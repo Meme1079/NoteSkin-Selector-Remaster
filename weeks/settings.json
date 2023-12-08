@@ -1,0 +1,31 @@
+{
+	"storyName": "IDK",
+	"difficulties": "",
+	"hideFreeplay": false,
+	"weekBackground": "",
+	"weekBefore": "tutorial",
+	"freeplayColor": [
+		146,
+		113,
+		253
+	],
+	"startUnlocked": true,
+	"weekCharacters": [
+		"",
+		"bf",
+		"gf"
+	],
+	"songs": [
+		[
+			"NoteSkin Settings",
+			"bf",
+			[
+				58,
+				27,
+				79
+			]
+		]
+	],
+	"hideStoryMode": true,
+	"weekName": "Week ???"
+}

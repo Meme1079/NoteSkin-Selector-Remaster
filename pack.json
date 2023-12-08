@@ -1,0 +1,7 @@
+{
+	"name": "NoteSkin Selector Remastered",
+	"description": "A Remastered of NoteSkin Selector!",
+	"restart": true,
+	"runsGlobally": true,
+	"color": [55, 100, 177]
+}
