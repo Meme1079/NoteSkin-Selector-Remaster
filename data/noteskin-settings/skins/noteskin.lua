@@ -1,6 +1,19 @@
 local table  = require('mods/NoteSkin Selector Remastered/scripts/modules/libraries/table')
 local string = require('mods/NoteSkin Selector Remastered/scripts/modules/libraries/string')
+local json   = require('mods/NoteSkin Selector Remastered/scripts/modules/libraries/json')
 local main   = require('mods/NoteSkin Selector Remastered/data/noteskin-settings/main')
+
+--- Gets the text file content's from another file
+---@param path string The path duh; Starts outside the `mods` folder
+---@return string The file content's
+local function getTextFileContent(path)
+     local file = io.open(path)
+     local content = ''
+     for line in file:lines() do  
+          content = content .. line .. '\n'
+     end
+     return content
+end
 
 --- Gets the noteskins assets
 ---@return table The noteskins that were collected
@@ -35,15 +48,20 @@ end
 ---@return nil
 local function initNoteSkins(noteSkinTag, noteSkinImage, nameAnim, prefixAnim, xpos)
      makeAnimatedLuaSprite(noteSkinTag, noteSkinImage, xpos, 175)
+     addAnimationByPrefix(noteSkinTag, 'leftConfirm', 'left confirm', 24, false)
+     addAnimationByPrefix(noteSkinTag, 'downConfirm', 'down confirm', 24, false)
+     addAnimationByPrefix(noteSkinTag, 'upConfirm', 'up confirm', 24, false)
+     addAnimationByPrefix(noteSkinTag, 'rightConfirm', 'right confirm', 24, false)
      addAnimationByPrefix(noteSkinTag, nameAnim, prefixAnim, 24, false)
      setGraphicSize(noteSkinTag, 110, 110)
      setObjectCamera(noteSkinTag, 'camHUD')
-     addLuaSprite(noteSkinTag)
+     addLuaSprite(noteSkinTag, false)
 end
 
 --- Creates the noteskin for display
 ---@return nil
 local function createNoteSkins()
+     local offsets = {left = {}, down = {}, up = {}, right = {}}
      for index, value in next, getNoteSkins() do
           local noteSkin_getCurPos = main.calculatePosition(getNoteSkins())[index]
           local noteSkin_hitboxTag = 'noteSkins_hitbox-'..tostring(index)
@@ -60,18 +78,30 @@ local function createNoteSkins()
           setGraphicSize(noteSkin_displayTag, 110, 110)
           setObjectCamera(noteSkin_displayTag, 'camOther')
           precacheImage(noteSkin_displayImage)
-          addLuaSprite(noteSkin_displayTag)
+          addLuaSprite(noteSkin_displayTag, false)
 
           local noteSkin_arrowImage = 'noteSkins/'..value
-          local notenoteSkin_arrowTagPrefix = {'_arrowLeft-', '_arrowDown-', '_arrowUp-', '_arrowRight-'}
+          local noteSkin_arrowTagPrefix = {'_arrowLeft-', '_arrowDown-', '_arrowUp-', '_arrowRight-'}
           local noteSkin_arrowTag = function(ind) 
-               return 'noteSkins'..notenoteSkin_arrowTagPrefix[ind]..tostring(index) 
+               return 'noteSkins'..noteSkin_arrowTagPrefix[ind]..tostring(index) 
           end
 
           initNoteSkins(noteSkin_arrowTag(1), noteSkin_arrowImage, 'left', 'arrowLEFT', 790)
           initNoteSkins(noteSkin_arrowTag(2), noteSkin_arrowImage, 'down', 'arrowDOWN', 790 + 115)
           initNoteSkins(noteSkin_arrowTag(3), noteSkin_arrowImage, 'up', 'arrowUP', 790 + 115 * 2)
           initNoteSkins(noteSkin_arrowTag(4), noteSkin_arrowImage, 'right', 'arrowRIGHT', 790 + 115 * 3)
+
+          table.insert(offsets.left, {getProperty(noteSkin_arrowTag(1)..'.offset.x'), getProperty(noteSkin_arrowTag(1)..'.offset.y')})
+          table.insert(offsets.down, {getProperty(noteSkin_arrowTag(2)..'.offset.x'), getProperty(noteSkin_arrowTag(2)..'.offset.y')})
+          table.insert(offsets.up, {getProperty(noteSkin_arrowTag(3)..'.offset.x'), getProperty(noteSkin_arrowTag(3)..'.offset.y')})
+          table.insert(offsets.right, {getProperty(noteSkin_arrowTag(4)..'.offset.x'), getProperty(noteSkin_arrowTag(4)..'.offset.y')})
+
+          for q = 1, #offsets.left do
+               addOffset(noteSkin_arrowTag(1), 'left',  offsets.left[q][1],  offsets.left[q][2])
+               addOffset(noteSkin_arrowTag(2), 'down',  offsets.down[q][1],  offsets.down[q][2])
+               addOffset(noteSkin_arrowTag(3), 'up',    offsets.up[q][1],    offsets.up[q][2])
+               addOffset(noteSkin_arrowTag(4), 'right', offsets.right[q][1], offsets.right[q][2])
+          end 
      end
 end
 
@@ -128,7 +158,7 @@ local maximumLimit_noteskins = false
 function onCreatePost()
      createNoteSkins()
      saveSelectionLocation()
-
+     
      setProperty('skinHitbox-highlight.x', noteSkin_savedData_highlightPosX)
      setProperty('skinHitbox-highlight.y', noteSkin_savedData_highlightPosY)
      setTextString('skin_page', 'Page '..noteSkin_savedData_curPage..' / '..main.calculatePageLimit(getNoteSkins()))
@@ -219,10 +249,38 @@ local function selectionNoteSkins()
      traverseNoteSkins()
 end
 
+local note_offsets = getTextFileContent('mods/NoteSkin Selector Remastered/jsons/offsets_confirm.jsonc'):gsub('//%s*.-(\n)', '%1')
+local g = json.decode(note_offsets)
+local function bi(key, ind, dir, offsets)
+     if keyboardJustPressed(getKeyBinds(key)) then
+          addOffset('noteSkins_arrow'..dir..'-'..ind, dir:lower()..'Confirm', offsets[1], offsets[2])
+          playAnim('noteSkins_arrow'..dir..'-'..ind, dir:lower()..'Confirm')
+     end
+     if keyboardReleased(getKeyBinds(key)) then
+          playAnim('noteSkins_arrow'..dir..'-'..ind, dir:lower())
+     end
+end
+
+local function hetero()
+     for k = 1, #noteSkins_getNoteSkins do
+          local noteSkin_savedData_selectedPos = getDataFromSave('noteskin_selector-save', 'noteSkin_savedData_selectedPos') or noteSkins_selectedPos
+          local noteSkins_arrows = {'_arrowLeft-', '_arrowDown-', '_arrowUp-', '_arrowRight-'}
+          if k == noteSkin_savedData_selectedPos then
+               local ace = function(dir, def)
+                    local x = g[dir][k] ~= nil and g[dir][k][1] or def[1]
+                    local y = g[dir][k] ~= nil and g[dir][k][2] or def[2]
+                    return {x, y}
+               end
+
+               bi(0, k, 'Left', ace('left', {45.5, 48}))
+               bi(1, k, 'Down', ace('down', {50, 48.5}))
+               bi(2, k, 'Up', ace('up', {50, 46.5}))
+               bi(3, k, 'Right', ace('right', {46, 49.5}))
+          end
+     end
+end
+
 function onUpdate(elapsed)
      selectionNoteSkins()
-
-     if not objectsOverlap('windowGameHitbox', 'mouse_hitbox') then
-          flushSaveData('noteskin_selector-save')
-     end
+     hetero()
 end

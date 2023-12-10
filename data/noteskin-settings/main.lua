@@ -135,6 +135,7 @@ function onCreate()
      -- Scripts --
 
      addLuaScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/skins/noteskin')
+     addHScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/other/globalfunk')
      addHScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/other/backdrop')
 end
 
@@ -166,10 +167,13 @@ end
 
 function onUpdate(elapsed)
      if keyboardJustPressed('ONE') then
-          restartSong()
+          restartSong(true)
      end
      if keyboardJustPressed('ESCAPE') then
           exitSong()
+     end
+     if not objectsOverlap('windowGameHitbox', 'mouse_hitbox') then
+          flushSaveData('noteskin_selector-save')
      end
 
      if clickObject('bgButton_splashskin') then
