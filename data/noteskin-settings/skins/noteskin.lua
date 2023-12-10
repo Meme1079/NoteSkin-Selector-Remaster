@@ -249,9 +249,17 @@ local function selectionNoteSkins()
      traverseNoteSkins()
 end
 
-local note_offsets = getTextFileContent('mods/NoteSkin Selector Remastered/jsons/offsets_confirm.jsonc'):gsub('//%s*.-(\n)', '%1')
-local g = json.decode(note_offsets)
-local function bi(key, ind, dir, offsets)
+local gayPath = 'mods/NoteSkin Selector Remastered/jsons/offsets_confirm.jsonc'
+local noteSkins_offsets_confirm = getTextFileContent(gayPath):gsub('//%s*.-(\n)', '%1')
+local g = json.decode(noteSkins_offsets_confirm)
+
+--- Initiates the note skin animations when pressing
+---@param key integer The note direction in each strum of the note
+---@param ind integer The given index of the note skin arrows
+---@param dir string The given direction to use
+---@param offsets table The animation offsets
+---@return nil
+local function initNoteAnim(key, ind, dir, offsets)
      if keyboardJustPressed(getKeyBinds(key)) then
           addOffset('noteSkins_arrow'..dir..'-'..ind, dir:lower()..'Confirm', offsets[1], offsets[2])
           playAnim('noteSkins_arrow'..dir..'-'..ind, dir:lower()..'Confirm')
@@ -261,26 +269,28 @@ local function bi(key, ind, dir, offsets)
      end
 end
 
-local function hetero()
+--- Sets the note skin animations
+---@return nil
+local function setNoteAnim()
      for k = 1, #noteSkins_getNoteSkins do
           local noteSkin_savedData_selectedPos = getDataFromSave('noteskin_selector-save', 'noteSkin_savedData_selectedPos') or noteSkins_selectedPos
           local noteSkins_arrows = {'_arrowLeft-', '_arrowDown-', '_arrowUp-', '_arrowRight-'}
           if k == noteSkin_savedData_selectedPos then
-               local ace = function(dir, def)
+               local offsets = function(dir, def)
                     local x = g[dir][k] ~= nil and g[dir][k][1] or def[1]
                     local y = g[dir][k] ~= nil and g[dir][k][2] or def[2]
                     return {x, y}
                end
 
-               bi(0, k, 'Left', ace('left', {45.5, 48}))
-               bi(1, k, 'Down', ace('down', {50, 48.5}))
-               bi(2, k, 'Up', ace('up', {50, 46.5}))
-               bi(3, k, 'Right', ace('right', {46, 49.5}))
+               initNoteAnim(0, k, 'Left',  offsets('left',  {45.5, 48}))
+               initNoteAnim(1, k, 'Down',  offsets('down',  {50, 48.5}))
+               initNoteAnim(2, k, 'Up',    offsets('up',    {50, 46.5}))
+               initNoteAnim(3, k, 'Right', offsets('right', {46, 49.5}))
           end
      end
 end
 
 function onUpdate(elapsed)
      selectionNoteSkins()
-     hetero()
+     setNoteAnim()
 end
