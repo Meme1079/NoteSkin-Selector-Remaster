@@ -39,7 +39,6 @@ local function calculatePageLimit(skinType)
 end
 
 function onCreate()
-
      makeLuaSprite('bg_cover', 'menuDesat', 0, 0)
      setObjectCamera('bg_cover', 'camHUD')
      setProperty('bg_cover.color', 0x5332a8)
@@ -48,7 +47,7 @@ function onCreate()
      makeLuaSprite('bg_side', 'sidebar', 100, 0)
      setObjectCamera('bg_side', 'camHUD')
      setProperty('bg_side.color', 0x000000)
-     setProperty('bg_side.alpha', 0.35)
+     setProperty('bg_side.alpha', 0.5)
      addLuaSprite('bg_side')
 
      makeLuaSprite('bg_head', nil, 0, 0)
@@ -120,6 +119,14 @@ function onCreate()
      setObjectCamera('skinHitbox-highlight', 'camHUD')
      addLuaSprite('skinHitbox-highlight')
 
+     -- Other --
+
+     makeLuaSprite('windowGameHitbox', nil, 15, 15)
+     makeGraphic('windowGameHitbox', screenWidth - 30, screenHeight - 30, '000000')
+     setObjectCamera('windowGameHitbox', 'camHUD')
+     setProperty('windowGameHitbox.visible', false)
+     addLuaSprite('windowGameHitbox')
+
      -- Music --
      
      precacheMusic('file_select')
@@ -128,6 +135,7 @@ function onCreate()
      -- Scripts --
 
      addLuaScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/skins/noteskin')
+     addHScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/other/backdrop')
 end
 
 function onCreatePost()
@@ -179,7 +187,7 @@ function onUpdate(elapsed)
      setProperty('mouse_hitbox.y', getMouseY('camHUD'))
 end
 
---- Converts a HUE value into a RGB value
+--- Converts a HUE value into a RGB value _(I stole this)_
 ---@param primary number The first color
 ---@param secondary number The second color
 ---@param tertiary number The third color
@@ -193,7 +201,7 @@ function hueToRGB(primary, secondary, tertiary)
      return primary;
 end
 
---- Converts HSL color value into a RGB value
+--- Converts HSL color value into a RGB value _(I stole this)_
 ---@param hue number The color
 ---@param sat number The saturation
 ---@param light number The lightness
@@ -209,7 +217,7 @@ function hslToRGB(hue, sat, light)
      return {math.floor(red * 255), math.floor(green * 255), math.floor(blue * 255)}
 end
 
---- Converts RGB color value into a Hex value
+--- Converts RGB color value into a Hex value _(I modified this)_
 ---@param red number The red value
 ---@param green number The green value
 ---@param blue number The blue value
@@ -221,7 +229,7 @@ function rgbToHex(red, green, blue)
      return string.format("%02x%02x%02x", red, green, blue)
 end
 
-local switch = false
+local switch = true
 local cpm = 0.05 -- color per-millisecond
 local hue = 230
 function onUpdatePost(elapsed)

@@ -82,25 +82,25 @@ function altValue(main, alt)
      return main ~= nil and main or alt
 end
 
-local savedData_curPage
-local savedData_highlightPosX
-local savedData_highlightPosY
-local savedData_selectedName
-local savedData_selectedPos
+local noteSkin_savedData_curPage
+local noteSkin_savedData_highlightPosX
+local noteSkin_savedData_highlightPosY
+local noteSkin_savedData_selectedName
+local noteSkin_savedData_selectedPos
 function onCreate()
      initSaveData('noteskin_selector-save', 'noteskin_selector')
-     savedData_curPage       = altValue(getDataFromSave('noteskin_selector-save', 'savedData_curPage'), 1)
-     savedData_highlightPosX = altValue(getDataFromSave('noteskin_selector-save', 'savedData_highlightPosX'), 42.8 - 30)
-     savedData_highlightPosY = altValue(getDataFromSave('noteskin_selector-save', 'savedData_highlightPosY'), 158)
-     savedData_selectedName  = altValue(getDataFromSave('noteskin_selector-save', 'savedData_selectedName'), 'Default')
-     savedData_selectedPos   = altValue(getDataFromSave('noteskin_selector-save', 'savedData_selectedPos'), 1)
+     noteSkin_savedData_curPage       = altValue(getDataFromSave('noteskin_selector-save', 'noteSkin_savedData_curPage'), 1)
+     noteSkin_savedData_highlightPosX = altValue(getDataFromSave('noteskin_selector-save', 'noteSkin_savedData_highlightPosX'), 42.8 - 30)
+     noteSkin_savedData_highlightPosY = altValue(getDataFromSave('noteskin_selector-save', 'noteSkin_savedData_highlightPosY'), 158)
+     noteSkin_savedData_selectedName  = altValue(getDataFromSave('noteskin_selector-save', 'noteSkin_savedData_selectedName'), 'Default')
+     noteSkin_savedData_selectedPos   = altValue(getDataFromSave('noteskin_selector-save', 'noteSkin_savedData_selectedPos'), 1)
 end
 
 --- Saves the current page were you left last time
 ---@return nil
 local function saveSelectionLocation()
      local perMultiply = 0
-     for perPage = 1, savedData_curPage do
+     for perPage = 1, noteSkin_savedData_curPage do
           if perPage >= 3 then
                perMultiply = perMultiply + 1
           end
@@ -108,17 +108,17 @@ local function saveSelectionLocation()
 
      local noteSkins_decrement = 0
      for perSkinInd = 1, #getNoteSkins() do
-          if savedData_curPage == 1 then --! DO NOT DELETE
+          if noteSkin_savedData_curPage == 1 then --! DO NOT DELETE
                break
           end
-          if savedData_curPage >= 3 then
+          if noteSkin_savedData_curPage >= 3 then
                noteSkins_decrement = 340 * perMultiply
           end
 
           local noteSkins_tagGetY        = 'noteSkins_hitbox-'..tostring(perSkinInd)..'.y'
           local noteSkins_tagDisplayGetY = 'noteSkins_display-'..tostring(perSkinInd)..'.y'
-          setProperty(noteSkins_tagGetY, getProperty(noteSkins_tagGetY) - 340 * savedData_curPage - noteSkins_decrement)
-          setProperty(noteSkins_tagDisplayGetY, getProperty(noteSkins_tagDisplayGetY) - 340 * savedData_curPage - noteSkins_decrement)
+          setProperty(noteSkins_tagGetY, getProperty(noteSkins_tagGetY) - 340 * noteSkin_savedData_curPage - noteSkins_decrement)
+          setProperty(noteSkins_tagDisplayGetY, getProperty(noteSkins_tagDisplayGetY) - 340 * noteSkin_savedData_curPage - noteSkins_decrement)
      end
 end
 
@@ -129,11 +129,11 @@ function onCreatePost()
      createNoteSkins()
      saveSelectionLocation()
 
-     setProperty('skinHitbox-highlight.x', savedData_highlightPosX)
-     setProperty('skinHitbox-highlight.y', savedData_highlightPosY)
-     setTextString('skin_page', 'Page '..savedData_curPage..' / '..main.calculatePageLimit(getNoteSkins()))
-     setTextString('skin_name', savedData_selectedName)
-     increValue_noteskins = altValue(getDataFromSave('noteskin_selector-save', 'savedData_curPage'), 1)
+     setProperty('skinHitbox-highlight.x', noteSkin_savedData_highlightPosX)
+     setProperty('skinHitbox-highlight.y', noteSkin_savedData_highlightPosY)
+     setTextString('skin_page', 'Page '..noteSkin_savedData_curPage..' / '..main.calculatePageLimit(getNoteSkins()))
+     setTextString('skin_name', noteSkin_savedData_selectedName)
+     increValue_noteskins = altValue(getDataFromSave('noteskin_selector-save', 'noteSkin_savedData_curPage'), 1)
 end
 
 local function traverseNoteSkins()
@@ -162,7 +162,7 @@ local function traverseNoteSkins()
      end
 
      if keyboardJustPressed('ONE') or keyboardJustPressed('ESCAPE') then
-          setDataFromSave('noteskin_selector-save', 'savedData_curPage', increValue_noteskins)
+          setDataFromSave('noteskin_selector-save', 'noteSkin_savedData_curPage', increValue_noteskins)
      end
 end
 
@@ -187,15 +187,15 @@ local function selectionNoteSkins()
                setProperty('skinHitbox-highlight.y', noteskinHitbox_highlightY)
                
                noteSkins_selectedPos = k
-               setDataFromSave('noteskin_selector-save', 'savedData_highlightPosX', noteskinHitbox_highlightX)
-               setDataFromSave('noteskin_selector-save', 'savedData_selectedName', getNoteSkinNames()[k])
-               setDataFromSave('noteskin_selector-save', 'savedData_selectedPos', k)
+               setDataFromSave('noteskin_selector-save', 'noteSkin_savedData_highlightPosX', noteskinHitbox_highlightX)
+               setDataFromSave('noteskin_selector-save', 'noteSkin_savedData_selectedName', getNoteSkinNames()[k])
+               setDataFromSave('noteskin_selector-save', 'noteSkin_savedData_selectedPos', k)
           end
 
-          local savedData_selectedPos = getDataFromSave('noteskin_selector-save', 'savedData_selectedPos') or noteSkins_selectedPos
+          local noteSkin_savedData_selectedPos = getDataFromSave('noteskin_selector-save', 'noteSkin_savedData_selectedPos') or noteSkins_selectedPos
           local noteSkins_arrows = {'_arrowLeft-', '_arrowDown-', '_arrowUp-', '_arrowRight-'}
           for a,b in next, noteSkins_arrows do
-               if k ~= savedData_selectedPos then
+               if k ~= noteSkin_savedData_selectedPos then
                     removeLuaSprite('noteSkins'..b..tostring(k), false)
                else
                     addLuaSprite('noteSkins'..b..tostring(k))
@@ -205,15 +205,15 @@ local function selectionNoteSkins()
           if keyboardJustPressed('UP') and maximumLimit_noteskins == false then
                setProperty(noteSkins_tagGetY, getProperty(noteSkins_tagGetY) + noteSkins_bgPos)
                setProperty(noteSkins_tagDisplayGetY, getProperty(noteSkins_tagDisplayGetY) + noteSkins_bgPos)
-               setProperty('skinHitbox-highlight.y', getProperty('noteSkins_hitbox-'..tostring(savedData_selectedPos)..'.y') - noteSkins_selectOffset)
+               setProperty('skinHitbox-highlight.y', getProperty('noteSkins_hitbox-'..tostring(noteSkin_savedData_selectedPos)..'.y') - noteSkins_selectOffset)
           end
           if keyboardJustPressed('DOWN') and minimumLimit_noteskins == false then
                setProperty(noteSkins_tagGetY, getProperty(noteSkins_tagGetY) - noteSkins_bgPos)
                setProperty(noteSkins_tagDisplayGetY, getProperty(noteSkins_tagDisplayGetY) - noteSkins_bgPos)
-               setProperty('skinHitbox-highlight.y', getProperty('noteSkins_hitbox-'..tostring(savedData_selectedPos)..'.y') - noteSkins_selectOffset)
+               setProperty('skinHitbox-highlight.y', getProperty('noteSkins_hitbox-'..tostring(noteSkin_savedData_selectedPos)..'.y') - noteSkins_selectOffset)
           end
 
-          setDataFromSave('noteskin_selector-save', 'savedData_highlightPosY', getProperty('noteSkins_hitbox-'..tostring(savedData_selectedPos)..'.y') - noteSkins_selectOffset)
+          setDataFromSave('noteskin_selector-save', 'noteSkin_savedData_highlightPosY', getProperty('noteSkins_hitbox-'..tostring(noteSkin_savedData_selectedPos)..'.y') - noteSkins_selectOffset)
      end
 
      traverseNoteSkins()
@@ -221,4 +221,8 @@ end
 
 function onUpdate(elapsed)
      selectionNoteSkins()
+
+     if not objectsOverlap('windowGameHitbox', 'mouse_hitbox') then
+          flushSaveData('noteskin_selector-save')
+     end
 end
