@@ -1,7 +1,7 @@
 {
 	"storyName": "IDK",
 	"difficulties": "",
-	"hideFreeplay": false,
+	"hideFreeplay": true,
 	"weekBackground": "",
 	"weekBefore": "tutorial",
 	"freeplayColor": [

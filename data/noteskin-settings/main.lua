@@ -1,8 +1,5 @@
 local table = require('mods/NoteSkin Selector Remastered/scripts/modules/libraries/table')
 
---- Calculates the positions of a row skins
----@param skinType table Either it will be `note` or `splash` tables to get the positions
----@return table Returns the given `x` and `y` positions
 local function calculatePosition(skinType)
      local xpos = {20, 220 - 30, (220 + 170) - 30, (220 + (170 * 2)) - 30}
      local ypos = -155 -- increment in each 4th value
@@ -24,9 +21,6 @@ local function calculatePosition(skinType)
      return result
 end
 
---- Calculates the page limit from the row skins
----@param skinType table Either it will be `note` or `splash` tables to get the page limit
----@return number Returns the given page limit from the specified skins
 local function calculatePageLimit(skinType)
      local yindex_limit = 0
      for skinIndex = 1, #skinType do
@@ -39,6 +33,10 @@ local function calculatePageLimit(skinType)
 end
 
 function onCreate()
+     addLuaScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/skins/noteskin')
+     addHScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/other/globalfunk')
+     addHScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/other/backdrop')
+
      makeLuaSprite('bg_cover', 'menuDesat', 0, 0)
      setObjectCamera('bg_cover', 'camHUD')
      setProperty('bg_cover.color', 0x5332a8)
@@ -119,10 +117,137 @@ function onCreate()
      setObjectCamera('skinHitbox-highlight', 'camHUD')
      addLuaSprite('skinHitbox-highlight')
 
+     -- Keybinds --
+
+     makeLuaText('keybind_text1', tostring(getKeyBinds(0)), nil, 833, 300)
+     setTextSize('keybind_text1', 35)
+     setObjectCamera('keybind_text1', 'camHUD')
+     addLuaText('keybind_text1')
+
+     makeLuaText('keybind_text2', tostring(getKeyBinds(1)), nil, 833 + 115, 300)
+     setTextSize('keybind_text2', 35)
+     setObjectCamera('keybind_text2', 'camHUD')
+     addLuaText('keybind_text2')
+
+     makeLuaText('keybind_text3', tostring(getKeyBinds(2)), nil, 833 + 115 * 2, 300)
+     setTextSize('keybind_text3', 35)
+     setObjectCamera('keybind_text3', 'camHUD')
+     addLuaText('keybind_text3')
+
+     makeLuaText('keybind_text4', tostring(getKeyBinds(3)), nil, 833 + 115 * 3, 300)
+     setTextSize('keybind_text4', 35)
+     setObjectCamera('keybind_text4', 'camHUD')
+     addLuaText('keybind_text4')
+
+     -- UI --
+
+     makeLuaText('ui_noteAnim', 'Anims', 0, 815, 610)
+     setTextFont('ui_noteAnim', 'phantummuff full.ttf')
+     addLuaText('ui_noteAnim')
+
+     makeLuaText('ui_noteStyle', 'Style', 0, 930, 610)
+     setTextFont('ui_noteStyle', 'phantummuff full.ttf')
+     addLuaText('ui_noteStyle')
+
+     makeLuaText('ui_noteOptions', 'Options', 0, 1030, 610)
+     setTextFont('ui_noteOptions', 'phantummuff full.ttf')
+     addLuaText('ui_noteOptions')
+
+     makeLuaText('ui_noteLBRACKET', 'LBRKT', 0, 840, 690)
+     setTextFont('ui_noteLBRACKET', 'phantummuff full.ttf')
+     addLuaText('ui_noteLBRACKET')
+
+     makeLuaText('ui_noteRBRACKET', 'RBRKT', 0, 950, 690)
+     setTextFont('ui_noteRBRACKET', 'phantummuff full.ttf')
+     addLuaText('ui_noteRBRACKET')
+
+     makeLuaText('ui_noteSHIFTO', 'SHIFT + O', 0, 1060, 690)
+     setTextFont('ui_noteSHIFTO', 'phantummuff full.ttf')
+     addLuaText('ui_noteSHIFTO')
+
+     makeLuaSprite('ui_notePressed', 'ui/note-pressed', 790, 620)
+     setObjectCamera('ui_notePressed', 'camHUD')
+     setGraphicSize('ui_notePressed', 100, 100)
+     addLuaSprite('ui_notePressed')
+
+     makeLuaSprite('ui_noteConfirm', 'ui/note-confirm', 790, 620)
+     setObjectCamera('ui_noteConfirm', 'camHUD')
+     setGraphicSize('ui_noteConfirm', 100, 100)
+     addLuaSprite('ui_noteConfirm')
+
+     makeLuaSprite('ui_noteNormal', 'ui/note-pressed', 900, 620)
+     setObjectCamera('ui_noteNormal', 'camHUD')
+     setGraphicSize('ui_noteNormal', 100, 100)
+     addLuaSprite('ui_noteNormal')
+
+     --makeLuaSprite('ui_notePixel', 'ui/note-pixel', 900, 620)
+     --setObjectCamera('ui_notePixel', 'camHUD')
+     --setGraphicSize('ui_notePixel', 100, 100)
+     --addLuaSprite('ui_notePixel')
+
+     makeLuaSprite('ui_noteOptions', 'ui/note-options', 1010, 620)
+     setObjectCamera('ui_noteOptions', 'camHUD')
+     setGraphicSize('ui_noteOptions', 100, 100)
+     addLuaSprite('ui_noteOptions')
+
+     -- Player & Opponent --
+
+     makeAnimatedLuaSprite('checkbox_player', 'checkboxanim', 803, 385)
+     setObjectCamera('checkbox_player', 'camHUD')
+     setGraphicSize('checkbox_player', 75, 75)
+     addAnimationByPrefix('checkbox_player', 'unchecked', 'checkbox0', 24, false)
+     addAnimationByPrefix('checkbox_player', 'unchecking', 'checkbox anim reverse', 24, false)
+     addAnimationByPrefix('checkbox_player', 'checking', 'checkbox anim0', 24, false)
+     addAnimationByPrefix('checkbox_player', 'checked', 'checkbox finish', 24, false)
+     addOffset('checkbox_player', 'unchecked', 18, 16.5)
+     addOffset('checkbox_player', 'unchecking', 37, 37)
+     addOffset('checkbox_player', 'checking', 44, 34)
+     addOffset('checkbox_player', 'checked', 20, 24)
+     playAnim('checkbox_player', 'unchecked')
+     addLuaSprite('checkbox_player')
+
+     makeAnimatedLuaSprite('checkbox_opponent', 'checkboxanim', 803, 385 + 100)
+     setObjectCamera('checkbox_opponent', 'camHUD')
+     setGraphicSize('checkbox_opponent', 75, 75)
+     addAnimationByPrefix('checkbox_opponent', 'unchecked', 'checkbox0', 24, false)
+     addAnimationByPrefix('checkbox_opponent', 'unchecking', 'checkbox anim reverse', 24, false)
+     addAnimationByPrefix('checkbox_opponent', 'checking', 'checkbox anim0', 24, false)
+     addAnimationByPrefix('checkbox_opponent', 'checked', 'checkbox finish', 24, false)
+     addOffset('checkbox_opponent', 'unchecked', 18, 16.5)
+     addOffset('checkbox_opponent', 'unchecking', 37, 37)
+     addOffset('checkbox_opponent', 'checking', 44, 34)
+     addOffset('checkbox_opponent', 'checked', 20, 24)
+     playAnim('checkbox_opponent', 'unchecked')
+     addLuaSprite('checkbox_opponent')
+
+     makeLuaText('checkbox_playerText', 'Player', 0, 803 + 100, 400 - 3)
+     setTextColor('checkbox_playerText', '31b0d1')
+     setTextSize('checkbox_playerText', 40)
+     setTextFont('checkbox_playerText', 'phantummuff full.ttf')
+     setObjectCamera('checkbox_playerText', 'camHUD')
+     addLuaText('checkbox_playerText')
+
+     makeLuaText('checkbox_opponentText', 'Opponent', 0, 803 + 100, 400 + 100 - 3)
+     setTextColor('checkbox_opponentText', 'af66ce')
+     setTextSize('checkbox_opponentText', 40)
+     setTextFont('checkbox_opponentText', 'phantummuff full.ttf')
+     setObjectCamera('checkbox_opponentText', 'camHUD')
+     addLuaText('checkbox_opponentText')
+
+     makeLuaSprite('checkbox_playerSelect', 'player-selected', 100, 165)
+     setGraphicSize('checkbox_playerSelect', 65, 65)
+     setObjectCamera('checkbox_playerSelect', 'camOther')
+     addLuaSprite('checkbox_playerSelect', true)
+
+     makeLuaSprite('checkbox_opponentSelect', 'opponent-selected', 100, 235)
+     setGraphicSize('checkbox_opponentSelect', 65, 65)
+     setObjectCamera('checkbox_opponentSelect', 'camOther')
+     addLuaSprite('checkbox_opponentSelect', true)
+
      -- Other --
 
-     makeLuaSprite('windowGameHitbox', nil, 15, 15)
-     makeGraphic('windowGameHitbox', screenWidth - 30, screenHeight - 30, '000000')
+     makeLuaSprite('windowGameHitbox', nil, 20, 20)
+     makeGraphic('windowGameHitbox', screenWidth - 40, screenHeight - 40, '000000')
      setObjectCamera('windowGameHitbox', 'camHUD')
      setProperty('windowGameHitbox.visible', false)
      addLuaSprite('windowGameHitbox')
@@ -130,13 +255,7 @@ function onCreate()
      -- Music --
      
      precacheMusic('file_select')
-     playMusic('file_select', 0.45, true)
-
-     -- Scripts --
-
-     addLuaScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/skins/noteskin')
-     addHScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/other/globalfunk')
-     addHScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/other/backdrop')
+     playMusic('file_select', 0.25, true)
 end
 
 function onCreatePost()
@@ -147,7 +266,7 @@ function onCreatePost()
      setProperty('scoreTxt.visible', false)
 
      -- Mouse --
-
+ 
      makeLuaSprite('mouse_hitbox', nil, getMouseX('camHUD'), getMouseY('camHUD'))
      makeGraphic('mouse_hitbox', 10, 10, 'e44932')
      setObjectCamera('mouse_hitbox', 'camHUD')
@@ -158,9 +277,6 @@ function onCreatePost()
      setPropertyFromClass('flixel.FlxG', 'mouse.visible', true);
 end
 
---- Clicks on the specified object and returns `true`, if clicked.
----@param obj string The specified object to click
----@return boolean
 local function clickObject(obj)
      return objectsOverlap(obj, 'mouse_hitbox') and mouseClicked('left')
 end
@@ -172,17 +288,33 @@ function onUpdate(elapsed)
      if keyboardJustPressed('ESCAPE') then
           exitSong()
      end
-     if not objectsOverlap('windowGameHitbox', 'mouse_hitbox') then
-          flushSaveData('noteskin_selector-save')
+     if keyboardJustPressed('TAB') then
+          loadNewSong(getDataFromSave('noteskin_selector-save', 'curSongName'), getDataFromSave('noteskin_selector-save', 'curDiffID'))
+     end
+
+     if keyboardPressed('SHIFT') and keyboardJustPressed('O') then
+          runHaxeCode([[
+   	          import options.OptionsState;
+  	          import backend.MusicBeatState;
+  	          game.paused = true; // For lua
+ 	          game.vocals.volume = 0;
+  	          MusicBeatState.switchState(new OptionsState());
+  	          if (ClientPrefs.data.pauseMusic != 'None') {
+    	               FlxG.sound.playMusic(Paths.music(Paths.formatToSongPath(ClientPrefs.data.pauseMusic)), game.modchartSounds('pauseMusic').volume);
+    	               FlxTween.tween(FlxG.sound.music, {volume: 1}, 0.8);
+      	          FlxG.sound.music.time = game.modchartSounds('pauseMusic').time;
+    	          }
+    	          OptionsState.onPlayState = true;
+	     ]])
      end
 
      if clickObject('bgButton_splashskin') then
-          playSound('ping', 0.1)
+          playSound('ping', 0.3)
           setProperty('bgButton_noteskin-selected.visible', false)
           setProperty('bgButton_splashskin-selected.visible', true)
      end
      if clickObject('bgButton_noteskin') then
-          playSound('ping', 0.1)
+          playSound('ping', 0.3)
           setProperty('bgButton_noteskin-selected.visible', true)
           setProperty('bgButton_splashskin-selected.visible', false)
      end
@@ -191,11 +323,6 @@ function onUpdate(elapsed)
      setProperty('mouse_hitbox.y', getMouseY('camHUD'))
 end
 
---- Converts a HUE value into a RGB value _(I stole this)_
----@param primary number The first color
----@param secondary number The second color
----@param tertiary number The third color
----@return number Returns a RGB value
 function hueToRGB(primary, secondary, tertiary)
      if tertiary < 0 then tertiary = tertiary + 1 end
      if tertiary > 1 then tertiary = tertiary - 1 end
@@ -205,11 +332,6 @@ function hueToRGB(primary, secondary, tertiary)
      return primary;
 end
 
---- Converts HSL color value into a RGB value _(I stole this)_
----@param hue number The color
----@param sat number The saturation
----@param light number The lightness
----@return table Returns a RGB value in a table form
 function hslToRGB(hue, sat, light)
      local hue, sat, light = hue / 360, sat / 100, light / 100
      local red, green, blue = light, light, light; -- achromatic
@@ -221,11 +343,6 @@ function hslToRGB(hue, sat, light)
      return {math.floor(red * 255), math.floor(green * 255), math.floor(blue * 255)}
 end
 
---- Converts RGB color value into a Hex value _(I modified this)_
----@param red number The red value
----@param green number The green value
----@param blue number The blue value
----@return string Returns a Hex value
 function rgbToHex(red, green, blue)
      local red   = red   >= 0 and (red   <= 255 and red   or 255) or 0
      local green = green >= 0 and (green <= 255 and green or 255) or 0
@@ -248,23 +365,6 @@ function onUpdatePost(elapsed)
      setProperty('bg_cover.color', tonumber('0x'..rgbToHex(unpack(hslToRGB(hue, 54, 43)))))
 end
 
---- Creates a timer in milliseconds _(Better)_
----@param tag string The specified tag to use
----@param timer number How much time will the `callback` be called
----@param callback function The code to execute
----@return nil
-function createTimer(tag, timer, callback)
-     timers = {}
-     table.insert(timers, {tag, callback})
-     runTimer(tag, timer)
-end
-
-function onTimerCompleted(tag, loops, loopsLeft)
-     for _,v in pairs(timers) do
-          if v[1] == tag then v[2]() end
-     end
-end
-
 local allowCountdown = false;
 function onStartCountdown()
      if not allowCountdown then -- Block the first countdown
@@ -274,9 +374,3 @@ function onStartCountdown()
      setProperty('camHUD.visible', true)
      return Function_Continue;
 end
-
-return {
-     ['clickObject'] = clickObject,
-     ['calculatePosition'] = calculatePosition, 
-     ['calculatePageLimit'] = calculatePageLimit,
-}

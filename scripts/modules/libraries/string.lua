@@ -52,6 +52,10 @@ function new_string.padEnd(str, limit, pattern)
      return str..result
 end
 
+function new_string.capAt(str, startPos, endPos)
+     return str:sub(startPos, endPos):upper()..str:sub(endPos + 1)
+end
+
 for k,v in pairs(string) do
      new_string[k] = v
 end
