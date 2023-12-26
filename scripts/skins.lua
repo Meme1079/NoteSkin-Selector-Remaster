@@ -33,15 +33,6 @@ function onCreate()
      noteSave_curNoteSkinOpponent = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_curNoteSkinOpponent'), 'NOTE_assets')
 end
 
-local function noteSplashesRGBDefaultColor()
-     local noteSplashesRGB = {{194, 75, 153}, {0, 255, 255}, {18, 250, 5}, {249, 57, 63}}
-     for j = 1, 4 do
-          setPropertyFromGroup('unspawnNotes', j - 1, 'noteSplashData.r', noteSplashesRGB[j][1])
-          setPropertyFromGroup('unspawnNotes', j - 1, 'noteSplashData.g', noteSplashesRGB[j][2])
-          setPropertyFromGroup('unspawnNotes', j - 1, 'noteSplashData.b', noteSplashesRGB[j][3])
-     end
-end
-
 local supportRGBPath = 'mods/NoteSkin Selector Remastered/jsons/doesSupport_RGB.json'
 local noteSkins_supportSupportRGB = getTextFileContent(supportRGBPath):gsub('//%s*.-(\n)', '%1')
 local noteSkins_jsonSupportRGB    = json.decode(noteSkins_supportSupportRGB)
@@ -52,28 +43,22 @@ local function initSplashesRGB(charInd, ind)
           return table.find(noteSkins_jsonSupportRGB, checkIfNone) ~= nil
      end
 
-
-     if supportsRGB(ind) == false then 
-          local forPlayer = function(i)
-               if getPropertyFromGroup('unspawnNotes', i, 'mustPress') then
-                    setPropertyFromGroup('unspawnNotes', i, 'rgbShader.enabled', false)
-                    noteSplashesRGBDefaultColor()
-               end
-          end
-          local forOpponent = function(i)
-               if not getPropertyFromGroup('unspawnNotes', i, 'mustPress') then
-                    setPropertyFromGroup('unspawnNotes', i, 'rgbShader.enabled', false)
-               end
-          end
-     
-          local chars = {'player', 'opponent'}
+     local chars = {'player', 'opponent'}
+     if supportsRGB(ind) == false then           
           for i = 0, getProperty('unspawnNotes.length')-1 do
-               if charInd == 1 then forPlayer(i)   end
-               if charInd == 2 then forOpponent(i) end
-               setPropertyFromGroup(chars[charInd]..'Strums', i, 'noteSplashData.useRGBShader', false)
-          end
-          for i = 0,3 do
-               setPropertyFromGroup(chars[charInd]..'Strums', i, 'useRGBShader', false)
+               if charInd == 1 then 
+                    if getPropertyFromGroup('unspawnNotes', i, 'mustPress') then
+                         setPropertyFromGroup('unspawnNotes', i, 'rgbShader.enabled', false)
+                         setPropertyFromGroup('playerStrums', i, 'useRGBShader', false)
+                         setPropertyFromGroup('playerStrums', i, 'noteSplashData.useRGBShader', false)
+                    end
+               end
+               if charInd == 2 then 
+                    if not getPropertyFromGroup('unspawnNotes', i, 'mustPress') then
+                         setPropertyFromGroup('unspawnNotes', i, 'rgbShader.enabled', false)
+                         setPropertyFromGroup('opponentStrums', i, 'useRGBShader', false)
+                    end
+               end
           end
      end
 end

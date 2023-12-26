@@ -1,0 +1,71 @@
+[
+	{
+		"save": "low_quality_mode",
+		"name": "Low Quality Mode",
+		"type": "bool",
+		"description": "Removes the checkerboard and color changing background",
+		"value": false
+	},
+     {
+		"save": "disable_selection_flash",
+		"name": "Disable Selection Box Flash",
+		"type": "bool",
+		"description": "If for some reason you hate selection box flashing itself",
+		"value": false
+	},
+     {
+		"save": "bg_checkerboard_color",
+		"name": "BG Checkerboard Color:",
+		"type": "int",
+		"description": "Changes the checkerboard background color hue",
+		"value": 180,
+          "min": 0,
+		"max": 360,
+          "step": 1
+	},
+     {
+		"save": "bg_colorstart",
+		"name": "BG Color Start:",
+		"type": "int",
+		"description": "Changes the background color hue from the starting point",
+          "value": 240,
+          "min": 0,
+		"max": 360,
+          "step": 1
+	},
+     {
+		"save": "bg_colorend",
+		"name": "BG Color End:",
+		"type": "int",
+		"description": "Changes the background color hue from the ending point",
+          "value": 270,
+          "min": 0,
+		"max": 360,
+          "step": 1
+	},
+     {
+		"save": "bg_color_scrollspeed",
+		"name": "BG Color Scroll Speed:",
+		"type": "float",
+		"description": "Changes the background color scroll speed\n(May Cause Seizures!)",
+          "value": 0.05,
+          "min": 0,
+		"max": 100,
+          "decimals": 2,
+          "step": 0.05,
+          "scroll": 8
+	},
+	{
+		"save": "bg_song",
+		"name": "BG Song:",
+		"type": "string",
+		"description": "Changes the Background Song",
+		"value": "Extras Menu",
+		"options": [
+               "Extras Menu",
+               "File Select",
+               "Tea Time",
+               "Breakfast"
+          ]
+	}
+]

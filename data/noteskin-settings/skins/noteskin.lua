@@ -24,7 +24,7 @@ local function calculatePosition(skinType)
           end
 
           local skinIndexNeg = skinIndex - 1
-          if skinIndexNeg % 4 == 0  then ypos = ypos + 180 end;
+          if skinIndexNeg % 4  == 0 then ypos = ypos + 180 end;
           if skinIndexNeg % 12 == 0 then ypos = ypos + 140 end;
           table.insert(result, {xpos[xindex], ypos});
      end

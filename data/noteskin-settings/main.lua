@@ -352,7 +352,7 @@ end
 
 local switch = true
 local cpm = 0.05 -- color per-millisecond
-local hue = 230
+local hue = 240
 function onUpdatePost(elapsed)
      if switch == false then
           if hue <= 270 then hue = hue + cpm end
