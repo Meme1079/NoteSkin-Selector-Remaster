@@ -139,6 +139,7 @@ local noteSave_selectedName, noteSave_selectedPos
 local noteSave_checkboxPlayer, noteSave_checkboxOpponent
 local noteSave_checkboxSelectedPlayer, noteSave_checkboxSelectedOpponent
 local noteSave_checkboxVisiblePlayer, noteSave_checkboxVisibleOpponent
+local noteSave_checkboxUncheckedPlayer, noteSave_checkboxUncheckedOpponent
 function onCreate()
      initSaveData('noteskin_selector-save', 'noteskin_selector')
      noteSave_curPage          = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_curPage'), 1)
@@ -148,10 +149,12 @@ function onCreate()
      noteSave_selectedPos      = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_selectedPos'), 1)
      noteSave_checkboxPlayer   = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_checkboxPlayer'), 1)
      noteSave_checkboxOpponent = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_checkboxOpponent'), 1)
-     noteSave_checkboxSelectedPlayer   = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_checkboxSelectedPlayer'), {100, 165})
-     noteSave_checkboxSelectedOpponent = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_checkboxSelectedOpponent'), {100, 235})
-     noteSave_checkboxVisiblePlayer    = altValue(getDataFromSave('noteskin_selector-save', 'cPlayer'), false)
-     noteSave_checkboxVisibleOpponent  = altValue(getDataFromSave('noteskin_selector-save', 'cOpponent'), false)
+     noteSave_checkboxSelectedPlayer    = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_checkboxSelectedPlayer'), {100, 165})
+     noteSave_checkboxSelectedOpponent  = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_checkboxSelectedOpponent'), {100, 235})
+     noteSave_checkboxVisiblePlayer     = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_checkboxVisiblePlayer'), false)
+     noteSave_checkboxVisibleOpponent   = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_checkboxVisibleOpponent'), false)
+     noteSave_checkboxUncheckedPlayer   = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_checkboxUncheckedPlayer'), false)
+     noteSave_checkboxUncheckedOpponent = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_checkboxUncheckedOpponent'), false)
 end
 
 local function saveSelectionLocation()
@@ -189,6 +192,8 @@ function onCreatePost()
      setProperty('checkbox_playerSelect.y', noteSave_checkboxSelectedPlayer[2])
      setProperty('checkbox_opponentSelect.x', noteSave_checkboxSelectedOpponent[1])
      setProperty('checkbox_opponentSelect.y', noteSave_checkboxSelectedOpponent[2])
+     if not noteSave_checkboxVisiblePlayer   then removeLuaSprite('checkbox_playerSelect', false)   end
+     if not noteSave_checkboxVisibleOpponent then removeLuaSprite('checkbox_opponentSelect', false) end
 
      setProperty('skinHitbox-highlight.x', noteSave_highlightPosX)
      setProperty('skinHitbox-highlight.y', noteSave_highlightPosY)
@@ -247,6 +252,7 @@ local function selectionNoteSkins()
                setProperty('skinHitbox-highlight.y', noteskinHitbox_highlightY)
                
                noteSkins_selectedPos = k
+               setDataFromSave('noteskin_selector-save', 'noteSave_checkboxUnchecked', true)
                setDataFromSave('noteskin_selector-save', 'noteSave_highlightPosX', noteskinHitbox_highlightX)
                setDataFromSave('noteskin_selector-save', 'noteSave_selectedName', getNoteSkinNames()[k])
                setDataFromSave('noteskin_selector-save', 'noteSave_selectedPos', k)
@@ -371,15 +377,16 @@ local function checkBoxAnimation()
           if clickObject('checkbox_'..char[curInd]) and isClicked[curInd] == false then
                addLuaSprite('checkbox_'..char[curInd]..'Select')
                playAnim('checkbox_'..char[curInd], 'checking', true)
-               isClicked[curInd] = true
 
                setDataFromSave('noteskin_selector-save', 'noteSave_checkboxVisible'..string.capAt(char[curInd], 1,1), true)
+               setDataFromSave('noteskin_selector-save', 'noteSave_checkboxUnchecked'..string.capAt(char[curInd], 1,1), true)
+               isClicked[curInd] = true
           elseif clickObject('checkbox_'..char[curInd]) and isClicked[curInd] == true then
                removeLuaSprite('checkbox_'..char[curInd]..'Select', false)
                playAnim('checkbox_'..char[curInd], 'unchecking', true)
-               isClicked[curInd] = false
 
                setDataFromSave('noteskin_selector-save', 'noteSave_checkboxVisible'..string.capAt(char[curInd], 1,1), false)
+               isClicked[curInd] = false
           end
      end
 
@@ -434,40 +441,34 @@ local function checkBoxSave()
      local noteSave_checkboxSelectedPos = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_checkboxSelectedPos'), checkbox_selectedPos)
      local checkboxChar_getPos = calculatePosition(noteSkins_getNoteSkins)[noteSave_checkboxSelectedPos]
      if clickObject('checkbox_player') and isClicked[1] == true then
-          noteSave_checkboxPlayer = checkbox_selectedPos
-          isDisabled[1] = false
+          noteSave_checkboxPlayer = noteSave_checkboxSelectedPos
 
           checkboxChar_setPos(1, checkboxChar_getPos[1], checkboxChar_getPos[2])
           setDataFromSave('noteskin_selector-save', 'noteSave_checkboxSelectedPlayer', {checkboxChar_getPos[1] + 80, checkboxChar_getPos[2]})
           setDataFromSave('noteskin_selector-save', 'noteSave_curNoteSkinPlayer', noteSkins_getNoteSkins[checkbox_selectedPos])
+          isDisabled[1] = false
      elseif clickObject('checkbox_player') and isClicked[1] == false then
           noteSave_checkboxPlayer = 0
      end
      if clickObject('checkbox_opponent') and isClicked[2] == true then
-          noteSave_checkboxOpponent = checkbox_selectedPos
-          isDisabled[2] = false
+          noteSave_checkboxOpponent = noteSave_checkboxSelectedPos
 
           checkboxChar_setPos(2, checkboxChar_getPos[1], checkboxChar_getPos[2])
           setDataFromSave('noteskin_selector-save', 'noteSave_checkboxSelectedOpponent', {checkboxChar_getPos[1] + 80, checkboxChar_getPos[2] + 70})
           setDataFromSave('noteskin_selector-save', 'noteSave_curNoteSkinOpponent', noteSkins_getNoteSkins[checkbox_selectedPos])
-     elseif clickObject('checkbox_opponent') and isClicked[1] == false then
+          isDisabled[2] = false
+     elseif clickObject('checkbox_opponent') and isClicked[2] == false then
           noteSave_checkboxOpponent = 0
      end
      
-     if noteSave_selectedPos == noteSave_checkboxPlayer and isDisabled[1] == true then
+     if noteSave_checkboxUncheckedPlayer and noteSave_selectedPos == noteSave_checkboxPlayer and isDisabled[1] == true then
           playAnim('checkbox_player', 'checked', false)
           isClicked[1] = true; isDisabled[1] = false
      end
-     if noteSave_selectedPos == noteSave_checkboxOpponent and isDisabled[2] == true then
+     if noteSave_checkboxUncheckedOpponent and noteSave_selectedPos == noteSave_checkboxOpponent and isDisabled[2] == true then
           playAnim('checkbox_opponent', 'checked', false)
           isClicked[2] = true; isDisabled[2] = false
      end
-
-     local noteSkins_getNoteSkinsWith0 = setmetatable(noteSkins_getNoteSkins, {
-          __index = function(self, ind)
-               if ind == 0 then return 'none' end
-          end
-     })
      setDataFromSave('noteskin_selector-save', 'noteSave_checkboxPlayer', noteSave_checkboxPlayer)
      setDataFromSave('noteskin_selector-save', 'noteSave_checkboxOpponent', noteSave_checkboxOpponent)
 end
@@ -475,8 +476,8 @@ end
 function onUpdate(elapsed)
      selectionNoteSkins()
      setNoteAnim()
-     saveDataWhenExit()
-
      checkBoxAnimation()
      checkBoxSave()
+
+     saveDataWhenExit()
 end

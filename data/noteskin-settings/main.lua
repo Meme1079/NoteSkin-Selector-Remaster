@@ -203,7 +203,7 @@ function onCreate()
      addOffset('checkbox_player', 'unchecking', 37, 37)
      addOffset('checkbox_player', 'checking', 44, 34)
      addOffset('checkbox_player', 'checked', 20, 24)
-     playAnim('checkbox_player', 'unchecked')
+     playAnim('checkbox_player', 'unchecked', true)
      addLuaSprite('checkbox_player')
 
      makeAnimatedLuaSprite('checkbox_opponent', 'checkboxanim', 803, 385 + 100)
@@ -217,7 +217,7 @@ function onCreate()
      addOffset('checkbox_opponent', 'unchecking', 37, 37)
      addOffset('checkbox_opponent', 'checking', 44, 34)
      addOffset('checkbox_opponent', 'checked', 20, 24)
-     playAnim('checkbox_opponent', 'unchecked')
+     playAnim('checkbox_opponent', 'unchecked', true)
      addLuaSprite('checkbox_opponent')
 
      makeLuaText('checkbox_playerText', 'Player', 0, 803 + 100, 400 - 3)
@@ -264,6 +264,7 @@ function onCreatePost()
      setProperty('healthBar.visible', false)
      setProperty('healthBarBG.visible', false)
      setProperty('scoreTxt.visible', false)
+     setProperty('botplayTxt.visible', false)
 
      -- Mouse --
  
@@ -373,4 +374,16 @@ function onStartCountdown()
      end
      setProperty('camHUD.visible', true)
      return Function_Continue;
+end
+
+function createTimer(tag, timer, callback)
+     timers = {}
+     table.insert(timers, {tag, callback})
+     runTimer(tag, timer)
+end
+
+function onTimerCompleted(tag, loops, loopsLeft)
+     for _,v in pairs(timers) do
+          if v[1] == tag then v[2]() end
+     end
 end

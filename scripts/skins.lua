@@ -24,18 +24,28 @@ local function altValue(main, alt)
      return main ~= nil and main or alt
 end
 
+local supportRGBPath   = 'mods/NoteSkin Selector Remastered/jsons/doesSupport_RGB.json'
+local strumsOffsetPath = 'mods/NoteSkin Selector Remastered/jsons/offsets_strums.json'
+
+local noteSkins_supportRGB   = getTextFileContent(supportRGBPath):gsub('//%s*.-(\n)', '%1')
+local noteSkins_strumsOffset = getTextFileContent(strumsOffsetPath):gsub('//%s*.-(\n)', '%1')
+local noteSkins_jsonSupportRGB    = json.decode(noteSkins_supportRGB)
+local noteSkins_jsonStrumsOffset  = json.decode(noteSkins_strumsOffset)
+
 local noteSkins_getNoteSkins = getNoteSkins()
 local noteSave_curNoteSkinPlayer, noteSave_curNoteSkinOpponent
+local noteSave_checkboxVisiblePlayer, noteSave_checkboxVisibleOpponent
 function onCreate()
+     setPropertyFromClass('backend.ClientPrefs', 'data.noteSkin', 'Default')
+     
      addHScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/other/globalfunk')
      initSaveData('noteskin_selector-save', 'noteskin_selector')
      noteSave_curNoteSkinPlayer   = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_curNoteSkinPlayer'), 'NOTE_assets')
      noteSave_curNoteSkinOpponent = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_curNoteSkinOpponent'), 'NOTE_assets')
+     noteSave_checkboxVisiblePlayer    = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_checkboxVisiblePlayer'), false)
+     noteSave_checkboxVisibleOpponent  = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_checkboxVisibleOpponent'), false)
 end
 
-local supportRGBPath = 'mods/NoteSkin Selector Remastered/jsons/doesSupport_RGB.json'
-local noteSkins_supportSupportRGB = getTextFileContent(supportRGBPath):gsub('//%s*.-(\n)', '%1')
-local noteSkins_jsonSupportRGB    = json.decode(noteSkins_supportSupportRGB)
 local function initSplashesRGB(charInd, ind)
      local supportsRGB = function(k)
           local getNoteSkinName = noteSkins_getNoteSkins[k]:gsub('NOTE_assets%-', ''):lower()
@@ -44,7 +54,7 @@ local function initSplashesRGB(charInd, ind)
      end
 
      local chars = {'player', 'opponent'}
-     if supportsRGB(ind) == false then           
+     if supportsRGB(ind) == false then
           for i = 0, getProperty('unspawnNotes.length')-1 do
                if charInd == 1 then 
                     if getPropertyFromGroup('unspawnNotes', i, 'mustPress') then
@@ -63,21 +73,61 @@ local function initSplashesRGB(charInd, ind)
      end
 end
 
-function onCreatePost()
-     for k = 1, #noteSkins_getNoteSkins do
-          if noteSkins_getNoteSkins[k] == noteSave_curNoteSkinPlayer   then initSplashesRGB(1, k) end
-          if noteSkins_getNoteSkins[k] == noteSave_curNoteSkinOpponent then initSplashesRGB(2, k) end
+local function strumOffsets(charInd, ind)
+     local chars = {noteSave_curNoteSkinPlayer, noteSave_curNoteSkinPlayer}
+     local checkNoteSkinName = function(element, charNameInd)
+          local getNoteSkinName_player   = noteSave_curNoteSkinPlayer:gsub('NOTE_assets%-', ''):lower()
+          local getNoteSkinName_opponent = noteSave_curNoteSkinOpponent:gsub('NOTE_assets%-', ''):lower()
+          local checkIfNone_player   = getNoteSkinName_player   == '' and 'normal' or getNoteSkinName_player
+          local checkIfNone_opponent = getNoteSkinName_opponent == '' and 'normal' or getNoteSkinName_opponent
+          local charNames = {checkIfNone_player, checkIfNone_opponent}
+
+          if noteSkins_jsonStrumsOffset[charNames[charNameInd]] ~= nil then
+               return noteSkins_jsonStrumsOffset[charNames[charNameInd]][element]
+          end
+          return nil
      end
 
-     for i = 0, getProperty('unspawnNotes.length')-1 do
-          if getPropertyFromGroup('unspawnNotes', i, 'mustPress') then
-               setPropertyFromGroup('unspawnNotes', i, 'texture', 'noteSkins/'..noteSave_curNoteSkinPlayer)
-          else
-               setPropertyFromGroup('unspawnNotes', i, 'texture', 'noteSkins/'..noteSave_curNoteSkinOpponent)
+     if checkNoteSkinName('scaleY', charInd) ~= nil then
+          setPropertyFromGroup('unspawnNotes', ind, 'scale.y', checkNoteSkinName('scaleY', charInd))
+     end
+     if checkNoteSkinName('offsets', charInd) ~= nil and checkNoteSkinName('offsets', charInd)[1] ~= nil then
+          setPropertyFromGroup('unspawnNotes', ind, 'offset.x', checkNoteSkinName('offsets', charInd)[1])
+     end
+     if checkNoteSkinName('offsets', charInd) ~= nil and checkNoteSkinName('offsets', charInd)[2] ~= nil then
+          setPropertyFromGroup('unspawnNotes', ind, 'offset.y', checkNoteSkinName('offsets', charInd)[2])
+     end
+     if getPropertyFromGroup('unspawnNotes', i, 'animation.name'):match('end') then
+          if checkNoteSkinName('endOffsetY', charInd) ~= nil then
+               setPropertyFromGroup('unspawnNotes', ind, 'offset.y', checkNoteSkinName('endOffsetY', charInd))
           end
+     end
+end
 
-          setPropertyFromGroup('playerStrums', i, 'texture', 'noteSkins/'..noteSave_curNoteSkinPlayer)
-          setPropertyFromGroup('opponentStrums', i, 'texture', 'noteSkins/'..noteSave_curNoteSkinOpponent)
+function onCreatePost()
+     for k = 1, #noteSkins_getNoteSkins do
+          if noteSave_checkboxVisiblePlayer   and noteSkins_getNoteSkins[k] == noteSave_curNoteSkinPlayer   then initSplashesRGB(1, k) end
+          if noteSave_checkboxVisibleOpponent and noteSkins_getNoteSkins[k] == noteSave_curNoteSkinOpponent then initSplashesRGB(2, k) end
+     end
+
+     local setupPlayerNotes = function(ind)
+          if noteSave_checkboxVisiblePlayer then
+               setPropertyFromGroup('unspawnNotes', ind, 'texture', 'noteSkins/'..noteSave_curNoteSkinPlayer)
+               if getPropertyFromGroup('unspawnNotes', ind, 'isSustainNote') then strumOffsets(1, ind) end
+          end
+     end
+     local setupOpponentNotes = function(ind)
+          if noteSave_checkboxVisibleOpponent then
+               setPropertyFromGroup('unspawnNotes', ind, 'texture', 'noteSkins/'..noteSave_curNoteSkinOpponent)
+               if getPropertyFromGroup('unspawnNotes', ind, 'isSustainNote') then strumOffsets(2, ind) end
+          end
+     end
+     for i = 0, getProperty('unspawnNotes.length')-1 do
+          if getPropertyFromGroup('unspawnNotes', i, 'mustPress') then setupPlayerNotes(i) else setupOpponentNotes(i) end
+     end
+     for i = 0, 3 do
+          if noteSave_checkboxVisiblePlayer   then setPropertyFromGroup('playerStrums', i, 'texture', 'noteSkins/'..noteSave_curNoteSkinPlayer)     end
+          if noteSave_checkboxVisibleOpponent then setPropertyFromGroup('opponentStrums', i, 'texture', 'noteSkins/'..noteSave_curNoteSkinOpponent) end
      end
 end
 
