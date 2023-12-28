@@ -1,5 +1,5 @@
-local json  = require('mods/NoteSkin Selector Remastered/scripts/modules/libraries/json')
-local table = require('mods/NoteSkin Selector Remastered/scripts/modules/libraries/table')
+local json   = require('mods/NoteSkin Selector Remastered/scripts/modules/libraries/json')
+local table  = require('mods/NoteSkin Selector Remastered/scripts/modules/libraries/table')
 
 local function getTextFileContent(path)
      local file = io.open(path)
@@ -24,13 +24,13 @@ local function altValue(main, alt)
      return main ~= nil and main or alt
 end
 
-local supportRGBPath   = 'mods/NoteSkin Selector Remastered/jsons/doesSupport_RGB.json'
+local notePropertyPath = 'mods/NoteSkin Selector Remastered/jsons/allowNoteProperties.json'
 local strumsOffsetPath = 'mods/NoteSkin Selector Remastered/jsons/offsets_strums.json'
 
-local noteSkins_supportRGB   = getTextFileContent(supportRGBPath):gsub('//%s*.-(\n)', '%1')
+local noteSkins_noteProperty = getTextFileContent(notePropertyPath):gsub('//%s*.-(\n)', '%1')
 local noteSkins_strumsOffset = getTextFileContent(strumsOffsetPath):gsub('//%s*.-(\n)', '%1')
-local noteSkins_jsonSupportRGB    = json.decode(noteSkins_supportRGB)
-local noteSkins_jsonStrumsOffset  = json.decode(noteSkins_strumsOffset)
+local noteSkins_jsonNoteProperty = json.decode(noteSkins_noteProperty)
+local noteSkins_jsonStrumsOffset = json.decode(noteSkins_strumsOffset)
 
 local noteSkins_getNoteSkins = getNoteSkins()
 local noteSave_curNoteSkinPlayer, noteSave_curNoteSkinOpponent
@@ -46,29 +46,38 @@ function onCreate()
      noteSave_checkboxVisibleOpponent  = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_checkboxVisibleOpponent'), false)
 end
 
-local function initSplashesRGB(charInd, ind)
+local function initNoteRGB(charInd, ind)
+     local chars = {'player', 'opponent'}
      local supportsRGB = function(k)
           local getNoteSkinName = noteSkins_getNoteSkins[k]:gsub('NOTE_assets%-', ''):lower()
           local checkIfNone     = getNoteSkinName == 'note_assets' and 'normal' or getNoteSkinName
-          return table.find(noteSkins_jsonSupportRGB, checkIfNone) ~= nil
+          return table.find(noteSkins_jsonNoteProperty.rgbshader, checkIfNone) ~= nil
      end
 
-     local chars = {'player', 'opponent'}
+     local rgbShaderPlayerNotes = function(ind, noteType)
+          if getPropertyFromGroup('unspawnNotes', ind, 'mustPress') then
+               if getPropertyFromGroup('unspawnNotes', ind, 'noteType') == noteType then 
+                    setPropertyFromGroup('unspawnNotes', ind, 'rgbShader.enabled', false) 
+               end
+          end
+          setPropertyFromGroup('playerStrums', ind, 'useRGBShader', false)
+          setPropertyFromGroup('playerStrums', ind, 'noteSplashData.useRGBShader', false)
+     end
+     local rgbShaderOpponentNotes = function(ind, noteType)
+          if not getPropertyFromGroup('unspawnNotes', ind, 'mustPress') then
+               if getPropertyFromGroup('unspawnNotes', ind, 'noteType') == noteType then 
+                    setPropertyFromGroup('unspawnNotes', ind, 'rgbShader.enabled', false) 
+               end
+          end
+          setPropertyFromGroup('opponentStrums', ind, 'useRGBShader', false)
+     end
      if supportsRGB(ind) == false then
-          for i = 0, getProperty('notes.length')-1 do
-               if charInd == 1 then 
-                    if getPropertyFromGroup('notes', i, 'mustPress') and getPropertyFromGroup('notes', i, 'noteType') == '' then
-                         setPropertyFromGroup('notes', i, 'rgbShader.enabled', false)
-                         setPropertyFromGroup('playerStrums', i, 'useRGBShader', false)
-                         setPropertyFromGroup('playerStrums', i, 'noteSplashData.useRGBShader', false)
-                    end
-               end
-               if charInd == 2 then 
-                    if not getPropertyFromGroup('notes', i, 'mustPress') and getPropertyFromGroup('notes', i, 'noteType') == '' then
-                         setPropertyFromGroup('notes', i, 'rgbShader.enabled', false)
-                         setPropertyFromGroup('opponentStrums', i, 'useRGBShader', false)
-                    end
-               end
+          for i = 0, getProperty('unspawnNotes.length')-1 do
+               local noteProps_noteType = noteSkins_jsonNoteProperty.notetype
+               local checkNoteType = getPropertyFromGroup('unspawnNotes', i, 'noteType')
+               local getNoteType   = noteProps_noteType[table.find(noteProps_noteType, checkNoteType)]
+               if charInd == 1 then rgbShaderPlayerNotes(i, getNoteType)   end
+               if charInd == 2 then rgbShaderOpponentNotes(i, getNoteType) end
           end
      end
 end
@@ -89,44 +98,47 @@ local function strumOffsets(charInd, ind)
      end
 
      if checkNoteSkinName('scaleY', charInd) ~= nil then
-          setPropertyFromGroup('notes', ind, 'scale.y', checkNoteSkinName('scaleY', charInd))
+          setPropertyFromGroup('unspawnNotes', ind, 'scale.y', checkNoteSkinName('scaleY', charInd))
      end
      if checkNoteSkinName('offsets', charInd) ~= nil and checkNoteSkinName('offsets', charInd)[1] ~= nil then
-          setPropertyFromGroup('notes', ind, 'offset.x', checkNoteSkinName('offsets', charInd)[1])
+          setPropertyFromGroup('unspawnNotes', ind, 'offset.x', checkNoteSkinName('offsets', charInd)[1])
      end
      if checkNoteSkinName('offsets', charInd) ~= nil and checkNoteSkinName('offsets', charInd)[2] ~= nil then
-          setPropertyFromGroup('notes', ind, 'offset.y', checkNoteSkinName('offsets', charInd)[2])
+          setPropertyFromGroup('unspawnNotes', ind, 'offset.y', checkNoteSkinName('offsets', charInd)[2])
      end
-     if getPropertyFromGroup('notes', i, 'animation.name'):match('end') then
+     if getPropertyFromGroup('unspawnNotes', ind, 'animation.name'):match('end') then
           if checkNoteSkinName('endOffsetY', charInd) ~= nil then
-               setPropertyFromGroup('notes', ind, 'offset.y', checkNoteSkinName('endOffsetY', charInd))
+               setPropertyFromGroup('unspawnNotes', ind, 'offset.y', checkNoteSkinName('endOffsetY', charInd))
           end
      end
 end
 
 local function setUpNoteSkins() -- me praying to god that it doesn't lag the script becuase of this
      for k = 1, #noteSkins_getNoteSkins do
-          if noteSave_checkboxVisiblePlayer   and noteSkins_getNoteSkins[k] == noteSave_curNoteSkinPlayer   then initSplashesRGB(1, k) end
-          if noteSave_checkboxVisibleOpponent and noteSkins_getNoteSkins[k] == noteSave_curNoteSkinOpponent then initSplashesRGB(2, k) end
+          if noteSave_checkboxVisiblePlayer   and noteSkins_getNoteSkins[k] == noteSave_curNoteSkinPlayer   then initNoteRGB(1, k) end
+          if noteSave_checkboxVisibleOpponent and noteSkins_getNoteSkins[k] == noteSave_curNoteSkinOpponent then initNoteRGB(2, k) end
      end
 
-     local setupPlayerNotes = function(ind)
+     local reskinPlayerNotes = function(ind)
           if noteSave_checkboxVisiblePlayer then
-               setPropertyFromGroup('notes', ind, 'texture', 'noteSkins/'..noteSave_curNoteSkinPlayer)
-               if getPropertyFromGroup('notes', ind, 'isSustainNote') then strumOffsets(1, ind) end
+               setPropertyFromGroup('unspawnNotes', ind, 'texture', 'noteSkins/'..noteSave_curNoteSkinPlayer)
+               if getPropertyFromGroup('unspawnNotes', ind, 'isSustainNote') then strumOffsets(1, ind) end
           end
      end
-     local setupOpponentNotes = function(ind)
+     local reskinOpponentNotes = function(ind)
           if noteSave_checkboxVisibleOpponent then
-               setPropertyFromGroup('notes', ind, 'texture', 'noteSkins/'..noteSave_curNoteSkinOpponent)
-               if getPropertyFromGroup('notes', ind, 'isSustainNote') then strumOffsets(2, ind) end
+               setPropertyFromGroup('unspawnNotes', ind, 'texture', 'noteSkins/'..noteSave_curNoteSkinOpponent)
+               if getPropertyFromGroup('unspawnNotes', ind, 'isSustainNote') then strumOffsets(2, ind) end
           end
      end
-     for i = 0, getProperty('notes.length')-1 do
-          if getPropertyFromGroup('notes', i, 'mustPress') then 
-               if getPropertyFromGroup('notes', i, 'noteType') == '' then setupPlayerNotes(i) end
+     for i = 0, getProperty('unspawnNotes.length')-1 do
+          local noteProps_noteType = noteSkins_jsonNoteProperty.notetype
+          local checkNoteType = getPropertyFromGroup('unspawnNotes', i, 'noteType')
+          local getNoteType   = noteProps_noteType[table.find(noteProps_noteType, checkNoteType)]
+          if getPropertyFromGroup('unspawnNotes', i, 'mustPress') then 
+               if checkNoteType == getNoteType then reskinPlayerNotes(i)   end
           else 
-               if getPropertyFromGroup('notes', i, 'noteType') == '' then setupOpponentNotes(i) end
+               if checkNoteType == getNoteType then reskinOpponentNotes(i) end
           end
      end
      for i = 0, 3 do
@@ -135,8 +147,9 @@ local function setUpNoteSkins() -- me praying to god that it doesn't lag the scr
      end
 end
 
-function onSpawnNote(membersIndex, noteData, noteType, isSustainNote) -- override, in case of failure to change noteskin
+function onCreatePost()
      setUpNoteSkins()
+     createTimer('deley', 0.1, function() setUpNoteSkins() end) -- override
 end
 
 function onUpdate(elapsed)
@@ -144,5 +157,17 @@ function onUpdate(elapsed)
           setDataFromSave('noteskin_selector-save', 'curSongName', songName)
           setDataFromSave('noteskin_selector-save', 'curDiffID', difficulty)
           loadNewSong('NoteSkin Settings')
+     end
+end 
+
+function createTimer(tag, timer, callback)
+     timers = {}
+     table.insert(timers, {tag, callback})
+     runTimer(tag, timer)
+end
+
+function onTimerCompleted(tag, loops, loopsLeft)
+     for _,v in pairs(timers) do
+          if v[1] == tag then v[2]() end
      end
 end

@@ -52,6 +52,15 @@ function new_string.padEnd(str, limit, pattern)
      return str..result
 end
 
+function new_string.formatch(str, tab)
+     for k,v in pairs(tab) do
+          if str == v then
+               return true
+          end
+     end
+     return ''
+end
+
 function new_string.capAt(str, startPos, endPos)
      return str:sub(startPos, endPos):upper()..str:sub(endPos + 1)
 end

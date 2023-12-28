@@ -21,6 +21,12 @@ function new_table.find(tab, value)
      end
 end
 
+function new_table.match(tab, value)
+     for k,v in pairs(tab) do
+          if v == value then return v end
+     end
+end
+
 function new_table.sub(tab, startPos, endPos)
      local faker = {}
      for i = startPos, endPos or #tab do
