@@ -349,7 +349,8 @@ local function saveDataWhenExit()
           local noteSaves = {
                'noteSave_highlightPosX', 'noteSave_highlightPosY', 'noteSave_selectedName', 'noteSave_selectedPos',
                'noteSave_curPage', 'noteSave_checkboxPlayer', 'noteSave_checkboxOpponent', 'noteSave_checkboxSelectedPlayer',
-               'noteSave_checkboxSelectedOpponent', 'noteSave_checkboxVisiblePlayer', 'noteSave_checkboxVisibleOpponent'
+               'noteSave_checkboxSelectedOpponent', 'noteSave_checkboxVisiblePlayer', 'noteSave_checkboxVisibleOpponent', 'noteSave_checkboxUncheckedPlayer',
+               'noteSave_checkboxUncheckedOpponent'
           }
 
           for k,v in next, noteSaves do
@@ -358,7 +359,7 @@ local function saveDataWhenExit()
           flushSaveData('noteskin_selector-save')
      end
 
-     if keyboardJustPressed('ESCAPE') then
+     if keyboardJustPressed('ESCAPE') or keyboardJustPressed('TAB') then
           doubleSaveData()
      end
      if not objectsOverlap('windowGameHitbox', 'mouse_hitbox') then
