@@ -114,11 +114,17 @@ local function strumOffsets(charInd, ind)
 end
 
 local function setUpNoteSkins() -- me praying to god that it doesn't lag the script becuase of this
-     for k = 1, #noteSkins_getNoteSkins do
-          if noteSave_checkboxVisiblePlayer   and noteSkins_getNoteSkins[k] == noteSave_curNoteSkinPlayer   then initNoteRGB(1, k) end
-          if noteSave_checkboxVisibleOpponent and noteSkins_getNoteSkins[k] == noteSave_curNoteSkinOpponent then initNoteRGB(2, k) end
+     if not getPropertyFromClass('states.Playstate', 'isPixelStage') then
+          for k = 1, #noteSkins_getNoteSkins do
+               if noteSave_checkboxVisiblePlayer   and noteSkins_getNoteSkins[k] == noteSave_curNoteSkinPlayer   then 
+                    initNoteRGB(1, k)
+               end
+               if noteSave_checkboxVisibleOpponent and noteSkins_getNoteSkins[k] == noteSave_curNoteSkinOpponent then 
+                    initNoteRGB(2, k)
+               end
+          end
      end
-
+     
      local reskinPlayerNotes = function(ind)
           if noteSave_checkboxVisiblePlayer then
                setPropertyFromGroup('unspawnNotes', ind, 'texture', 'noteSkins/'..noteSave_curNoteSkinPlayer)

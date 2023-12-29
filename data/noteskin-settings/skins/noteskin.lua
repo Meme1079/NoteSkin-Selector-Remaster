@@ -375,6 +375,7 @@ local function checkBoxAnimation()
      local char = {'player', 'opponent'}
      local checkBoxSwitch = function(curInd)
           if clickObject('checkbox_'..char[curInd]) and isClicked[curInd] == false then
+               playSound('scrollMenu', 0.6)
                addLuaSprite('checkbox_'..char[curInd]..'Select')
                playAnim('checkbox_'..char[curInd], 'checking', true)
 
@@ -382,6 +383,7 @@ local function checkBoxAnimation()
                setDataFromSave('noteskin_selector-save', 'noteSave_checkboxUnchecked'..string.capAt(char[curInd], 1,1), true)
                isClicked[curInd] = true
           elseif clickObject('checkbox_'..char[curInd]) and isClicked[curInd] == true then
+               playSound('cancel', 0.5)
                removeLuaSprite('checkbox_'..char[curInd]..'Select', false)
                playAnim('checkbox_'..char[curInd], 'unchecking', true)
 
