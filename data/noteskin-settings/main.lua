@@ -1,4 +1,14 @@
 local table = require('mods/NoteSkin Selector Remastered/scripts/modules/libraries/table')
+local json  = require('mods/NoteSkin Selector Remastered/scripts/modules/libraries/json')
+
+local function getTextFileContent(path)
+     local file = io.open(path)
+     local content = ''
+     for line in file:lines() do  
+          content = content .. line .. '\n'
+     end
+     return content
+end
 
 local function calculatePosition(skinType)
      local xpos = {20, 220 - 30, (220 + 170) - 30, (220 + (170 * 2)) - 30}
@@ -32,11 +42,8 @@ local function calculatePageLimit(skinType)
      return yindex_limit
 end
 
+local skinHitboxAnimation = getModSetting('disable_selection_flash', 'NoteSkin Selector Remastered') == false and 'selecting' or 'selecting-static'
 function onCreate()
-     addLuaScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/skins/noteskin')
-     addHScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/other/globalfunk')
-     addHScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/other/backdrop')
-
      makeLuaSprite('bg_cover', 'menuDesat', 0, 0)
      setObjectCamera('bg_cover', 'camHUD')
      setProperty('bg_cover.color', 0x5332a8)
@@ -113,7 +120,8 @@ function onCreate()
 
      makeAnimatedLuaSprite('skinHitbox-highlight', 'selection', 42.8 - 30, 158)
      addAnimationByPrefix('skinHitbox-highlight', 'selecting', 'selected', 3)
-     playAnim('skinHitbox-highlight', 'selecting')
+     addAnimationByIndices('skinHitbox-highlight', 'selecting-static', 'selected', '0', 1)
+     playAnim('skinHitbox-highlight', skinHitboxAnimation)
      setObjectCamera('skinHitbox-highlight', 'camHUD')
      addLuaSprite('skinHitbox-highlight')
 
@@ -254,11 +262,108 @@ function onCreate()
 
      -- Music --
      
-     precacheMusic('file_select')
-     playMusic('file_select', 0.25, true)
+     for k,v in pairs(directoryFileList('mods/NoteSkin Selector Remastered/music')) do
+          if v:match('%.ogg') then
+               precacheMusic(v:gsub('%.ogg', ''))
+          end
+     end
+
+     local music_dataPath = getTextFileContent('mods/NoteSkin Selector Remastered/music/music_data.json')
+     local music_dataJson = json.decode(music_dataPath)
+     local music_data     = music_dataJson[getModSetting('bg_song', 'NoteSkin Selector Remastered')]
+     playMusic(music_data.file, music_data.volume, true)
+
+     -- Haxe Scripts --
+
+     local backdropPath = 'mods/NoteSkin Selector Remastered/data/noteskin-settings/other/backdrop.hx'
+     runHaxeCode(getTextFileContent(backdropPath), {
+          setCheckerboardColor = getModSetting('bg_checkerboard_color', 'NoteSkin Selector Remastered'),
+          setCheckerboardAlpha = getModSetting('bg_checkerboard_alpha', 'NoteSkin Selector Remastered')
+     })
+end
+
+local function getSkins(state)
+     local results_note   = {'NOTE_assets', 'NOTE_assets-future', 'NOTE_assets-chip'}
+     local results_splash = {'noteSplashes', 'noteSplashes-vanilla', 'noteSplashes-sparkles', 'noteSplashes-electric', 'noteSplashes-diamond'}
+     local results = state == 'note' and results_note or results_splash
+
+     local pattern_note   = '^(NOTE_assets%-.+)%.png$'
+     local pattern_splash = '^(noteSplashes%-.+)%.png$'
+     local pattern = state == 'note' and pattern_note or pattern_splash
+
+     local folder = state == 'note' and 'noteSkins' or 'noteSplashes'
+     for _,v in next, directoryFileList('mods/NoteSkin Selector Remastered/images/'..folder) do
+          if v:match(pattern) then
+               table.insert(results, v:match(pattern))
+          end
+     end
+     return results
+end
+
+local function getSkinNames(state)
+     local results_note   = {'Normal', 'Future', 'Chip'}
+     local results_splash = {'Normal', 'Vanilla', 'Sparkles', 'Electric', 'Diamond'}
+     local results = state == 'note' and results_note or results_splash
+
+     local pattern_note   = '^NOTE_assets%-(.+)%.png$'
+     local pattern_splash = '^noteSplashes%-(.+)%.png$'
+     local pattern = state == 'note' and pattern_note or pattern_splash
+
+     local folder = state == 'note' and 'noteSkins' or 'noteSplashes'
+     for _,v in next, directoryFileList('mods/NoteSkin Selector Remastered/images/'..folder) do
+          if v:match(pattern) then
+               table.insert(results, v:match(pattern))
+          end
+     end
+     return results
+end
+
+local function hideSkinStateElements(state)
+     if state == 'splash' then
+          for index, value in next, getSkins('note') do
+               local noteSkin_getCurPos = calculatePosition(getSkinNames('note'))[index]
+               local noteSkin_hitboxTag = 'noteSkins_hitbox-'..tostring(index)
+               removeLuaSprite(noteSkin_hitboxTag, false)
+
+               local noteSkin_displayTag = 'noteSkins_display-'..tostring(index)
+               removeLuaSprite(noteSkin_displayTag, false)
+          end
+          for index, value in next, getSkins('splash') do
+               local splashSkin_getCurPos = calculatePosition(getSkinNames('splash'))[index]
+               local splashSkin_hitboxTag = 'splashSkins_hitbox-'..tostring(index)
+               addLuaSprite(splashSkin_hitboxTag, false)
+
+               local splashSkin_displayTag = 'splashSkins_display-'..tostring(index)
+               addLuaSprite(splashSkin_displayTag, false)
+          end
+          removeLuaSprite('checkbox_opponentSelect', false)
+     end
+     if state == 'note' then
+          for index, value in next, getSkins('note') do
+               local noteSkin_getCurPos = calculatePosition(getSkinNames('note'))[index]
+               local noteSkin_hitboxTag = 'noteSkins_hitbox-'..tostring(index)
+               addLuaSprite(noteSkin_hitboxTag)
+
+               local noteSkin_displayTag = 'noteSkins_display-'..tostring(index)
+               addLuaSprite(noteSkin_displayTag)
+          end
+          for index, value in next, getSkins('splash') do
+               local splashSkin_getCurPos = calculatePosition(getSkinNames('splash'))[index]
+               local splashSkin_hitboxTag = 'splashSkins_hitbox-'..tostring(index)
+               removeLuaSprite(splashSkin_hitboxTag, false)
+
+               local splashSkin_displayTag = 'splashSkins_display-'..tostring(index)
+               removeLuaSprite(splashSkin_displayTag, false)
+          end
+          addLuaSprite('checkbox_opponentSelect')
+     end
 end
 
 function onCreatePost()
+     addLuaScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/skins/noteskin')
+     addLuaScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/skins/splashskin')
+     setVar('skinStates', 'note')
+     
      setProperty('iconP1.visible', false)
      setProperty('iconP2.visible', false)
      setProperty('healthBar.visible', false)
@@ -282,6 +387,7 @@ local function clickObject(obj)
      return objectsOverlap(obj, 'mouse_hitbox') and mouseClicked('left')
 end
 
+local locked = false
 function onUpdate(elapsed)
      if keyboardJustPressed('ONE') then
           restartSong(true)
@@ -289,35 +395,38 @@ function onUpdate(elapsed)
      if keyboardJustPressed('ESCAPE') then
           exitSong()
      end
+
      if keyboardJustPressed('TAB') then
-          loadNewSong(getDataFromSave('noteskin_selector-save', 'curSongName'), getDataFromSave('noteskin_selector-save', 'curDiffID'))
+          local curSongName = getDataFromSave('noteskin_selector-save', 'curSongName')
+          local curDiffID   = getDataFromSave('noteskin_selector-save', 'curDiffID')
+          loadNewSong(curSongName, curDiffID)
      end
-
      if keyboardPressed('SHIFT') and keyboardJustPressed('O') then
-          runHaxeCode([[
-   	          import options.OptionsState;
-  	          import backend.MusicBeatState;
-  	          game.paused = true; // For lua
- 	          game.vocals.volume = 0;
-  	          MusicBeatState.switchState(new OptionsState());
-  	          if (ClientPrefs.data.pauseMusic != 'None') {
-    	               FlxG.sound.playMusic(Paths.music(Paths.formatToSongPath(ClientPrefs.data.pauseMusic)), game.modchartSounds('pauseMusic').volume);
-    	               FlxTween.tween(FlxG.sound.music, {volume: 1}, 0.8);
-      	          FlxG.sound.music.time = game.modchartSounds('pauseMusic').time;
-    	          }
-    	          OptionsState.onPlayState = true;
-	     ]])
+          local optionsPath = 'mods/NoteSkin Selector Remastered/data/noteskin-settings/other/options.hx'
+          local options = getTextFileContent(optionsPath)
+          runHaxeCode(options)
      end
 
-     if clickObject('bgButton_splashskin') then
+     if clickObject('bgButton_splashskin') and getVar('skinStates') == 'note' then
+          setVar('skinStates', 'splash')
           playSound('ping', 0.3)
+
           setProperty('bgButton_noteskin-selected.visible', false)
           setProperty('bgButton_splashskin-selected.visible', true)
      end
-     if clickObject('bgButton_noteskin') then
+     if clickObject('bgButton_noteskin') and getVar('skinStates') == 'splash' then
+          setVar('skinStates', 'note')
           playSound('ping', 0.3)
+
           setProperty('bgButton_noteskin-selected.visible', true)
           setProperty('bgButton_splashskin-selected.visible', false)
+     end
+
+     if locked == false then
+          hideSkinStateElements(getVar('skinStates')); locked = true
+     end
+     if clickObject('bgButton_splashskin') or clickObject('bgButton_noteskin') then
+          hideSkinStateElements(getVar('skinStates'))
      end
 
      setProperty('mouse_hitbox.x', getMouseX('camHUD'))
@@ -353,17 +462,19 @@ end
 
 local switch = true
 local cpm = 0.05 -- color per-millisecond
-local hue = 240
+local hue = getModSetting('bg_colorstart', 'NoteSkin Selector Remastered')
 function onUpdatePost(elapsed)
      if switch == false then
-          if hue <= 270 then hue = hue + cpm end
-          if hue >= 270 then switch = true end
+          if hue <= getModSetting('bg_colorend', 'NoteSkin Selector Remastered') then hue = hue + cpm end
+          if hue >= getModSetting('bg_colorend', 'NoteSkin Selector Remastered') then switch = true end
      else
-          if hue >= 240 then hue = hue - cpm end
-          if hue <= 240 then switch = false end
+          if hue >= getModSetting('bg_colorstart', 'NoteSkin Selector Remastered') then hue = hue - cpm end
+          if hue <= getModSetting('bg_colorstart', 'NoteSkin Selector Remastered') then switch = false end
      end
 
-     setProperty('bg_cover.color', tonumber('0x'..rgbToHex(unpack(hslToRGB(hue, 54, 43)))))
+     if getModSetting('low_detail_mode', 'NoteSkin Selector Remastered') == false then
+          setProperty('bg_cover.color', tonumber('0x'..rgbToHex(unpack(hslToRGB(hue, 54, 43)))))
+     end
 end
 
 local allowCountdown = false;

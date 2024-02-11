@@ -24,8 +24,8 @@ local function altValue(main, alt)
      return main ~= nil and main or alt
 end
 
-local notePropertyPath = 'mods/NoteSkin Selector Remastered/jsons/allowNoteProperties.json'
-local strumsOffsetPath = 'mods/NoteSkin Selector Remastered/jsons/offsets_strums.json'
+local notePropertyPath = 'mods/NoteSkin Selector Remastered/jsons/note/allowNoteProperties.json'
+local strumsOffsetPath = 'mods/NoteSkin Selector Remastered/jsons/note/offsets_strums.json'
 
 local noteSkins_noteProperty = getTextFileContent(notePropertyPath):gsub('//%s*.-(\n)', '%1')
 local noteSkins_strumsOffset = getTextFileContent(strumsOffsetPath):gsub('//%s*.-(\n)', '%1')
@@ -38,12 +38,11 @@ local noteSave_checkboxVisiblePlayer, noteSave_checkboxVisibleOpponent
 function onCreate()
      setPropertyFromClass('backend.ClientPrefs', 'data.noteSkin', 'Default')
 
-     addHScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/other/globalfunk')
      initSaveData('noteskin_selector-save', 'noteskin_selector')
      noteSave_curNoteSkinPlayer   = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_curNoteSkinPlayer'), 'NOTE_assets')
      noteSave_curNoteSkinOpponent = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_curNoteSkinOpponent'), 'NOTE_assets')
-     noteSave_checkboxVisiblePlayer    = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_checkboxVisiblePlayer'), false)
-     noteSave_checkboxVisibleOpponent  = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_checkboxVisibleOpponent'), false)
+     noteSave_checkboxVisiblePlayer   = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_checkboxVisiblePlayer'), false)
+     noteSave_checkboxVisibleOpponent = altValue(getDataFromSave('noteskin_selector-save', 'noteSave_checkboxVisibleOpponent'), false)
 end
 
 local function initNoteRGB(charInd, ind)
@@ -158,13 +157,87 @@ function onCreatePost()
      createTimer('deley', 0.1, function() setUpNoteSkins() end) -- override
 end
 
+function onCustomSubstateCreate(name)
+     if name == 'confirm_enter' then
+          local promptbackgroundPath = 'mods/NoteSkin Selector Remastered/data/noteskin-settings/other/promptbackground.hx'
+          runHaxeCode(getTextFileContent(promptbackgroundPath), {boxWidth = screenWidth, boxHeight = screenHeight});
+
+          makeLuaText('promptDescription', 'Are you sure you want to enter, the noteskin state?', 0, 0, 230)
+          setTextFont('promptDescription', 'phantummuff full.ttf')
+          setTextSize('promptDescription', 16 * 2)
+          setTextBorder('promptDescription', 0, '000000')
+          setTextAlignment('promptDescription', 'center')
+          setObjectCamera('promptDescription', 'camOther')
+          screenCenter('promptDescription', 'X')
+          setProperty('promptDescription.alpha', 0)
+          addLuaText('promptDescription')
+
+          makeLuaText('promptYesKey', '[Tab]', 0, ((screenWidth / 2) - 180) - 35, 330 + 55)
+          setTextFont('promptYesKey', 'phantummuff full.ttf')
+          setTextSize('promptYesKey', 16 * 1.5)
+          setTextBorder('promptYesKey', 0, '000000')
+          setTextAlignment('promptYesKey', 'center')
+          setObjectCamera('promptYesKey', 'camOther')
+          setProperty('promptYesKey.alpha', 0)
+          addLuaText('promptYesKey')
+
+          makeLuaText('promptNoKey', '[Enter / Esc]', 0, ((screenWidth / 2) + 180) - 75, 330 + 55)
+          setTextFont('promptNoKey', 'phantummuff full.ttf')
+          setTextSize('promptNoKey', 16 * 1.5)
+          setTextBorder('promptNoKey', 0, '000000')
+          setTextAlignment('promptNoKey', 'center')
+          setObjectCamera('promptNoKey', 'camOther')
+          setProperty('promptNoKey.alpha', 0)
+          addLuaText('promptNoKey')
+
+          startTween('promptDescriptionTween', 'promptDescription', { alpha = 1 }, 0.35, { ease = 'quartInOut' })
+          startTween('promptYesKeyTween', 'promptYesKey', { alpha = 1 }, 0.35, { ease = 'quartInOut' })
+          startTween('promptNoKeyTween', 'promptNoKey', { alpha = 1 }, 0.35, { ease = 'quartInOut' })
+     end
+end
+
+function onCustomSubstateUpdate(name, elapsed)
+     if name == 'confirm_enter' then
+          if keyboardJustPressed('ESCAPE') or keyboardJustPressed('ENTER') then
+               runHaxeCode([=[
+                    game.remove(getVar('promptBGElement'), true);
+                    game.remove(getVar('titlePromptElement'), true);
+                    game.remove(getVar('agreePrompt'), true);
+                    game.remove(getVar('disagreePrompt'), true);
+               ]=])
+               removeLuaText('promptDescription', false)
+               removeLuaText('promptYesKey', false)
+               removeLuaText('promptNoKey', false)
+
+               createTimer('timerExecute', 1, function()
+                    closeCustomSubstate()
+               end)
+          end
+
+          if keyboardJustPressed('TAB') and songName ~= 'NoteSkin Settings' then
+               setDataFromSave('noteskin_selector-save', 'curSongName', songName)
+               setDataFromSave('noteskin_selector-save', 'curDiffID', difficulty)
+               loadNewSong('NoteSkin Settings')
+          end
+     end
+end
+
+local disableSubstate = false -- only on death
+local disablePopUp = getModSetting('enable_confirm_entrance', 'NoteSkin Selector Remastered')
 function onUpdate(elapsed)
-     if keyboardJustPressed('TAB') and songName ~= 'NoteSkin Settings' then
+     if disablePopUp == false and (keyboardJustPressed('TAB') and songName ~= 'NoteSkin Settings') then
           setDataFromSave('noteskin_selector-save', 'curSongName', songName)
           setDataFromSave('noteskin_selector-save', 'curDiffID', difficulty)
           loadNewSong('NoteSkin Settings')
      end
-end 
+     if disablePopUp == true and (keyboardJustPressed('TAB') and disableSubstate == false) then
+          openCustomSubstate('confirm_enter', true)
+     end
+end
+
+function onGameOver()
+     disableSubstate = true -- too prevent a bug
+end
 
 function createTimer(tag, timer, callback)
      timers = {}

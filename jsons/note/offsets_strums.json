@@ -1,0 +1,22 @@
+{
+     "future": {
+          "offsets": [59.9, -8],
+          "scaleY": 1.1499,
+          "endOffsetY": -7.8
+     },
+     "chip": {
+          "offsets": [47.5, -5],
+          "scaleY": 1.1499,
+          "endOffsetY": -4.5
+     },
+     "bad": {
+          "offsets": [29, null],
+          "scaleY": null,
+          "endOffsetsY": null
+     },
+     "tgt": {
+          "offsets": [20.8, null],
+          "scaleY": null,
+          "endOffsetsY": null
+     }
+}

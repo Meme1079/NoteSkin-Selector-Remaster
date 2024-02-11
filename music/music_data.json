@@ -1,0 +1,30 @@
+{
+     "Breakfast": {
+          "file": "breakfast",
+          "volume": 0.25
+     },
+     "Tea Time": {
+          "file": "tea-time",
+          "volume": 0.25
+     },
+     "Creative Exercise": {
+          "file": "creative exercise",
+          "volume": 0.45
+     },
+     "Monkey": {
+          "file": "monkey",
+          "volume": 0.25
+     },
+     "PokeDex Theme": {
+          "file": "pokedex theme",
+          "volume": 0.25
+     },
+     "File Select": {
+          "file": "file select",
+          "volume": 0.45
+     },
+     "Extras Menu": {
+          "file": "extras menu",
+          "volume": 0.25
+     }
+}

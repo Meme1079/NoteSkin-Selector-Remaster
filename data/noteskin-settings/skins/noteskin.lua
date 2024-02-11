@@ -88,7 +88,7 @@ local function initNoteSkins(noteSkinTag, noteSkinImage, nameAnim, prefixAnim, x
 end
 
 local function createNoteSkins()
-     local offsetsConfrim = {left = {}, down = {}, up = {}, right = {}}
+     local offsetsConfirm = {left = {}, down = {}, up = {}, right = {}}
      local offsetsPressed = {left = {}, down = {}, up = {}, right = {}}
      for index, value in next, getNoteSkins() do
           local noteSkin_getCurPos = calculatePosition(getNoteSkins())[index]
@@ -119,16 +119,16 @@ local function createNoteSkins()
           initNoteSkins(noteSkin_arrowTag(3), noteSkin_arrowImage, 'up', 'arrowUP', 790 + 115 * 2)
           initNoteSkins(noteSkin_arrowTag(4), noteSkin_arrowImage, 'right', 'arrowRIGHT', 790 + 115 * 3)
 
-          table.insert(offsetsConfrim.left,  {getProperty(noteSkin_arrowTag(1)..'.offset.x'), getProperty(noteSkin_arrowTag(1)..'.offset.y')})
-          table.insert(offsetsConfrim.down,  {getProperty(noteSkin_arrowTag(2)..'.offset.x'), getProperty(noteSkin_arrowTag(2)..'.offset.y')})
-          table.insert(offsetsConfrim.up,    {getProperty(noteSkin_arrowTag(3)..'.offset.x'), getProperty(noteSkin_arrowTag(3)..'.offset.y')})
-          table.insert(offsetsConfrim.right, {getProperty(noteSkin_arrowTag(4)..'.offset.x'), getProperty(noteSkin_arrowTag(4)..'.offset.y')})
+          table.insert(offsetsConfirm.left,  {getProperty(noteSkin_arrowTag(1)..'.offset.x'), getProperty(noteSkin_arrowTag(1)..'.offset.y')})
+          table.insert(offsetsConfirm.down,  {getProperty(noteSkin_arrowTag(2)..'.offset.x'), getProperty(noteSkin_arrowTag(2)..'.offset.y')})
+          table.insert(offsetsConfirm.up,    {getProperty(noteSkin_arrowTag(3)..'.offset.x'), getProperty(noteSkin_arrowTag(3)..'.offset.y')})
+          table.insert(offsetsConfirm.right, {getProperty(noteSkin_arrowTag(4)..'.offset.x'), getProperty(noteSkin_arrowTag(4)..'.offset.y')})
 
-          for q = 1, #offsetsConfrim.left do
-               addOffset(noteSkin_arrowTag(1), 'left',  offsetsConfrim.left[q][1],  offsetsConfrim.left[q][2])
-               addOffset(noteSkin_arrowTag(2), 'down',  offsetsConfrim.down[q][1],  offsetsConfrim.down[q][2])
-               addOffset(noteSkin_arrowTag(3), 'up',    offsetsConfrim.up[q][1],    offsetsConfrim.up[q][2])
-               addOffset(noteSkin_arrowTag(4), 'right', offsetsConfrim.right[q][1], offsetsConfrim.right[q][2])
+          for q = 1, #offsetsConfirm.left do
+               addOffset(noteSkin_arrowTag(1), 'left',  offsetsConfirm.left[q][1],  offsetsConfirm.left[q][2])
+               addOffset(noteSkin_arrowTag(2), 'down',  offsetsConfirm.down[q][1],  offsetsConfirm.down[q][2])
+               addOffset(noteSkin_arrowTag(3), 'up',    offsetsConfirm.up[q][1],    offsetsConfirm.up[q][2])
+               addOffset(noteSkin_arrowTag(4), 'right', offsetsConfirm.right[q][1], offsetsConfirm.right[q][2])
           end 
      end
 end
@@ -230,12 +230,29 @@ local function traverseNoteSkins()
      end
 end
 
+local disable_selection_flash = getModSetting('disable_selection_flash', 'NoteSkin Selector Remastered')
+local skinHitboxAnimation = disable_selection_flash == false and 'selecting' or 'selecting-static'
+
 local noteSkins_getNoteSkins = getNoteSkins()
 local noteSkins_selectedPos  = 1
 local noteSkins_bgPos        = 340 * 2
 local noteSkins_selectOffset = 7
 local noteSkins_selectPos = 1
 local function selectionNoteSkins()
+     local setCheckbox_charSelectIcon = function(charInd, direct)
+          local char = {'player', 'opponent'}
+          local checkboxPos  = getDataFromSave('noteskin_selector-save', 'noteSave_checkboxSelected'..string.capAt(char[charInd], 1,1))
+          local checkboxPosY
+
+          if direct == 'up' then
+               checkboxPosY = checkboxPos[2] + noteSkins_bgPos
+          else
+               checkboxPosY = checkboxPos[2] - noteSkins_bgPos
+          end
+          setProperty('checkbox_'..char[charInd]..'Select.y', checkboxPosY)
+          setDataFromSave('noteskin_selector-save', 'noteSave_checkboxSelected'..string.capAt(char[charInd], 1,1), {checkboxPos[1], checkboxPosY})
+     end
+
      for k = 1, #noteSkins_getNoteSkins do
           local noteSkins_getPos = calculatePosition(noteSkins_getNoteSkins)[k]
           local noteSkins_tagGetY = 'noteSkins_hitbox-'..tostring(k)..'.y'
@@ -243,7 +260,7 @@ local function selectionNoteSkins()
 
           if clickObject('noteSkins_hitbox-'..tostring(k)) then
                playSound('select', 1)
-               playAnim('skinHitbox-highlight', 'selecting', true)
+               playAnim('skinHitbox-highlight', skinHitboxAnimation, true)
                setTextString('skin_name', getNoteSkinNames()[k])
 
                local noteskinHitbox_highlightX = noteSkins_getPos[1] - 8 + 0.8
@@ -267,16 +284,22 @@ local function selectionNoteSkins()
                     addLuaSprite('noteSkins'..b..tostring(k))
                end
           end
-          
+
           if keyboardJustPressed('UP') and maximumLimit_noteskins == false then
                setProperty(noteSkins_tagGetY, getProperty(noteSkins_tagGetY) + noteSkins_bgPos)
                setProperty(noteSkins_tagDisplayGetY, getProperty(noteSkins_tagDisplayGetY) + noteSkins_bgPos)
+
                setProperty('skinHitbox-highlight.y', getProperty('noteSkins_hitbox-'..tostring(noteSave_selectedPos)..'.y') - noteSkins_selectOffset)
+               setCheckbox_charSelectIcon(1, 'up')
+               setCheckbox_charSelectIcon(2, 'up')
           end
           if keyboardJustPressed('DOWN') and minimumLimit_noteskins == false then
                setProperty(noteSkins_tagGetY, getProperty(noteSkins_tagGetY) - noteSkins_bgPos)
                setProperty(noteSkins_tagDisplayGetY, getProperty(noteSkins_tagDisplayGetY) - noteSkins_bgPos)
+
                setProperty('skinHitbox-highlight.y', getProperty('noteSkins_hitbox-'..tostring(noteSave_selectedPos)..'.y') - noteSkins_selectOffset)
+               setCheckbox_charSelectIcon(1, 'down')
+               setCheckbox_charSelectIcon(2, 'down')
           end
 
           setDataFromSave('noteskin_selector-save', 'noteSave_highlightPosY', getProperty('noteSkins_hitbox-'..tostring(noteSave_selectedPos)..'.y') - noteSkins_selectOffset)
@@ -285,8 +308,8 @@ local function selectionNoteSkins()
      traverseNoteSkins()
 end
 
-local confirmPath = 'mods/NoteSkin Selector Remastered/jsons/offsets_confirm.json'
-local pressedPath = 'mods/NoteSkin Selector Remastered/jsons/offsets_pressed.json'
+local confirmPath = 'mods/NoteSkin Selector Remastered/jsons/note/offsets_confirm.json'
+local pressedPath = 'mods/NoteSkin Selector Remastered/jsons/note/offsets_pressed.json'
 
 local noteSkins_offsets_confirm = getTextFileContent(confirmPath):gsub('//%s*.-(\n)', '%1')
 local noteSkins_offsets_pressed = getTextFileContent(pressedPath):gsub('//%s*.-(\n)', '%1')
@@ -340,34 +363,6 @@ local function setNoteAnim()
                     initNoteAnim(3, k, 'Right', offsets(noteSkins_jsonPressed, 'right', {20, 20}), 'Pressed')
                end
           end
-     end
-end
-
-local antiRepeat = false
-local function saveDataWhenExit()
-     local doubleSaveData = function()
-          local noteSaves = {
-               'noteSave_highlightPosX', 'noteSave_highlightPosY', 'noteSave_selectedName', 'noteSave_selectedPos',
-               'noteSave_curPage', 'noteSave_checkboxPlayer', 'noteSave_checkboxOpponent', 'noteSave_checkboxSelectedPlayer',
-               'noteSave_checkboxSelectedOpponent', 'noteSave_checkboxVisiblePlayer', 'noteSave_checkboxVisibleOpponent', 'noteSave_checkboxUncheckedPlayer',
-               'noteSave_checkboxUncheckedOpponent'
-          }
-
-          for k,v in next, noteSaves do
-               setDataFromSave('noteskin_selector-save', v, getDataFromSave('noteskin_selector-save', v))
-          end
-          flushSaveData('noteskin_selector-save')
-     end
-
-     if keyboardJustPressed('ESCAPE') or keyboardJustPressed('TAB') then
-          doubleSaveData()
-     end
-     if not objectsOverlap('windowGameHitbox', 'mouse_hitbox') then
-          doubleSaveData()
-          antiRepeat = true
-     end
-     if objectsOverlap('windowGameHitbox', 'mouse_hitbox') then
-          antiRepeat = false
      end
 end
 
@@ -446,8 +441,8 @@ local function checkBoxSave()
      if clickObject('checkbox_player') and isClicked[1] == true then
           noteSave_checkboxPlayer = noteSave_checkboxSelectedPos
 
-          checkboxChar_setPos(1, checkboxChar_getPos[1], checkboxChar_getPos[2])
-          setDataFromSave('noteskin_selector-save', 'noteSave_checkboxSelectedPlayer', {checkboxChar_getPos[1] + 80, checkboxChar_getPos[2]})
+          checkboxChar_setPos(1, checkboxChar_getPos[1], getProperty('noteSkins_hitbox-'..checkbox_selectedPos..'.y'))
+          setDataFromSave('noteskin_selector-save', 'noteSave_checkboxSelectedPlayer', {checkboxChar_getPos[1] + 80, getProperty('noteSkins_hitbox-'..checkbox_selectedPos..'.y')})
           setDataFromSave('noteskin_selector-save', 'noteSave_curNoteSkinPlayer', noteSkins_getNoteSkins[checkbox_selectedPos])
           isDisabled[1] = false
      elseif clickObject('checkbox_player') and isClicked[1] == false then
@@ -456,8 +451,8 @@ local function checkBoxSave()
      if clickObject('checkbox_opponent') and isClicked[2] == true then
           noteSave_checkboxOpponent = noteSave_checkboxSelectedPos
 
-          checkboxChar_setPos(2, checkboxChar_getPos[1], checkboxChar_getPos[2])
-          setDataFromSave('noteskin_selector-save', 'noteSave_checkboxSelectedOpponent', {checkboxChar_getPos[1] + 80, checkboxChar_getPos[2] + 70})
+          checkboxChar_setPos(2, checkboxChar_getPos[1], getProperty('noteSkins_hitbox-'..checkbox_selectedPos..'.y'))
+          setDataFromSave('noteskin_selector-save', 'noteSave_checkboxSelectedOpponent', {checkboxChar_getPos[1] + 80, getProperty('noteSkins_hitbox-'..checkbox_selectedPos..'.y') + 70})
           setDataFromSave('noteskin_selector-save', 'noteSave_curNoteSkinOpponent', noteSkins_getNoteSkins[checkbox_selectedPos])
           isDisabled[2] = false
      elseif clickObject('checkbox_opponent') and isClicked[2] == false then
@@ -476,11 +471,41 @@ local function checkBoxSave()
      setDataFromSave('noteskin_selector-save', 'noteSave_checkboxOpponent', noteSave_checkboxOpponent)
 end
 
-function onUpdate(elapsed)
-     selectionNoteSkins()
-     setNoteAnim()
-     checkBoxAnimation()
-     checkBoxSave()
+local antiRepeat = false
+local function saveDataWhenExit()
+     local doubleSaveData = function()
+          local noteSaves = {
+               'noteSave_highlightPosX', 'noteSave_highlightPosY', 'noteSave_selectedName', 'noteSave_selectedPos',
+               'noteSave_curPage', 'noteSave_checkboxPlayer', 'noteSave_checkboxOpponent', 'noteSave_checkboxSelectedPlayer',
+               'noteSave_checkboxSelectedOpponent', 'noteSave_checkboxVisiblePlayer', 'noteSave_checkboxVisibleOpponent', 'noteSave_checkboxUncheckedPlayer',
+               'noteSave_checkboxUncheckedOpponent'
+          }
 
-     saveDataWhenExit()
+          for k,v in next, noteSaves do
+               setDataFromSave('noteskin_selector-save', v, getDataFromSave('noteskin_selector-save', v))
+          end
+          flushSaveData('noteskin_selector-save')
+     end
+
+     if keyboardJustPressed('ESCAPE') or keyboardJustPressed('TAB') then
+          doubleSaveData()
+     end
+     if not objectsOverlap('windowGameHitbox', 'mouse_hitbox') then
+          doubleSaveData()
+          antiRepeat = true
+     end
+     if objectsOverlap('windowGameHitbox', 'mouse_hitbox') then
+          antiRepeat = false
+     end
+end
+
+function onUpdatePost(elapsed)
+     if getProperty('skinStates') == 'note' then
+          checkBoxAnimation()
+          checkBoxSave()
+          selectionNoteSkins()
+          setNoteAnim()
+          
+          saveDataWhenExit()
+     end
 end

@@ -1,7 +1,7 @@
 [
 	{
-		"save": "low_quality_mode",
-		"name": "Low Quality Mode",
+		"save": "low_detail_mode",
+		"name": "Low Detail Mode",
 		"type": "bool",
 		"description": "Removes the checkerboard and color changing background",
 		"value": false
@@ -13,15 +13,57 @@
 		"description": "If for some reason you hate selection box flashing itself",
 		"value": false
 	},
+	{
+		"save": "enable_confirm_entrance",
+		"name": "Enable Confirm Entrance",
+		"type": "bool",
+		"description": "Enables a confirm window when pressing the [Tab] key",
+		"value": false
+	},
+	{
+		"save": "bg_song",
+		"name": "BG Song:",
+		"type": "string",
+		"description": "Changes the Background Song",
+		"value": "Extras Menu",
+		"options": [
+               "Extras Menu",
+               "File Select",
+			"Monkey",
+			"Creative Exercise",
+			"PokeDex Theme",
+               "Tea Time",
+               "Breakfast"
+          ]
+	},
      {
 		"save": "bg_checkerboard_color",
 		"name": "BG Checkerboard Color:",
-		"type": "int",
+		"type": "string",
 		"description": "Changes the checkerboard background color hue",
-		"value": 180,
+		"value": "00FFFF",
+          "options": [
+               "000000",
+               "FF0000",
+			"FFFF00",
+			"00FF00",
+			"00FFFF",
+               "0000FF",
+               "FF00FF",
+			"FFFFFF"
+          ]
+	},
+	{
+		"save": "bg_checkerboard_alpha",
+		"name": "BG Checkerboard Alpha:",
+		"type": "float",
+		"description": "Changes the checkerboard background opacity value",
+		"value": 0.15,
           "min": 0,
-		"max": 360,
-          "step": 1
+		"max": 1,
+		"step": 0.05,
+		"decimals": 2,
+		"scroll": 0.5
 	},
      {
 		"save": "bg_colorstart",
@@ -42,30 +84,5 @@
           "min": 0,
 		"max": 360,
           "step": 1
-	},
-     {
-		"save": "bg_color_scrollspeed",
-		"name": "BG Color Scroll Speed:",
-		"type": "float",
-		"description": "Changes the background color scroll speed\n(May Cause Seizures!)",
-          "value": 0.05,
-          "min": 0,
-		"max": 100,
-          "decimals": 2,
-          "step": 0.05,
-          "scroll": 8
-	},
-	{
-		"save": "bg_song",
-		"name": "BG Song:",
-		"type": "string",
-		"description": "Changes the Background Song",
-		"value": "Extras Menu",
-		"options": [
-               "Extras Menu",
-               "File Select",
-               "Tea Time",
-               "Breakfast"
-          ]
 	}
 ]
