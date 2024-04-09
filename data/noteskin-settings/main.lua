@@ -1,439 +1,252 @@
-local table = require('mods/NoteSkin Selector Remastered/scripts/modules/libraries/table')
-local json  = require('mods/NoteSkin Selector Remastered/scripts/modules/libraries/json')
+local funkinlua = require 'mods.NoteSkin Selector Remastered.modules.funkinlua'
+local globals   = require 'mods.NoteSkin Selector Remastered.modules.globals'
+local string    = require 'mods.NoteSkin Selector Remastered.libraries.string'
+local json      = require 'mods.NoteSkin Selector Remastered.libraries.json.json'
 
-local function getTextFileContent(path)
-     local file = io.open(path)
-     local content = ''
-     for line in file:lines() do  
-          content = content .. line .. '\n'
-     end
-     return content
-end
+local setSave = funkinlua.setSave
+local getSave = funkinlua.getSave
+initSaveData('noteselector', 'NoteSkin Selector')
 
-local function calculatePosition(skinType)
-     local xpos = {20, 220 - 30, (220 + 170) - 30, (220 + (170 * 2)) - 30}
-     local ypos = -155 -- increment in each 4th value
-
-     local xindex = 0
-     local result = {}
-     for skinIndex = 1, #skinType do
-          xindex = xindex + 1
-          if xindex > 4 then
-               xindex = 1
-          end
-
-          local skinIndexNeg = skinIndex - 1
-          if skinIndexNeg % 4 == 0  then ypos = ypos + 180 end;
-          if skinIndexNeg % 12 == 0 then ypos = ypos + 140 end;
-          table.insert(result, {xpos[xindex], ypos});
-     end
-     
-     return result
-end
-
-local function calculatePageLimit(skinType)
-     local yindex_limit = 0
-     for skinIndex = 1, #skinType do
-          local skinIndexNeg = skinIndex - 1
-          if skinIndexNeg % 12 == 0 then
-               yindex_limit = yindex_limit + 1
-          end
-     end
-     return yindex_limit
-end
-
-local skinHitboxAnimation = getModSetting('disable_selection_flash', 'NoteSkin Selector Remastered') == false and 'selecting' or 'selecting-static'
 function onCreate()
-     makeLuaSprite('bg_cover', 'menuDesat', 0, 0)
-     setObjectCamera('bg_cover', 'camHUD')
-     setProperty('bg_cover.color', 0x5332a8)
-     addLuaSprite('bg_cover')
+     makeLuaSprite('bgCover', 'menuDesat', 0, 0)
+     setObjectCamera('bgCover', 'camHUD')
+     setProperty('bgCover.color', 0x5332a8)
+     addLuaSprite('bgCover')
 
-     makeLuaSprite('bg_side', 'sidebar', 100, 0)
-     setObjectCamera('bg_side', 'camHUD')
-     setProperty('bg_side.color', 0x000000)
-     setProperty('bg_side.alpha', 0.5)
-     addLuaSprite('bg_side')
+     makeLuaSprite('bgSideCover', 'ui/sidebar', 80, 0)
+     setObjectCamera('bgSideCover', 'camHUD')
+     setProperty('bgSideCover.color', 0x000000)
+     setProperty('bgSideCover.alpha', 0.5)
+     addLuaSprite('bgSideCover')
 
-     makeLuaSprite('bg_head', nil, 0, 0)
-     makeGraphic('bg_head', 1300, 100, 'ffffff')
-     setObjectCamera('bg_head', 'camHUD')
-     addLuaSprite('bg_head')
+     -- Buttons --
 
-     -- Button Displays --
+     makeLuaText('buttonNoteText', 'Note', 0, 105, 18)
+     setObjectCamera('buttonNoteText', 'camHUD')
+     setTextFont('buttonNoteText', 'sonic.ttf')
+     setTextAlignment('buttonNoteText', 'center')
+     setTextSize('buttonNoteText', 50)
+     setProperty('buttonNoteText.antialiasing', false)
+     addLuaText('buttonNoteText')
 
-     makeLuaText('skin_note', 'Note', 0, 272.5, 20)
-     setTextFont('skin_note', 'mania.ttf')
-     setTextAlignment('skin_note', 'center')
-     setTextSize('skin_note', 50)
-     setObjectCamera('skin_note', 'camHUD')
-     setProperty('skin_note.antialiasing', true)
-     addLuaText('skin_note')
+     makeLuaSprite('buttonNoteBackBG', 'ui/button', 30, 25)
+     setObjectCamera('buttonNoteBackBG', 'camHUD')
+     scaleObject('buttonNoteBackBG', 0.75, 0.85)
+     setProperty('buttonNoteBackBG.color', 0xff0000)
+     addLuaSprite('buttonNoteBackBG')
 
-     makeLuaText('skin_splash', 'Splash', 0, 817.5, 20)
-     setTextFont('skin_splash', 'mania.ttf')
-     setTextAlignment('skin_splash', 'center')
-     setTextSize('skin_splash', 50)
-     setObjectCamera('skin_splash', 'camHUD')
-     setProperty('skin_splash.antialiasing', true)
-     addLuaText('skin_splash')
+     makeLuaSprite('buttonNoteFrontBG', 'ui/button', 30 - 10, 25 - 10)
+     setObjectCamera('buttonNoteFrontBG', 'camHUD')
+     scaleObject('buttonNoteFrontBG', 0.75, 0.85)
+     setProperty('buttonNoteFrontBG.color', 0x0000000)
+     addLuaSprite('buttonNoteFrontBG')
 
-     makeLuaSprite('bgButton_noteskin-selected', 'buttons/selectbut', getProperty('skin_note.x') - 85, getProperty('skin_note.y'))
-     setGraphicSize('bgButton_noteskin-selected', 300, 70)
-     setObjectCamera('bgButton_noteskin-selected', 'camHUD')
-     setProperty('bgButton_noteskin-selected.color', 0xff0000)
-     addLuaSprite('bgButton_noteskin-selected')
+     makeLuaText('buttonSplashText', 'Splash', 0, (118 * 4) - 30 + 20, 18)
+     setObjectCamera('buttonSplashText', 'camHUD')
+     setTextFont('buttonSplashText', 'sonic.ttf')
+     setTextAlignment('buttonSplashText', 'center')
+     setTextSize('buttonSplashText', 50)
+     setProperty('buttonSplashText.antialiasing', false)
+     addLuaText('buttonSplashText')
 
-     makeLuaSprite('bgButton_splashskin-selected', 'buttons/selectbut', getProperty('skin_splash.x') - 65, getProperty('skin_splash.y'))
-     setGraphicSize('bgButton_splashskin-selected', 300, 70)
-     setObjectCamera('bgButton_splashskin-selected', 'camHUD')
-     setProperty('bgButton_splashskin-selected.color', 0xff0000)
-     setProperty('bgButton_splashskin-selected.visible', false)
-     addLuaSprite('bgButton_splashskin-selected')
+     makeLuaSprite('buttonSplashBackBG', 'ui/button', (50 * 8) - 20 + 20, 25)
+     setObjectCamera('buttonSplashBackBG', 'camHUD')
+     scaleObject('buttonSplashBackBG', 0.75, 0.85)
+     setProperty('buttonSplashBackBG.color', 0xff00000)
+     setProperty('buttonSplashBackBG.visible', false)
+     addLuaSprite('buttonSplashBackBG')
 
-     makeLuaSprite('bgButton_noteskin', 'buttons/blackbut', getProperty('skin_note.x') - 100, getProperty('skin_note.y') - 10)  
-     setGraphicSize('bgButton_noteskin', 300, 70)
-     setObjectCamera('bgButton_noteskin', 'camHUD')
-     addLuaSprite('bgButton_noteskin')
-
-     makeLuaSprite('bgButton_splashskin', 'buttons/blackbut', getProperty('skin_splash.x') - 80, getProperty('skin_splash.y') - 10)
-     setGraphicSize('bgButton_splashskin', 300, 70)
-     setObjectCamera('bgButton_splashskin', 'camHUD')
-     addLuaSprite('bgButton_splashskin')
-
-     -- Infos --
-
-     makeLuaText('skin_page', 'Page 1 / NaN', 0, 265, 675)
-     setObjectCamera('skin_page', 'camHUD')
-     setTextFont('skin_page', 'mania.ttf')
-     setTextSize('skin_page', 30)
-     setProperty('skin_page.antialiasing', true)
-     addLuaText('skin_page')
-
-     makeLuaText('skin_name', 'Default', 350, 845, 115)
-     setObjectCamera('skin_name', 'camHUD')
-     setTextFont('skin_name', 'mania.ttf')
-     setTextSize('skin_name', 50)
-     setTextAlignment('skin_name', 'center')
-     setProperty('skin_name.antialiasing', true)
-     addLuaText('skin_name')
-
-     makeAnimatedLuaSprite('skinHitbox-highlight', 'selection', 42.8 - 30, 158)
-     addAnimationByPrefix('skinHitbox-highlight', 'selecting', 'selected', 3)
-     addAnimationByIndices('skinHitbox-highlight', 'selecting-static', 'selected', '0', 1)
-     playAnim('skinHitbox-highlight', skinHitboxAnimation)
-     setObjectCamera('skinHitbox-highlight', 'camHUD')
-     addLuaSprite('skinHitbox-highlight')
+     makeLuaSprite('buttonSplashFrontBG', 'ui/button', ((50 * 8) - 20) - 10 + 20, 25 - 10)
+     setObjectCamera('buttonSplashFrontBG', 'camHUD')
+     scaleObject('buttonSplashFrontBG', 0.75, 0.85)
+     setProperty('buttonSplashFrontBG.color', 0x000000)
+     addLuaSprite('buttonSplashFrontBG')
 
      -- Keybinds --
 
-     makeLuaText('keybind_text1', tostring(getKeyBinds(0)), nil, 833, 300)
-     setTextSize('keybind_text1', 35)
-     setObjectCamera('keybind_text1', 'camHUD')
-     addLuaText('keybind_text1')
-
-     makeLuaText('keybind_text2', tostring(getKeyBinds(1)), nil, 833 + 115, 300)
-     setTextSize('keybind_text2', 35)
-     setObjectCamera('keybind_text2', 'camHUD')
-     addLuaText('keybind_text2')
-
-     makeLuaText('keybind_text3', tostring(getKeyBinds(2)), nil, 833 + 115 * 2, 300)
-     setTextSize('keybind_text3', 35)
-     setObjectCamera('keybind_text3', 'camHUD')
-     addLuaText('keybind_text3')
-
-     makeLuaText('keybind_text4', tostring(getKeyBinds(3)), nil, 833 + 115 * 3, 300)
-     setTextSize('keybind_text4', 35)
-     setObjectCamera('keybind_text4', 'camHUD')
-     addLuaText('keybind_text4')
-
-     -- UI --
-
-     makeLuaText('ui_noteAnim', 'Anims', 0, 815, 610)
-     setTextFont('ui_noteAnim', 'phantummuff full.ttf')
-     addLuaText('ui_noteAnim')
-
-     makeLuaText('ui_noteStyle', 'Style', 0, 930, 610)
-     setTextFont('ui_noteStyle', 'phantummuff full.ttf')
-     addLuaText('ui_noteStyle')
-
-     makeLuaText('ui_noteOptions', 'Options', 0, 1030, 610)
-     setTextFont('ui_noteOptions', 'phantummuff full.ttf')
-     addLuaText('ui_noteOptions')
-
-     makeLuaText('ui_noteLBRACKET', 'LBRKT', 0, 840, 690)
-     setTextFont('ui_noteLBRACKET', 'phantummuff full.ttf')
-     addLuaText('ui_noteLBRACKET')
-
-     makeLuaText('ui_noteRBRACKET', 'RBRKT', 0, 950, 690)
-     setTextFont('ui_noteRBRACKET', 'phantummuff full.ttf')
-     addLuaText('ui_noteRBRACKET')
-
-     makeLuaText('ui_noteSHIFTO', 'SHIFT + O', 0, 1060, 690)
-     setTextFont('ui_noteSHIFTO', 'phantummuff full.ttf')
-     addLuaText('ui_noteSHIFTO')
-
-     makeLuaSprite('ui_notePressed', 'ui/note-pressed', 790, 620)
-     setObjectCamera('ui_notePressed', 'camHUD')
-     setGraphicSize('ui_notePressed', 100, 100)
-     addLuaSprite('ui_notePressed')
-
-     makeLuaSprite('ui_noteConfirm', 'ui/note-confirm', 790, 620)
-     setObjectCamera('ui_noteConfirm', 'camHUD')
-     setGraphicSize('ui_noteConfirm', 100, 100)
-     addLuaSprite('ui_noteConfirm')
-
-     makeLuaSprite('ui_noteNormal', 'ui/note-pressed', 900, 620)
-     setObjectCamera('ui_noteNormal', 'camHUD')
-     setGraphicSize('ui_noteNormal', 100, 100)
-     addLuaSprite('ui_noteNormal')
-
-     --makeLuaSprite('ui_notePixel', 'ui/note-pixel', 900, 620)
-     --setObjectCamera('ui_notePixel', 'camHUD')
-     --setGraphicSize('ui_notePixel', 100, 100)
-     --addLuaSprite('ui_notePixel')
-
-     makeLuaSprite('ui_noteOptions', 'ui/note-options', 1010, 620)
-     setObjectCamera('ui_noteOptions', 'camHUD')
-     setGraphicSize('ui_noteOptions', 100, 100)
-     addLuaSprite('ui_noteOptions')
-
-     -- Player & Opponent --
-
-     makeAnimatedLuaSprite('checkbox_player', 'checkboxanim', 803, 385)
-     setObjectCamera('checkbox_player', 'camHUD')
-     setGraphicSize('checkbox_player', 75, 75)
-     addAnimationByPrefix('checkbox_player', 'unchecked', 'checkbox0', 24, false)
-     addAnimationByPrefix('checkbox_player', 'unchecking', 'checkbox anim reverse', 24, false)
-     addAnimationByPrefix('checkbox_player', 'checking', 'checkbox anim0', 24, false)
-     addAnimationByPrefix('checkbox_player', 'checked', 'checkbox finish', 24, false)
-     addOffset('checkbox_player', 'unchecked', 18, 16.5)
-     addOffset('checkbox_player', 'unchecking', 37, 37)
-     addOffset('checkbox_player', 'checking', 44, 34)
-     addOffset('checkbox_player', 'checked', 20, 24)
-     playAnim('checkbox_player', 'unchecked', true)
-     addLuaSprite('checkbox_player')
-
-     makeAnimatedLuaSprite('checkbox_opponent', 'checkboxanim', 803, 385 + 100)
-     setObjectCamera('checkbox_opponent', 'camHUD')
-     setGraphicSize('checkbox_opponent', 75, 75)
-     addAnimationByPrefix('checkbox_opponent', 'unchecked', 'checkbox0', 24, false)
-     addAnimationByPrefix('checkbox_opponent', 'unchecking', 'checkbox anim reverse', 24, false)
-     addAnimationByPrefix('checkbox_opponent', 'checking', 'checkbox anim0', 24, false)
-     addAnimationByPrefix('checkbox_opponent', 'checked', 'checkbox finish', 24, false)
-     addOffset('checkbox_opponent', 'unchecked', 18, 16.5)
-     addOffset('checkbox_opponent', 'unchecking', 37, 37)
-     addOffset('checkbox_opponent', 'checking', 44, 34)
-     addOffset('checkbox_opponent', 'checked', 20, 24)
-     playAnim('checkbox_opponent', 'unchecked', true)
-     addLuaSprite('checkbox_opponent')
-
-     makeLuaText('checkbox_playerText', 'Player', 0, 803 + 100, 400 - 3)
-     setTextColor('checkbox_playerText', '31b0d1')
-     setTextSize('checkbox_playerText', 40)
-     setTextFont('checkbox_playerText', 'phantummuff full.ttf')
-     setObjectCamera('checkbox_playerText', 'camHUD')
-     addLuaText('checkbox_playerText')
-
-     makeLuaText('checkbox_opponentText', 'Opponent', 0, 803 + 100, 400 + 100 - 3)
-     setTextColor('checkbox_opponentText', 'af66ce')
-     setTextSize('checkbox_opponentText', 40)
-     setTextFont('checkbox_opponentText', 'phantummuff full.ttf')
-     setObjectCamera('checkbox_opponentText', 'camHUD')
-     addLuaText('checkbox_opponentText')
-
-     makeLuaSprite('checkbox_playerSelect', 'player-selected', 100, 165)
-     setGraphicSize('checkbox_playerSelect', 65, 65)
-     setObjectCamera('checkbox_playerSelect', 'camOther')
-     addLuaSprite('checkbox_playerSelect', true)
-
-     makeLuaSprite('checkbox_opponentSelect', 'opponent-selected', 100, 235)
-     setGraphicSize('checkbox_opponentSelect', 65, 65)
-     setObjectCamera('checkbox_opponentSelect', 'camOther')
-     addLuaSprite('checkbox_opponentSelect', true)
-
-     -- Other --
-
-     makeLuaSprite('windowGameHitbox', nil, 20, 20)
-     makeGraphic('windowGameHitbox', screenWidth - 40, screenHeight - 40, '000000')
-     setObjectCamera('windowGameHitbox', 'camHUD')
-     setProperty('windowGameHitbox.visible', false)
-     addLuaSprite('windowGameHitbox')
-
-     -- Music --
-     
-     for k,v in pairs(directoryFileList('mods/NoteSkin Selector Remastered/music')) do
-          if v:match('%.ogg') then
-               precacheMusic(v:gsub('%.ogg', ''))
-          end
+     local keybindTextX = {833 - 15, 833 + 115 - 15, (833 + 115 * 2) - 15, (833 + 115 * 3) - 15}
+     for keyPos = 1, #keybindTextX do
+          local keybindTag    = 'keybind_text'..keyPos
+          local keybindString = tostring(getKeyBinds(keyPos - 1))
+          makeLuaText(keybindTag, keybindString, nil, keybindTextX[keyPos], 270)
+          setTextSize(keybindTag, 35)
+          setObjectCamera(keybindTag, 'camHUD')
+          addLuaText(keybindTag)
      end
 
-     local music_dataPath = getTextFileContent('mods/NoteSkin Selector Remastered/music/music_data.json')
-     local music_dataJson = json.decode(music_dataPath)
-     local music_data     = music_dataJson[getModSetting('bg_song', 'NoteSkin Selector Remastered')]
-     playMusic(music_data.file, music_data.volume, true)
+     -- Info UIs --
 
-     -- Haxe Scripts --
+     local maximumLimit_noteskins = globals.calculatePageLimit(globals.getSkins('note'))
+     makeLuaText('uiSkinPage', 'Page 1 / '..maximumLimit_noteskins, 1000, -165, 675)
+     setObjectCamera('uiSkinPage', 'camHUD')
+     setTextFont('uiSkinPage', 'sonic.ttf')
+     setTextAlignment('uiSkinPage', 'center')
+     setTextSize('uiSkinPage', 30)
+     setProperty('uiSkinPage.antialiasing', false)
+     addLuaText('uiSkinPage')
 
-     local backdropPath = 'mods/NoteSkin Selector Remastered/data/noteskin-settings/other/backdrop.hx'
-     runHaxeCode(getTextFileContent(backdropPath), {
-          setCheckerboardColor = getModSetting('bg_checkerboard_color', 'NoteSkin Selector Remastered'),
-          setCheckerboardAlpha = getModSetting('bg_checkerboard_alpha', 'NoteSkin Selector Remastered')
-     })
-end
+     makeLuaText('uiSkinName', 'Normal', 500, 756, 70) -- y: 70
+     setObjectCamera('uiSkinName', 'camHUD')
+     setTextFont('uiSkinName', 'sonic.ttf')
+     setTextAlignment('uiSkinName', 'center')
+     setTextSize('uiSkinName', 60)
+     setTextBorder('uiSkinName', 5, '000000', 'OUTLINE_FAST')
+     setProperty('uiSkinName.antialiasing', false)
+     addLuaText('uiSkinName')
 
-local function getSkins(state)
-     local results_note   = {'NOTE_assets', 'NOTE_assets-future', 'NOTE_assets-chip'}
-     local results_splash = {'noteSplashes', 'noteSplashes-vanilla', 'noteSplashes-sparkles', 'noteSplashes-electric', 'noteSplashes-diamond'}
-     local results = state == 'note' and results_note or results_splash
+     makeLuaText('uiCurVersion', 'Beta 0.4.0', 0, 1188, 5)
+     setTextFont('uiCurVersion', 'sonic.ttf')
+     setTextColor('uiCurVersion', 'fccf03')
+     setTextSize('uiCurVersion', 20)
+     setObjectCamera('uiCurVersion', 'camHUD')
+     setProperty('uiCurVersion.antialiasing', false)
+     addLuaText('uiCurVersion')
 
-     local pattern_note   = '^(NOTE_assets%-.+)%.png$'
-     local pattern_splash = '^(noteSplashes%-.+)%.png$'
-     local pattern = state == 'note' and pattern_note or pattern_splash
+     makeLuaSprite('uiArrowUp', 'ui/button_arrows', 455, 670)
+     setObjectCamera('uiArrowUp', 'camHUD')
+     scaleObject('uiArrowUp', 0.18, 0.18)
+     addLuaSprite('uiArrowUp')
 
-     local folder = state == 'note' and 'noteSkins' or 'noteSplashes'
-     for _,v in next, directoryFileList('mods/NoteSkin Selector Remastered/images/'..folder) do
-          if v:match(pattern) then
-               table.insert(results, v:match(pattern))
-          end
-     end
-     return results
-end
+     makeLuaSprite('uiArrowDown', 'ui/button_arrows', 180, 670)
+     setObjectCamera('uiArrowDown', 'camHUD')
+     scaleObject('uiArrowDown', 0.18, 0.18)
+     setProperty('uiArrowDown.flipY', true)
+     addLuaSprite('uiArrowDown')
 
-local function getSkinNames(state)
-     local results_note   = {'Normal', 'Future', 'Chip'}
-     local results_splash = {'Normal', 'Vanilla', 'Sparkles', 'Electric', 'Diamond'}
-     local results = state == 'note' and results_note or results_splash
+     -- Note UIs --
 
-     local pattern_note   = '^NOTE_assets%-(.+)%.png$'
-     local pattern_splash = '^noteSplashes%-(.+)%.png$'
-     local pattern = state == 'note' and pattern_note or pattern_splash
+     makeLuaSprite('uiNoteOptions', 'ui/changers/note-options', 1170, 630)
+     setObjectCamera('uiNoteOptions', 'camHUD')
+     setGraphicSize('uiNoteOptions', 80, 80)
+     addLuaSprite('uiNoteOptions')
 
-     local folder = state == 'note' and 'noteSkins' or 'noteSplashes'
-     for _,v in next, directoryFileList('mods/NoteSkin Selector Remastered/images/'..folder) do
-          if v:match(pattern) then
-               table.insert(results, v:match(pattern))
-          end
-     end
-     return results
-end
+     makeAnimatedLuaSprite('uiNoteAnimations', 'ui/changers/note-animations', 770, 620)
+     addAnimationByPrefix('uiNoteAnimations', 'confirm', 'note-confirm0', 24, false)
+     addAnimationByPrefix('uiNoteAnimations', 'pressed', 'note-pressed0', 24, false)
+     addAnimationByPrefix('uiNoteAnimations', 'colored', 'note-colored0', 24, false)
+     setObjectCamera('uiNoteAnimations', 'camHUD')
+     setGraphicSize('uiNoteAnimations', 100, 100)
+     playAnim('uiNoteAnimations', 'confirm', true)
+     addLuaSprite('uiNoteAnimations')
 
-local function hideSkinStateElements(state)
-     if state == 'splash' then
-          for index, value in next, getSkins('note') do
-               local noteSkin_getCurPos = calculatePosition(getSkinNames('note'))[index]
-               local noteSkin_hitboxTag = 'noteSkins_hitbox-'..tostring(index)
-               removeLuaSprite(noteSkin_hitboxTag, false)
+     makeAnimatedLuaSprite('uiNoteStyles', 'ui/changers/note-style', 770 + 110, 620)
+     addAnimationByPrefix('uiNoteStyles', 'pixel', 'note-pixel0', 24, false)
+     addAnimationByPrefix('uiNoteStyles', 'normal', 'note-normal0', 24, false)
+     setObjectCamera('uiNoteStyles', 'camHUD')
+     setGraphicSize('uiNoteStyles', 100, 100)
+     playAnim('uiNoteStyles', 'normal', true)
+     addLuaSprite('uiNoteStyles')
 
-               local noteSkin_displayTag = 'noteSkins_display-'..tostring(index)
-               removeLuaSprite(noteSkin_displayTag, false)
-          end
-          for index, value in next, getSkins('splash') do
-               local splashSkin_getCurPos = calculatePosition(getSkinNames('splash'))[index]
-               local splashSkin_hitboxTag = 'splashSkins_hitbox-'..tostring(index)
-               addLuaSprite(splashSkin_hitboxTag, false)
+     makeLuaText('uiTextSettings', 'Settings', 0, 1170 + 3, 608)
+     setTextFont('uiTextSettings', 'phantummuff.ttf')
+     addLuaText('uiTextSettings')
 
-               local splashSkin_displayTag = 'splashSkins_display-'..tostring(index)
-               addLuaSprite(splashSkin_displayTag, false)
-          end
-          removeLuaSprite('checkbox_opponentSelect', false)
-     end
-     if state == 'note' then
-          for index, value in next, getSkins('note') do
-               local noteSkin_getCurPos = calculatePosition(getSkinNames('note'))[index]
-               local noteSkin_hitboxTag = 'noteSkins_hitbox-'..tostring(index)
-               addLuaSprite(noteSkin_hitboxTag)
+     makeLuaText('uiTextNoteAnimations', 'Anims', 0, 770 + 25, 608)
+     setTextFont('uiTextNoteAnimations', 'phantummuff.ttf')
+     addLuaText('uiTextNoteAnimations')
 
-               local noteSkin_displayTag = 'noteSkins_display-'..tostring(index)
-               addLuaSprite(noteSkin_displayTag)
-          end
-          for index, value in next, getSkins('splash') do
-               local splashSkin_getCurPos = calculatePosition(getSkinNames('splash'))[index]
-               local splashSkin_hitboxTag = 'splashSkins_hitbox-'..tostring(index)
-               removeLuaSprite(splashSkin_hitboxTag, false)
+     makeLuaText('uiTextNoteStyles', 'Styles', 0, 770 + 110 + 25, 608)
+     setTextFont('uiTextNoteStyles', 'phantummuff.ttf')
+     addLuaText('uiTextNoteStyles')
 
-               local splashSkin_displayTag = 'splashSkins_display-'..tostring(index)
-               removeLuaSprite(splashSkin_displayTag, false)
-          end
-          addLuaSprite('checkbox_opponentSelect')
-     end
+     makeLuaText('uiTextNoteAnimationsControl', 'LBRCKT', 0, 770 + 50, 610 + 80)
+     setTextFont('uiTextNoteAnimationsControl', 'phantummuff.ttf')
+     setTextSize('uiTextNoteAnimationsControl', 14)
+     addLuaText('uiTextNoteAnimationsControl')
+
+     makeLuaText('uiTextNoteStylesControl', 'RBRCKT', 0, 770 + 110 + 50, 610 + 80)
+     setTextFont('uiTextNoteStylesControl', 'phantummuff.ttf')
+     setTextSize('uiTextNoteStylesControl', 14)
+     addLuaText('uiTextNoteStylesControl')
 end
 
 function onCreatePost()
-     addLuaScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/skins/noteskin')
-     addLuaScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/skins/splashskin')
-     setVar('skinStates', 'note')
+     addLuaScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/states/note')
+     if not getModSetting('remove_checker_bg', 'NoteSkin Selector Remastered') then
+          runHaxeCode(funkinlua.getTextFileContent('mods/NoteSkin Selector Remastered/hscripts/backdrop.hx'))
+     end
      
-     setProperty('iconP1.visible', false)
-     setProperty('iconP2.visible', false)
-     setProperty('healthBar.visible', false)
-     setProperty('healthBarBG.visible', false)
-     setProperty('scoreTxt.visible', false)
-     setProperty('botplayTxt.visible', false)
+     -- Whatever the hell this is --
+
+     callMethod('uiGroup.remove', {instanceArg('iconP1')})
+     callMethod('uiGroup.remove', {instanceArg('iconP2')})
+     callMethod('uiGroup.remove', {instanceArg('healthBar')})
+     callMethod('uiGroup.remove', {instanceArg('scoreTxt')})
+     callMethod('uiGroup.remove', {instanceArg('botplayTxt')})
 
      -- Mouse --
- 
-     makeLuaSprite('mouse_hitbox', nil, getMouseX('camHUD'), getMouseY('camHUD'))
-     makeGraphic('mouse_hitbox', 10, 10, 'e44932')
-     setObjectCamera('mouse_hitbox', 'camHUD')
-     setObjectOrder('mouse_hitbox', math.huge)
-     setProperty('mouse_hitbox.visible', false)
-     addLuaSprite('mouse_hitbox')
+
+     makeLuaSprite('mouseHitBox', nil, getMouseX('camHUD') - 3, getMouseY('camHUD'))
+     makeGraphic('mouseHitBox', 10, 10, 'ff0000')
+     setObjectCamera('mouseHitBox', 'camHUD')
+     setObjectOrder('mouseHitBox', 90E34) -- fuck you
+     setProperty('mouseHitBox.visible', false)
+     addLuaSprite('mouseHitBox', true)
 
      setPropertyFromClass('flixel.FlxG', 'mouse.visible', true);
+
+     -- Music --
+
+     local music = getModSetting('song_select', 'NoteSkin Selector Remastered'):lower()
+     playMusic(music, 0.35, true)
 end
 
-local function clickObject(obj)
-     return objectsOverlap(obj, 'mouse_hitbox') and mouseClicked('left')
+local buttonState = 'splash'
+local function changeStates()
+     if funkinlua.clickObject('buttonNoteBackBG') and buttonState == 'note' then
+          playSound('ping', 0.1)
+
+          setProperty('buttonNoteBackBG.visible', true)
+          setProperty('buttonSplashBackBG.visible', false)
+          buttonState = 'splash'
+     end
+     if funkinlua.clickObject('buttonSplashBackBG') and buttonState == 'splash' then
+          playSound('ping', 0.1)
+
+          setProperty('buttonNoteBackBG.visible', false)
+          setProperty('buttonSplashBackBG.visible', true)
+          buttonState = 'note'
+     end
 end
 
-local locked = false
+local changeSize = false
+local function changeToOptionState()
+     local changeOptionSize = function()
+          local curNoteOptionsScale = 0.526315789473684
+          if objectsOverlap('uiNoteOptions', 'mouseHitBox') and changeSize == false then
+               startTween('uiNoteOptionsIn', 'uiNoteOptions', {['scale.x'] = 0.48, ['scale.y'] = 0.48}, 0.15, {ease = 'circout'})
+               return;
+          end
+          startTween('uiNoteOptionsIn', 'uiNoteOptions', {['scale.x'] = curNoteOptionsScale, ['scale.y'] = curNoteOptionsScale}, 0.15, {ease = 'circout'})
+     
+          changeSize = true
+          funkinlua.createTimer('resetChange', 0.01, function() 
+               changeSize = false 
+          end)
+     end
+     
+     local optionsStatePath = 'mods/NoteSkin Selector Remastered/hscripts/options.hx'
+     local optionsState = funkinlua.getTextFileContent(optionsStatePath)
+     if funkinlua.clickObject('uiNoteOptions') then
+          playSound('select', 1)
+          funkinlua.createTimer('toOptionsState', 0.1, function() 
+               runHaxeCode(optionsState)
+          end)
+     end
+     changeOptionSize()
+end
+
 function onUpdate(elapsed)
-     if keyboardJustPressed('ONE') then
-          restartSong(true)
-     end
-     if keyboardJustPressed('ESCAPE') then
-          exitSong()
-     end
+     setProperty('mouseHitBox.x', getMouseX('camHUD') - 3)
+     setProperty('mouseHitBox.y', getMouseY('camHUD'))
 
-     if keyboardJustPressed('TAB') then
-          local curSongName = getDataFromSave('noteskin_selector-save', 'curSongName')
-          local curDiffID   = getDataFromSave('noteskin_selector-save', 'curDiffID')
-          loadNewSong(curSongName, curDiffID)
-     end
-     if keyboardPressed('SHIFT') and keyboardJustPressed('O') then
-          local optionsPath = 'mods/NoteSkin Selector Remastered/data/noteskin-settings/other/options.hx'
-          local options = getTextFileContent(optionsPath)
-          runHaxeCode(options)
-     end
-
-     if clickObject('bgButton_splashskin') and getVar('skinStates') == 'note' then
-          setVar('skinStates', 'splash')
-          playSound('ping', 0.3)
-
-          setProperty('bgButton_noteskin-selected.visible', false)
-          setProperty('bgButton_splashskin-selected.visible', true)
-     end
-     if clickObject('bgButton_noteskin') and getVar('skinStates') == 'splash' then
-          setVar('skinStates', 'note')
-          playSound('ping', 0.3)
-
-          setProperty('bgButton_noteskin-selected.visible', true)
-          setProperty('bgButton_splashskin-selected.visible', false)
-     end
-
-     if locked == false then
-          hideSkinStateElements(getVar('skinStates')); locked = true
-     end
-     if clickObject('bgButton_splashskin') or clickObject('bgButton_noteskin') then
-          hideSkinStateElements(getVar('skinStates'))
-     end
-
-     setProperty('mouse_hitbox.x', getMouseX('camHUD'))
-     setProperty('mouse_hitbox.y', getMouseY('camHUD'))
+     if keyboardJustPressed('ONE')    then restartSong(true) end
+     if keyboardJustPressed('ESCAPE') then exitSong()        end
+     changeStates()
+     changeToOptionState()
 end
 
-function hueToRGB(primary, secondary, tertiary)
+local function hueToRGB(primary, secondary, tertiary)
      if tertiary < 0 then tertiary = tertiary + 1 end
      if tertiary > 1 then tertiary = tertiary - 1 end
      if tertiary < 1 / 6 then return primary + (secondary - primary) * 6 * tertiary end
@@ -442,7 +255,7 @@ function hueToRGB(primary, secondary, tertiary)
      return primary;
 end
 
-function hslToRGB(hue, sat, light)
+local function hslToRGB(hue, sat, light)
      local hue, sat, light = hue / 360, sat / 100, light / 100
      local red, green, blue = light, light, light; -- achromatic
      if sat ~= 0 then
@@ -453,7 +266,7 @@ function hslToRGB(hue, sat, light)
      return {math.floor(red * 255), math.floor(green * 255), math.floor(blue * 255)}
 end
 
-function rgbToHex(red, green, blue)
+local function rgbToHex(red, green, blue)
      local red   = red   >= 0 and (red   <= 255 and red   or 255) or 0
      local green = green >= 0 and (green <= 255 and green or 255) or 0
      local blue  = blue  >= 0 and (blue  <= 255 and blue  or 255) or 0
@@ -461,19 +274,25 @@ function rgbToHex(red, green, blue)
 end
 
 local switch = true
-local cpm = 0.05 -- color per-millisecond
-local hue = getModSetting('bg_colorstart', 'NoteSkin Selector Remastered')
-function onUpdatePost(elapsed)
+local cpm    = 0.05 -- color per-millisecond
+local hue    = 240
+local function colorSwapTween()
      if switch == false then
-          if hue <= getModSetting('bg_colorend', 'NoteSkin Selector Remastered') then hue = hue + cpm end
-          if hue >= getModSetting('bg_colorend', 'NoteSkin Selector Remastered') then switch = true end
+          if hue <= 270 then hue = hue + cpm end
+          if hue >= 270 then switch = true end
      else
-          if hue >= getModSetting('bg_colorstart', 'NoteSkin Selector Remastered') then hue = hue - cpm end
-          if hue <= getModSetting('bg_colorstart', 'NoteSkin Selector Remastered') then switch = false end
+          if hue >= 240 then hue = hue - cpm end
+          if hue <= 240 then switch = false end
      end
+     setProperty('bgCover.color', tonumber('0x'..rgbToHex(unpack(hslToRGB(hue, 54, 43)))))
+end
 
-     if getModSetting('low_detail_mode', 'NoteSkin Selector Remastered') == false then
-          setProperty('bg_cover.color', tonumber('0x'..rgbToHex(unpack(hslToRGB(hue, 54, 43)))))
+function onUpdatePost(elapsed)
+     if not getModSetting('remove_color_changing_bg', 'NoteSkin Selector Remastered') then
+          colorSwapTween()
+     end
+     if keyboardJustPressed('TAB') and songName == 'NoteSkin Settings' then
+          loadNewSong(getSave('songLocalName'), getSave('songLocalDiff'))
      end
 end
 
@@ -487,14 +306,59 @@ function onStartCountdown()
      return Function_Continue;
 end
 
-function createTimer(tag, timer, callback)
-     timers = {}
-     table.insert(timers, {tag, callback})
-     runTimer(tag, timer)
-end
+--[[ local a = funkinlua.parseJson('mods/NoteSkin Selector Remastered/jsons/save.json')
+a.note.selection.noteID = 1
 
-function onTimerCompleted(tag, loops, loopsLeft)
-     for _,v in pairs(timers) do
-          if v[1] == tag then v[2]() end
-     end
-end
+debugPrint(funkinlua.stringifyJson(a)) ]]
+
+
+
+
+--[[ 
+{
+     "note": {
+          "selection": {
+               "page": 1,
+               "noteID": 1,
+               "name": "Normal",
+               "positions": [39.8, 158]
+          },
+          "checkboxes": {
+               "player": {
+                    "noteID": 1,
+                    "positions": [100, 165],
+                    "visible": false,
+                    "checked": false
+               },
+               "opponent": {
+                    "noteID": 1,
+                    "positions": [100, 235],
+                    "visible": false,
+                    "checked": false
+               }
+          }
+     },
+     "splash": {
+          "selection": {
+               "page": 1,
+               "noteID": 1,
+               "name": "Normal",
+               "positions": [39.8, 158]
+          },
+          "checkboxes": {
+               "player": {
+                    "noteID": 1,
+                    "positions": [100, 165],
+                    "visible": false,
+                    "checked": false
+               },
+               "opponent": {
+                    "noteID": 1,
+                    "positions": [100, 235],
+                    "visible": false,
+                    "checked": false
+               }
+          }
+     }
+}
+ ]]

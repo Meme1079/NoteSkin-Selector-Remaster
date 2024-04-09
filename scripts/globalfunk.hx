@@ -1,8 +1,8 @@
 import backend.InputFormatter;
 import backend.Difficulty;
-import states.LoadingState;
 import backend.Highscore;
 import backend.Song;
+import states.LoadingState;
 
 createGlobalCallback('getKeyBinds', function(?noteType:Int = 0) {
      var binds = ClientPrefs.keyBinds;
@@ -16,6 +16,7 @@ createGlobalCallback('getKeyBinds', function(?noteType:Int = 0) {
      }
 });
 
+// Rodney
 createGlobalCallback('loadNewSong', function(?name:String = null, ?difficultyNum:Int = -1, ?difficultyArray:Array<String> = null) {
      if (difficultyArray != null) Difficulty.list = difficultyArray;
      if (name == null || name.length < 1) name = PlayState.SONG.song;

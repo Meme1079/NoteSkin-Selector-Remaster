@@ -1,6 +1,6 @@
 {
 	"storyName": "IDK",
-	"difficulties": "",
+	"difficulties": "Normal",
 	"hideFreeplay": true,
 	"weekBackground": "",
 	"weekBefore": "tutorial",
@@ -18,6 +18,15 @@
 	"songs": [
 		[
 			"NoteSkin Settings",
+			"bf",
+			[
+				58,
+				27,
+				79
+			]
+		],
+		[
+			"NoteSkin Offsetting",
 			"bf",
 			[
 				58,

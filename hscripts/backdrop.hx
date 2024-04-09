@@ -22,15 +22,13 @@ function checkerboardColorHex(hexString:String) {
      }
 }
 
-if (getModSetting('low_detail_mode', 'NoteSkin Selector Remastered') == false) {
-     var gridOverlayColor = checkerboardColorHex(setCheckerboardColor);
-     var gridOverlay = FlxGridOverlay.createGrid(80, 80, 160, 160, true, gridOverlayColor, 0x0);
-     var gridBG:FlxBackdrop = new FlxBackdrop(gridOverlay);
-     gridBG.velocity.set(20, 20);
-     gridBG.alpha = 0;
-     gridBG.cameras = [game.camHUD];
-     setObjectOrder(gridBG, 1);
-     add(gridBG, false);
+var gridOverlayColor = checkerboardColorHex(0xFF00FFFF);
+var gridOverlay = FlxGridOverlay.createGrid(80, 80, 160, 160, true, 0xFF68CBFD, 0x0);
+var gridBG:FlxBackdrop = new FlxBackdrop(gridOverlay);
+gridBG.velocity.set(20, 20);
+gridBG.alpha = 0;
+gridBG.cameras = [game.camHUD];
+setObjectOrder(gridBG, 1);
+add(gridBG, false);
      
-     FlxTween.tween(gridBG, {alpha: setCheckerboardAlpha}, 0.5, {ease: FlxEase.quadOut});
-}
+FlxTween.tween(gridBG, {alpha: 0.2}, 0.5, {ease: FlxEase.quadOut});

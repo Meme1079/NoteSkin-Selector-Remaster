@@ -1,0 +1,46 @@
+{
+     "note": {
+          "selection": {
+               "page": 1,
+               "noteID": 1,
+               "name": "Normal",
+               "positions": [39.8, 158]
+          },
+          "checkboxes": {
+               "player": {
+                    "noteID": 1,
+                    "positions": [100, 165],
+                    "visible": false,
+                    "checked": false
+               },
+               "opponent": {
+                    "noteID": 1,
+                    "positions": [100, 235],
+                    "visible": false,
+                    "checked": false
+               }
+          }
+     },
+     "splash": {
+          "selection": {
+               "page": 1,
+               "noteID": 1,
+               "name": "Normal",
+               "positions": [39.8, 158]
+          },
+          "checkboxes": {
+               "player": {
+                    "noteID": 1,
+                    "positions": [100, 165],
+                    "visible": false,
+                    "checked": false
+               },
+               "opponent": {
+                    "noteID": 1,
+                    "positions": [100, 235],
+                    "visible": false,
+                    "checked": false
+               }
+          }
+     }
+}
