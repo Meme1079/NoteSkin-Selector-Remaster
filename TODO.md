@@ -1,4 +1,4 @@
-1. Add player and opponent checkboxes
+1. Add player and opponent checkboxes (Complete)
      - Must have a save feature
      - Transport the saved data to another script to add the noteskins in game
 2. Make Splashes

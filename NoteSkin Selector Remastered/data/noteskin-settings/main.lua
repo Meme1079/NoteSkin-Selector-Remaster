@@ -94,7 +94,7 @@ function onCreate()
      setProperty('uiSkinName.antialiasing', false)
      addLuaText('uiSkinName')
 
-     makeLuaText('uiCurVersion', 'Beta 0.4.0', 0, 1188, 5)
+     makeLuaText('uiCurVersion', 'Ver 1.0.0', 0, 1188, 5)
      setTextFont('uiCurVersion', 'sonic.ttf')
      setTextColor('uiCurVersion', 'fccf03')
      setTextSize('uiCurVersion', 20)

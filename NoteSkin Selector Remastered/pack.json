@@ -1,6 +1,6 @@
 {
 	"name": "NoteSkin Selector",
-	"description": "A Remastered of NoteSkin Selector!\n\nThis script allows you to select your note/splash skins in an easy and fast way. And heavily improves the current built-in noteskin system in the engine, because that one sucks ass.\n\nVersion: Beta 0.4.0",
+	"description": "A Remastered of NoteSkin Selector!\n\nThis script allows you to select your note/splash skins in an easy and fast way. And heavily improves the current built-in noteskin system in the engine, because that one sucks ass.\n\nVersion: 1.0.0",
 	"restart": true,
 	"runsGlobally": true,
 	"color": [55, 100, 177]
