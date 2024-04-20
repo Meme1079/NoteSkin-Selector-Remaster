@@ -5,13 +5,13 @@ A Remastered of NoteSkin Selector! This script allows you to select your note/sp
 
 
 ## Features
-- Overhaul & User Friendly UI
-- Data Saving
+- User-Friendly & Overhauled UI
 - Background Music
-- Mod Settings
+- Saved Data for NoteSkins
+- Easy Implementation of NoteSkins
 - Note Preview
-- Note Preview Editor
-- Allowing separating player and opponent skins
+  - Editor for the Note Preview
+  - Animations Preview
 
 ***
 
