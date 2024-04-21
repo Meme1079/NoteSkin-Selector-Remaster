@@ -1,0 +1,38 @@
+[
+	{
+		"save": "remove_checker_bg",
+		"name": "Remove Checker BG",
+		"type": "bool",
+		"description": "If checked, will removed the checker background",
+		"value": false
+	},
+	{
+		"save": "remove_color_changing_bg",
+		"name": "Remove Color Changing BG",
+		"type": "bool",
+		"description": "If checked, will removed the color changing background",
+		"value": false
+	},
+	{
+		"save": "enable_double-tapping_safe",
+		"name": "Enable Double-Tapping Safe",
+		"type": "bool",
+		"description": "Prevents you from accidentally going to the noteskin state, when pressing the [Tab] key",
+		"value": false
+	},
+	{
+		"save": "song_select",
+		"name": "Song Select:",
+		"type": "string",
+		"description": "Select the song to play",
+		"value": "Extras Menu",
+		"options": [
+               "Extras Menu",
+               "File Select",
+			"Monkey",
+			"Artistic Expression",
+               "Tea-Time",
+               "Breakfast"
+          ]
+	}
+]
