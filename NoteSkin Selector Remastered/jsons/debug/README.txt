@@ -1,1 +1,1 @@
-Paste this to the offsets.json
+Paste the data positions to the offsets.json

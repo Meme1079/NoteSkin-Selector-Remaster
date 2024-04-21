@@ -1,1 +1,1 @@
-The png and xml file names should have 'NOTE_assets-' before the note name
+The png and xml file names, you should have 'NOTE_assets-' before the note name or it will not work properly
