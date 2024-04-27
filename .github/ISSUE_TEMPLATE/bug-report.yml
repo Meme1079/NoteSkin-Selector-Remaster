@@ -1,0 +1,10 @@
+name: Bug Report
+description: Report any bugs you've encountered while using NoteSkin Selector Remastered
+labels: [bug]
+body:
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: "Describe the bug you've encountered _(Recommended to have images for reference)_"
+    validations:
+      required: true
