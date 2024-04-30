@@ -1,5 +1,6 @@
 local funkinlua = require 'mods.NoteSkin Selector Remastered.modules.funkinlua'
 local globals   = require 'mods.NoteSkin Selector Remastered.modules.globals'
+local states    = require 'mods.NoteSkin Selector Remastered.modules.states'
 local string    = require 'mods.NoteSkin Selector Remastered.libraries.string'
 local table     = require 'mods.NoteSkin Selector Remastered.libraries.table'
 local json      = require 'mods.NoteSkin Selector Remastered.libraries.json.json'
@@ -14,63 +15,70 @@ makeGraphic('bgCover', 2500, 1500, 'ababab')
 setObjectCamera('bgCover', 'camHUD')
 addLuaSprite('bgCover', false)
 
+makeAnimatedLuaSprite('nails', 'ui/nails', 560, 445)
+addAnimationByPrefix('nails', 'flash', 'nails-flash', 16, true)
+addAnimationByPrefix('nails', 'static', 'nails-static', 16, false)
+setObjectCamera('nails', 'camHUD')
+scaleObject('nails', 0.5, 0.5)
+setProperty('nails.visible', false)
+setProperty('nails.antialiasing', false)
+addLuaSprite('nails')
+
+makeLuaText('fileControlInfo', 'Controls:', 0, 2^9.5, 470)
+setTextSize('fileControlInfo', 16)
+setTextFont('fileControlInfo', 'nokia.ttf')
+setObjectCamera('fileControlInfo', 'camHUD')
+addLuaText('fileControlInfo')
+
+local function createTextControl(tag, content, x, y)
+     makeLuaText(tag, content[1], 0, x[1], y)
+     setTextSize(tag, 16)
+     setTextFont(tag, 'nokia.ttf')
+     setObjectCamera(tag, 'camHUD')
+     addLuaText(tag)
+
+     local tagContent = tag..'Content'
+     makeLuaText(tagContent, content[2], 0, x[1] + (x[2] or 100), y)
+     setTextSize(tagContent, 16)
+     setTextFont(tagContent, 'nokia.ttf')
+     setTextColor(tagContent, 'ababab')
+     setObjectCamera(tagContent, 'camHUD')
+     addLuaText(tagContent)
+end
+
+createTextControl('fileControlLeft', {'LEFT:', 'A'}, {2^9.5}, 510)
+createTextControl('fileControlDOWN', {'DOWN:', 'S'}, {2^9.5}, 510 + 25)
+createTextControl('fileControlUP', {'UP:', 'W'}, {2^9.5}, 510 + 25 * 2)
+createTextControl('fileControlRIGHT', {'RIGHT:', 'D'}, {2^9.5}, 510 + 25 * 3)
+
+createTextControl('fileControlGoLeft', {'Go Left:', 'K'}, {2^9.8, 110}, 510)
+createTextControl('fileControlGoRight', {'Go Right:', 'L'}, {2^9.8, 110}, 510 + 25)
+
+createTextControl('fileControlChangeIdle', {'To Idle:', 'I'}, {2^10.05, 150}, 510)
+createTextControl('fileControlChangeConfirm', {'To Confirm:', 'O'}, {2^10.05, 150}, 510 + 25)
+createTextControl('fileControlChangePressed', {'To Pressed:', 'P'}, {2^10.05, 150}, 510 + 25 * 2)
+
+-- Selected BG --
+
 local selectedX = 168 * 2
-local selectedY = 230 - 9.5
+local selectedY = (230 - 9.5) - 30
 makeLuaSprite('selectedBG', nil, selectedX - 9.5, selectedY)
 makeGraphic('selectedBG', 130, 130, '000000')
 setObjectCamera('selectedBG', 'camHUD')
 setProperty('selectedBG.alpha', 0.5)
 addLuaSprite('selectedBG', false)
 
-makeLuaText('controlLoadJson', 'Save Data Positions (SHIFT + M)', 0, 51, 620)
-setTextSize('controlLoadJson', 16)
-setTextFont('controlLoadJson', 'nokia.ttf')
-addLuaText('controlLoadJson')
-
-makeLuaText('controlSaveMessageJson', 'JSON Data Saved!', 0, 51 + 370, 620)
-setTextSize('controlSaveMessageJson', 16)
-setTextFont('controlSaveMessageJson', 'nokia.ttf')
-setTextColor('controlSaveMessageJson', '00ff00')
-setProperty('controlSaveMessageJson.visible', false)
-addLuaText('controlSaveMessageJson')
-
-makeLuaText('controlTitle', 'Controls:', 0, 800, 510)
-setTextSize('controlTitle', 16)
-setTextFont('controlTitle', 'nokia.ttf')
-addLuaText('controlTitle')
-
-local function createControlTexts(content, x, y, color)
-     local color = color == nil and 'ffffff' or color
-     for i = 1, #content do
-          local controlTag = 'controlMove'..content[i]:upper()
-          makeLuaText(controlTag, content[i], 0, x, y + (30 * (i - 1)))
-          setTextSize(controlTag, 16)
-          setTextFont(controlTag, 'nokia.ttf')
-          setTextColor(controlTag, color)
-          addLuaText(controlTag)
-     end
-end
-
-createControlTexts({'Left:', 'Down:', 'Up:', 'Right:'}, 800, 540)
-createControlTexts({'A', 'S', 'W', 'D'}, 800 + 80, 540, 'ababab')
-createControlTexts({'Arrow anim:', 'Confirm anim:', 'Pressed anim:'}, 950, 540)
-createControlTexts({'I', 'O', 'P'}, 950 + 160, 540, 'ababab')
-
 makeLuaText('selectedConfirmInfo', 'Confirm Pos:', 0, selectedX - 180, selectedY + 140)
 setTextSize('selectedConfirmInfo', 16)
 setTextFont('selectedConfirmInfo', 'nokia.ttf')
+setObjectCamera('selectedConfirmInfo', 'camHUD')
 addLuaText('selectedConfirmInfo')
 
 makeLuaText('selectedPressedInfo', 'Pressed Pos:', 0, selectedX - 180, selectedY + 170)
 setTextSize('selectedPressedInfo', 16)
 setTextFont('selectedPressedInfo', 'nokia.ttf')
+setObjectCamera('selectedPressedInfo', 'camHUD')
 addLuaText('selectedPressedInfo')
-
-makeLuaText('eeer3', 'NOTE_assets', 0, 10, 10)
-setTextSize('eeer3', 30)
-setTextFont('eeer3', 'nokia.ttf')
-setProperty('eeer3.visible', false)
-addLuaText('eeer3')
 
 -- Positions & Note Displays --
 
@@ -97,7 +105,7 @@ local function initSelectedNotes(ind, direct, image, x, y)
      makeAnimatedLuaSprite(selectedNotesTag, 'noteSkins/'..image, selectedNotesX, y + 10)
      addAnimationByPrefix(selectedNotesTag, direct..'Confirm', direct..' confirm', 24, false)
      addAnimationByPrefix(selectedNotesTag, direct..'Pressed', direct..' press', 24, false)
-     addAnimationByPrefix(selectedNotesTag, direct, 'arrow'..direct:upper(), 24, false)
+     addAnimationByPrefix(selectedNotesTag, direct, 'arrow'..direct:upper(), 24, true)
      setGraphicSize(selectedNotesTag, 110, 110)
      setObjectCamera(selectedNotesTag, 'camOther')
      addOffset(selectedNotesTag, direct, unpack(getOffsetSelectedNotes(direct)))
@@ -135,7 +143,7 @@ function onCreatePost()
      callMethod('uiGroup.remove', {instanceArg('botplayTxt')})
 
      setPropertyFromClass('flixel.FlxG', 'mouse.visible', true)
-     setOnScripts('getNotes', globals.getSkins('note'))
+     setOnScripts('getNotes', states.getSkins('note'))
 end
 
 function math.round(num, dp) -- i stole this
@@ -194,8 +202,8 @@ local function offsetNoteAnims(direct)
           if keyboardPressed('S') then moveOffsetAnims(state, 2, -0.1) end
           if keyboardPressed('W') then moveOffsetAnims(state, 2, 0.1)  end
      end
-     
-     if getProperty('selectedNote-left.animation.curAnim.name') ~= direct then
+
+     if getProperty('selectedNote-'..direct..'.animation.curAnim.name') ~= direct then
           if fileInputTextFocused == true then
                return
           end
@@ -208,13 +216,13 @@ local function offsetNoteAnims(direct)
      end
 end
 
-local noteAnimsIndex   = 1
+local noteAnimsIndex = 1
 local function selectNoteAnims()
-     if fileInputTextFocused == false and keyboardJustPressed('E') then
+     if fileInputTextFocused == false and keyboardJustPressed('L') then
           noteAnimsIndex = noteAnimsIndex + 1
           playSound('select', 0.3)
      end
-     if fileInputTextFocused == false and keyboardJustPressed('Q') then
+     if fileInputTextFocused == false and keyboardJustPressed('K') then
           noteAnimsIndex = noteAnimsIndex - 1
           playSound('select', 0.3)
      end
@@ -233,14 +241,17 @@ end
 local noteOffsetsJson = {name = {confirm = {}, pressed = {}}}
 local noteStrConfirmOffsets = ''
 local noteStrPressedOffsets = ''
+
+local saveNoteDebugDelay = false
 local function saveNoteDebugPositions() -- what the fuck
      local spaceBy10 = ('\n'):pad(10, ' ', 'r')
 
-     if fileInputTextFocused == false and (keyboardPressed('SHIFT') and keyboardJustPressed('M')) then
+     local condition = not fileInputTextFocused and (keyboardPressed('SHIFT') and keyboardJustPressed('M'))
+     if not saveNoteDebugDelay and condition then
           local noteStrOffsets = json.stringify(noteOffsetsJson, nil, 5)
           local noteStrOffsets_filterName    = noteStrOffsets:gsub('name', changeSelectTexture:gsub('NOTE_assets%-', ''):lower() or 'normal')
-          local noteStrOffsets_filterConfirm = noteStrOffsets_filterName:gsub('(.+"confirm": ){}(.+)', '%1{@2}%2')
-          local noteStrOffsets_filterPressed = noteStrOffsets_filterConfirm:gsub('(.+"pressed": ){}(.+)', '%1{@1}%2')
+          local noteStrOffsets_filterConfirm = noteStrOffsets_filterName:gsub('(.+"confirm": ){}(.+)', '%1{@1}%2')
+          local noteStrOffsets_filterPressed = noteStrOffsets_filterConfirm:gsub('(.+"pressed": ){}(.+)', '%1{@2}%2')
 
           noteStrConfirmOffsets = ''
           noteStrPressedOffsets = ''
@@ -268,23 +279,65 @@ local function saveNoteDebugPositions() -- what the fuck
 
           local path = 'NoteSkin Selector Remastered/jsons/debug/'..changeSelectTexture..'.json'
           saveFile(path, noteStrOffsets_filterSpaced)
-          setProperty('controlSaveMessageJson.visible', true)
+
+          if getRandomBool(30) then
+               setProperty('nails.visible', true)
+               playAnim('nails', 'flash')
+
+               funkinlua.createTimer('nailsTimer', 2.0, function() playAnim('nails', 'static', true)  end)
+          else
+               setProperty('nails.visible', false)
+          end
+
+          saveNoteDebugDelay = true
+          funkinlua.createTimer('saveNoteDebugDelay', 2.0, function() saveNoteDebugDelay = false end)
+     end
+end
+
+local eraseNoteDebugDelay = false
+local function erasedNoteDebugPositions()
+     local condition = not fileInputTextFocused and (keyboardPressed('SHIFT') and keyboardJustPressed('B'))
+     if not eraseNoteDebugDelay and condition then
+          for k,v in pairs(directoryFileList('mods/NoteSkin Selector Remastered/jsons/debug')) do
+               if v:match('%.json') then
+                    deleteFile('NoteSkin Selector Remastered/jsons/debug/'..v)
+               end
+          end
+
+          eraseNoteDebugDelay = true
+          funkinlua.createTimer('eraseNoteDebugDelay', 1.0, function() eraseNoteDebugDelay = false end)
      end
 end
 
 function onUpdate(elapsed)
      if fileInputTextFocused == false and keyboardJustPressed('ONE')    then restartSong(true) end
      if fileInputTextFocused == false and keyboardJustPressed('ESCAPE') then exitSong()        end
-     if keyboardJustPressed('TAB') then loadNewSong('NoteSkin Settings') end
+     if getModSetting('enable_double-tapping_safe', 'NoteSkin Selector Remastered') then
+          if funkinlua.keyboardJustDoublePressed('TAB') then
+               loadNewSong('NoteSkin Settings')
+          end
+     else
+          if keyboardJustPressed('TAB') then
+               loadNewSong('NoteSkin Settings')
+          end
+     end
      
      selectNoteAnims()
      changeSelectedNotes()
+
      saveNoteDebugPositions()
+     erasedNoteDebugPositions()
 end
 
 local allowCountdown = false;
 function onStartCountdown()
      if not allowCountdown then -- Block the first countdown
+          local localModFolder = 'NoteSkin Selector Remastered'
+          for k,v in pairs(getRunningScripts()) do
+               if v:match(localModFolder..'/scripts/skins') or not v:match(localModFolder) then
+                    removeLuaScript(v)
+               end
+          end
           allowCountdown = true;
           return Function_Stop;
      end

@@ -1,12 +1,14 @@
 local funkinlua = require 'mods.NoteSkin Selector Remastered.modules.funkinlua'
 local globals   = require 'mods.NoteSkin Selector Remastered.modules.globals'
+local states    = require 'mods.NoteSkin Selector Remastered.modules.states'
 local string    = require 'mods.NoteSkin Selector Remastered.libraries.string'
+local table     = require 'mods.NoteSkin Selector Remastered.libraries.table'
 local json      = require 'mods.NoteSkin Selector Remastered.libraries.json.json'
 
 local setProperties = funkinlua.setProperties
 local setSave = funkinlua.setSave
 local getSave = funkinlua.getSave
-local ternary = funkinlua.ternary
+local ternary = globals.ternary
 
 initSaveData('noteselector', 'NoteSkin Selector')
 local saveNote_noteStateIndex             = ternary(nil, getSave('noteStateIndex'), 1)
@@ -17,7 +19,7 @@ local saveNote_noteCheckOpponentIndex     = ternary(nil, getSave('noteCheckOppon
 local saveNote_noteCheckPlayerSelectPos   = ternary(nil, getSave('noteCheckPlayerSelectPos'), {95, 215})
 local saveNote_noteCheckOpponentSelectPos = ternary(nil, getSave('noteCheckOpponentSelectPos'), {95, 215 - 80})
 
-local getNotes = globals.getSkins('note')
+local getNotes = states.getSkins('note')
 local getNoteIndex = saveNote_noteStateIndex
 local function getCurrentIndex()
      for k = 1, #getNotes do
@@ -26,6 +28,24 @@ local function getCurrentIndex()
           end
      end
      return getNoteIndex
+end
+
+local function errorNoteSkinChecking()
+     for k,v in pairs(getNotes) do
+          if v ~= saveNote_noteStateSkins[k] then
+               setProperty('camGame.visible', false)
+               setProperty('camHUD.visible', false)
+               setProperty('camOther.visible', false)
+               restartSong(true)
+
+               setSave('noteStateIndex', 1)
+               setSave('noteStatePage', 1)
+               setSave('noteCheckPlayerIndex', 0)
+               setSave('noteCheckOpponentIndex', 0)
+               setSave('noteCheckPlayerSelectPos', {95, 215})
+               setSave('noteCheckOpponentSelectPos', {95, 215 - 80})
+          end
+     end
 end
 
 local function loadsaveNote(num)
@@ -37,10 +57,10 @@ local function loadsaveNote(num)
           setProperty(displayTagY, getProperty(displayTagY) - calculatePosition)
      end
 
-     local maximumLimit_noteskins = globals.calculatePageLimit(globals.getSkins('note'))
+     local maximumLimit_noteskins = states.calculatePageLimit(states.getSkins('note'))
      local skinPageElems = {curPage = num, maxPage = maximumLimit_noteskins}
      setTextString('uiSkinPage', ('Page ${curPage} / ${maxPage}'):interpol(skinPageElems))
-     setTextString('uiSkinName', globals.getSkinNames('note')[getCurrentIndex()])
+     setTextString('uiSkinName', states.getSkinNames('note')[getCurrentIndex()])
 
      local hitbox = ('noteHitbox-${curInd}'):interpol({curInd = getCurrentIndex()})
      setProperties('selectDisplay', {x = getProperty(hitbox..'.x') - 7, y = getProperty(hitbox..'.y') - 7})
@@ -79,7 +99,7 @@ local function initNoteSkins(tag, image, nameAnim, prefixAnim, xpos)
      addAnimationByPrefix(tag, 'downColored', 'blue0', 24, false)
      addAnimationByPrefix(tag, 'upColored', 'green0', 24, false)
      addAnimationByPrefix(tag, 'rightColored', 'red0', 24, false)
-     addAnimationByPrefix(tag, nameAnim, prefixAnim, 24, false)
+     addAnimationByPrefix(tag, nameAnim, prefixAnim, 24, true)
      setGraphicSize(tag, 110, 110)
      setObjectCamera(tag, 'camHUD')
      addLuaSprite(tag, false)
@@ -114,8 +134,8 @@ end
 
 local function createNoteSkins()
      local offsets = {left = {}, down = {}, up = {}, right = {}}
-     for index, value in next, globals.getSkins('note') do
-          local getCurrentPos   = globals.calculatePosition(globals.getSkins('note'))[index]
+     for index, value in next, states.getSkins('note') do
+          local getCurrentPos   = states.calculatePosition(states.getSkins('note'))[index]
           local getCurrentNotes = 'noteSkins/'..value
 
           local hitboxTag = 'noteHitbox-'..index
@@ -134,24 +154,6 @@ local function createNoteSkins()
           addLuaSprite(displayTag, false)
 
           offsetNoteSkins(offsets, getCurrentNotes, index)          
-     end
-end
-
-local function errorNoteSkinChecking()
-     for k,v in pairs(getNotes) do
-          if v ~= saveNote_noteStateSkins[k] then
-               setProperty('camGame.visible', false)
-               setProperty('camHUD.visible', false)
-               setProperty('camOther.visible', false)
-               restartSong(true)
-
-               setSave('noteStateIndex', 1)
-               setSave('noteStatePage', 1)
-               setSave('noteCheckPlayerIndex', 0)
-               setSave('noteCheckOpponentIndex', 0)
-               setSave('noteCheckPlayerSelectPos', {95, 215})
-               setSave('noteCheckOpponentSelectPos', {95, 215 - 80})
-          end
      end
 end
 
@@ -242,7 +244,7 @@ local function traverseNoteSkins()
           startTween('uiArrowDown', 'uiArrowDown', {y = 670}, 0.15, {ease = 'circin'})
      end
 
-     local maximumPageLimit = globals.calculatePageLimit(globals.getSkins('note'))
+     local maximumPageLimit = states.calculatePageLimit(states.getSkins('note'))
      if keyboardJustPressed('UP') and maximumLimit_noteskins == false then
           increValue_noteskins = increValue_noteskins - 1
           startTween('uiArrowUp', 'uiArrowUp', {y = 665}, 0.15, {ease = 'circout', onComplete = 'completeArrowUp'})
@@ -282,12 +284,12 @@ local function selectNoteSkins()
      local selectDisplayMoveByPage = 340 * 2
      local selectDisplayOffset     = 7
      for k = 1, #getNotes do
-          local getCalculatePosition = globals.calculatePosition(getNotes)[k]
+          local getCalculatePosition = states.calculatePosition(getNotes)[k]
           local hitboxTagY  = ('noteHitbox-${ind}.y'):interpol({ind = k})
           local displayTagY = ('noteDisplay-${ind}.y'):interpol({ind = k})
 
           if funkinlua.clickObject('noteHitbox-'..tostring(k)) then
-               setTextString('uiSkinName', globals.getSkinNames('note')[k])
+               setTextString('uiSkinName', states.getSkinNames('note')[k])
                playAnim('selectDisplay', 'selecting', true)
                playSound('select', 1)
 
@@ -324,9 +326,7 @@ local function selectNoteSkins()
      traverseNoteSkins()
 end
 
-local noteOffsetPath  = 'mods/NoteSkin Selector Remastered/jsons/note/offsets.json'
-local noteOffsetFetch = funkinlua.getTextFileContent(noteOffsetPath):gsub('//%s*.-(\n)', '%1')
-local noteOffsetJson  = json.parse(noteOffsetFetch, true)
+local noteOffsetJson = funkinlua.getJson('mods/NoteSkin Selector Remastered/jsons/note/offsets.json')
 local function initNoteAnim(key, ind, dir, animType, offsets)
      local tag    = ('noteSkins_arrow${direct}-${ind}'):interpol({direct = dir:upperAtStart(), ind = ind})
      local prefix = dir:lower()..animType:upperAtStart()
@@ -335,7 +335,10 @@ local function initNoteAnim(key, ind, dir, animType, offsets)
           return;
      end
 
-     if keyboardJustPressed(getKeyBinds(key)) then
+     if keyboardPressed('LBRACKET') then -- prevents a bug
+          playAnim(tag, dir:lower())
+     end
+     if keyboardJustPressed(getKeyBinds(key)) and not keyboardPressed('LBRACKET') then
           addOffset(tag, prefix, offsets[1], offsets[2])
           playAnim(tag, prefix)
      end

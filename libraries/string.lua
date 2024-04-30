@@ -1,7 +1,7 @@
 local string = string
 
 --- Splits a string by using a pattern
----@param string string The string to split
+---@param self string The string to split
 ---@param delimiter string The pattern to split the string
 ---@return string
 function string:split(delimiter)
@@ -13,7 +13,7 @@ function string:split(delimiter)
 end
 
 --- Checks if the string begins with the specified pattern, returning `true` if detected
----@param string string The string to use
+---@param self string The string to use
 ---@param startPattern string The starting pattern for the string to find
 ---@return string
 function string:startsWith(startPattern)
@@ -21,7 +21,7 @@ function string:startsWith(startPattern)
 end
 
 --- Checks if the string ends with the specified pattern, returning `true` if detected
----@param string string The string to use
+---@param self string The string to use
 ---@param endPattern string The ending pattern for the string to find
 ---@return string
 function string:endsWith(endPattern)
@@ -35,7 +35,7 @@ function string:upperAtStart()
 end
 
 --- Removes any whitespaces from a string
----@param string string The string to trim
+---@param self string The string to trim
 ---@param direction string The direcftion to trim `l` for left and `r` for right
 ---@return string
 function string:trim(direction)
@@ -49,7 +49,7 @@ function string:trim(direction)
 end
 
 --- Pads a string; extends a string to a given length with the specified character(s)
----@param string string The string to pad
+---@param self string The string to pad
 ---@param length number The length of the padding
 ---@param direction string The direcftion to pad `l` for left and `r` for right
 ---@return string
@@ -69,8 +69,8 @@ function string:pad(length, pad, direction)
 end
 
 --- Counts the number of patterns in a given string
----@param string string The string to count the pattern
----@param string pattern The pattern to be counted on the given string
+---@param self string The string to count the pattern
+---@param pattern string The pattern to be counted on the given string
 ---@param startInd number An optional parameter, The starting position to start counting; Default value: 1
 ---@param endInd number An optional parameter, The starting position to end the counting
 ---@return string
@@ -92,7 +92,7 @@ end
 --- Shorthand for "Interpolation", is a process substituting values of variables into placeholders in a string
 --- This uses the `${variable}` format to insert variable's value inside the string
 --- It uses two methods to use this function, it uses global variables or tables on the `template` parameter
----@param string string The string to interpolate with variables
+---@param self string The string to interpolate with variables
 ---@param template string The template to reference the variables inside the string
 ---@return string
 function string:interpol(template)

@@ -1,8 +1,8 @@
 -- Copyright (c) 2018, Souche Inc.
 
-local Constant = require("mods/NoteSkin Selector Remastered/libraries/json/files/constant")
-local Serializer = require("mods/NoteSkin Selector Remastered/libraries/json/files/serializer")
-local Parser = require("mods/NoteSkin Selector Remastered/libraries/json/files/parser")
+local Constant   = require "mods.NoteSkin Selector Remastered.libraries.json.files.constant"
+local Serializer = require "mods.NoteSkin Selector Remastered.libraries.json.files.serializer"
+local Parser     = require "mods.NoteSkin Selector Remastered.libraries.json.files.parser"
 
 local json = {
     _VERSION = "0.1",

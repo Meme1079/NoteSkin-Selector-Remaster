@@ -17,7 +17,7 @@
 		"save": "enable_double-tapping_safe",
 		"name": "Enable Double-Tapping Safe",
 		"type": "bool",
-		"description": "Prevents you from accidentally going to the noteskin state, when pressing the [Tab] key",
+		"description": "Prevents you from accidentally going to the noteskin state, when pressing the [Tab] or [Shift] key",
 		"value": false
 	},
 	{

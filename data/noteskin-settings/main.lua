@@ -1,5 +1,6 @@
 local funkinlua = require 'mods.NoteSkin Selector Remastered.modules.funkinlua'
 local globals   = require 'mods.NoteSkin Selector Remastered.modules.globals'
+local states    = require 'mods.NoteSkin Selector Remastered.modules.states'
 local string    = require 'mods.NoteSkin Selector Remastered.libraries.string'
 local json      = require 'mods.NoteSkin Selector Remastered.libraries.json.json'
 
@@ -76,7 +77,7 @@ function onCreate()
 
      -- Info UIs --
 
-     local maximumLimit_noteskins = globals.calculatePageLimit(globals.getSkins('note'))
+     local maximumLimit_noteskins = states.calculatePageLimit(states.getSkins('note'))
      makeLuaText('uiSkinPage', 'Page 1 / '..maximumLimit_noteskins, 1000, -165, 675)
      setObjectCamera('uiSkinPage', 'camHUD')
      setTextFont('uiSkinPage', 'sonic.ttf')
@@ -94,7 +95,7 @@ function onCreate()
      setProperty('uiSkinName.antialiasing', false)
      addLuaText('uiSkinName')
 
-     makeLuaText('uiCurVersion', 'Ver 1.0.0', 0, 1188, 5)
+     makeLuaText('uiCurVersion', 'Ver 1.5.0', 0, 1188, 5)
      setTextFont('uiCurVersion', 'sonic.ttf')
      setTextColor('uiCurVersion', 'fccf03')
      setTextSize('uiCurVersion', 20)
@@ -163,7 +164,7 @@ end
 function onCreatePost()
      addLuaScript('mods/NoteSkin Selector Remastered/data/noteskin-settings/states/note')
      if not getModSetting('remove_checker_bg', 'NoteSkin Selector Remastered') then
-          runHaxeCode(funkinlua.getTextFileContent('mods/NoteSkin Selector Remastered/hscripts/backdrop.hx'))
+          runHaxeCode(globals.getTextFileContent('mods/NoteSkin Selector Remastered/data/noteskin-settings/hscripts/backdrop.hx'))
      end
      
      -- Whatever the hell this is --
@@ -209,33 +210,33 @@ local function changeStates()
      end
 end
 
-local changeSize = false
-local function changeToOptionState()
-     local changeOptionSize = function()
-          local curNoteOptionsScale = 0.526315789473684
-          if objectsOverlap('uiNoteOptions', 'mouseHitBox') and changeSize == false then
-               startTween('uiNoteOptionsIn', 'uiNoteOptions', {['scale.x'] = 0.48, ['scale.y'] = 0.48}, 0.15, {ease = 'circout'})
-               return;
-          end
-          startTween('uiNoteOptionsIn', 'uiNoteOptions', {['scale.x'] = curNoteOptionsScale, ['scale.y'] = curNoteOptionsScale}, 0.15, {ease = 'circout'})
-     
-          changeSize = true
-          funkinlua.createTimer('resetChange', 0.01, function() 
-               changeSize = false 
-          end)
+local function changeSettingSize(tagSetting)
+     local uiSettingSize = 0.526315789473684
+     local changeSize = false
+     if objectsOverlap(tagSetting, 'mouseHitBox') and changeSize == false then
+          startTween(tagSetting..'In', tagSetting, {['scale.x'] = 0.48, ['scale.y'] = 0.48}, 0.15, {ease = 'circout'})
+          return;
      end
-     
-     local optionsStatePath = 'mods/NoteSkin Selector Remastered/hscripts/options.hx'
-     local optionsState = funkinlua.getTextFileContent(optionsStatePath)
+     startTween(tagSetting..'In', tagSetting, {['scale.x'] = uiSettingSize, ['scale.y'] = uiSettingSize}, 0.15, {ease = 'circout'})
+
+     changeSize = true
+     funkinlua.createTimer('resetChange', 0.01, function() 
+          changeSize = false 
+     end)
+end
+
+local function changeToOptionState()
+     local optionsStatePath = 'mods/NoteSkin Selector Remastered/data/noteskin-settings/hscripts/options.hx'
+     local optionsState = globals.getTextFileContent(optionsStatePath)
      if funkinlua.clickObject('uiNoteOptions') then
           playSound('select', 1)
           funkinlua.createTimer('toOptionsState', 0.1, function() 
                runHaxeCode(optionsState)
           end)
      end
-     changeOptionSize()
+     changeSettingSize('uiNoteOptions')
 end
-
+ 
 function onUpdate(elapsed)
      setProperty('mouseHitBox.x', getMouseX('camHUD') - 3)
      setProperty('mouseHitBox.y', getMouseY('camHUD'))
@@ -295,14 +296,26 @@ function onUpdatePost(elapsed)
           loadNewSong(getSave('songLocalName'), getSave('songLocalDiff'))
      end
 
-     if keyboardJustPressed('SHIFT') then
-          loadNewSong('NoteSkin Debug')
+     if getModSetting('enable_double-tapping_safe', 'NoteSkin Selector Remastered') then
+          if funkinlua.keyboardJustDoublePressed('SHIFT') then
+               loadNewSong('NoteSkin Debug')
+          end
+     else
+          if keyboardJustPressed('SHIFT') then
+               loadNewSong('NoteSkin Debug')
+          end
      end
 end
 
 local allowCountdown = false;
 function onStartCountdown()
      if not allowCountdown then -- Block the first countdown
+          local localModFolder = 'NoteSkin Selector Remastered'
+          for k,v in pairs(getRunningScripts()) do
+               if v:match(localModFolder..'/scripts/skins') or not v:match(localModFolder) then
+                    removeLuaScript(v)
+               end
+          end
           allowCountdown = true;
           return Function_Stop;
      end

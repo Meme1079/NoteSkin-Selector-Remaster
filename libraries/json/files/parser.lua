@@ -1,6 +1,6 @@
 -- Copyright (c) 2019, Souche Inc.
 
-local Constant = require("mods/NoteSkin Selector Remastered/libraries/json/files/constant")
+local Constant = require "mods.NoteSkin Selector Remastered.libraries.json.files.constant"
 
 local NULL = Constant.NULL
 local UN_ESC_MAP = Constant.UN_ESC_MAP

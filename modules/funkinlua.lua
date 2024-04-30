@@ -1,28 +1,16 @@
-local string    = require 'mods.NoteSkin Selector Remastered.libraries.string'
+local globals   = require 'mods.NoteSkin Selector Remastered.modules.globals'
 local json      = require 'mods.NoteSkin Selector Remastered.libraries.json.json'
 local funkinlua = {}
 
-function funkinlua.getTextFileContent(path)
-     local file = io.open(path)
-     local content = ''
-     for line in file:lines() do  
-          content = content .. line .. '\n'
-     end
-     return content:sub(1, #content - 1)
+function funkinlua.clickObject(obj)
+     return objectsOverlap(obj, 'mouseHitBox') and mouseClicked('left')
 end
 
-function funkinlua.ternary(condition, valueMain, valueFailed)
-     if condition == nil then
-          return valueMain ~= nil and valueMain or valueFailed
-     end
-     return condition and valueMain or valueFailed
-end
-
-function funkinlua.setSave(field, value)
+function funkinlua.setSave(field, value) -- shortcuts
      setDataFromSave('noteselector', 'skinNote_'..field, value)
 end
 
-function funkinlua.getSave(field)
+function funkinlua.getSave(field)        -- shortcuts
      return getDataFromSave('noteselector', 'skinNote_'..field)
 end
 
@@ -40,20 +28,39 @@ function funkinlua.getProperties(tag, values)
      return result
 end
 
-function funkinlua.calculateByEachX(x, y)
-     return (x + ((x * y) / 2)) - x / 2 
+function funkinlua.getJson(path)
+     local getJsonFile = globals.getTextFileContent(path):gsub('//%s*.-(\n)', '%1')
+     return json.parse(getJsonFile, true)
 end
 
-function funkinlua.clickObject(obj)
-     return objectsOverlap(obj, 'mouseHitBox') and mouseClicked('left')
+local doubleClicked = 0
+local enableTimer   = false
+local closureCount  = globals.closureCount()
+function funkinlua.keyboardJustDoublePressed(key)
+     if keyboardJustPressed(key:upper()) then
+          doubleClicked = doubleClicked + 1
+          enableTimer   = true
+     end
+
+     if enableTimer == true then
+          funkinlua.createTimer('pressedDuraction'..closureCount(), 0.3, function()
+               doubleClicked = 0
+               enableTimer   = false
+          end)
+          enableTimer = 'maybe'
+     end
+     if doubleClicked >= 2 then
+          return true
+     end
+     return false
 end
 
+local timers = {}
 function funkinlua.createTimer(tag, timer, callback)
-     timers = {}
      table.insert(timers, {tag, callback})
      runTimer(tag, timer)
 end
-
+     
 function onTimerCompleted(tag, loops, loopsLeft)
      for _,v in pairs(timers) do
           if v[1] == tag then v[2]() end

@@ -1,12 +1,13 @@
 local funkinlua = require 'mods.NoteSkin Selector Remastered.modules.funkinlua'
 local globals   = require 'mods.NoteSkin Selector Remastered.modules.globals'
+local states    = require 'mods.NoteSkin Selector Remastered.modules.states'
 local string    = require 'mods.NoteSkin Selector Remastered.libraries.string'
 local table     = require 'mods.NoteSkin Selector Remastered.libraries.table'
 local json      = require 'mods.NoteSkin Selector Remastered.libraries.json.json'
 
 local setSave = funkinlua.setSave
 local getSave = funkinlua.getSave
-local ternary = funkinlua.ternary
+local ternary = globals.ternary
 
 initSaveData('noteselector', 'NoteSkin Selector')
 local saveNote_noteStateIndex         = ternary(nil, getSave('noteStateIndex'), 1)
@@ -15,15 +16,10 @@ local saveNote_noteCheckOpponentIndex = ternary(nil, getSave('noteCheckOpponentI
 local saveNote_noteCurSkinPlayer      = ternary(nil, getSave('noteCurSkinPlayer'), 'NOTE_assets-')
 local saveNote_noteCurSkinOpponent    = ternary(nil, getSave('noteCurSkinOpponent'), 'NOTE_assets-')
 
-local noteOffsetPath  = 'mods/NoteSkin Selector Remastered/jsons/note/offsets.json'
-local noteOffsetFetch = funkinlua.getTextFileContent(noteOffsetPath):gsub('//%s*.-(\n)', '%1')
-local noteOffsetJson  = json.parse(noteOffsetFetch, true)
+local noteOffsetJson = funkinlua.getJson('mods/NoteSkin Selector Remastered/jsons/note/offsets.json')
+local notePropsJson  = funkinlua.getJson('mods/NoteSkin Selector Remastered/jsons/note/properties.json')
 
-local notePropsPath  = 'mods/NoteSkin Selector Remastered/jsons/note/properties.json'
-local notePropsFetch = funkinlua.getTextFileContent(notePropsPath):gsub('//%s*.-(\n)', '%1')
-local notePropsJson  = json.parse(notePropsFetch)
-
-local getNotes = globals.getSkins('note')
+local getNotes = states.getSkins('note')
 local function initNoteRGB(charInd, ind)
      local chars = {'player', 'opponent'}
      local rgbShaderPlayerNotes = function(ind, noteType)
@@ -119,36 +115,50 @@ local function setUpNoteSkins() -- me praying to god that it doesn't lag the scr
      end
 end
 
+local function errorNoteSkinChecking()
+     setProperty('camGame.visible', false)
+     setProperty('camHUD.visible', false)
+     setProperty('camOther.visible', false)
+     restartSong(true)
+
+     setSave('noteStateIndex', 1)
+     setSave('noteStatePage', 1)
+     setSave('noteCheckPlayerIndex', 0)
+     setSave('noteCheckOpponentIndex', 0)
+     setSave('noteCheckPlayerSelectPos', {95, 215})
+     setSave('noteCheckOpponentSelectPos', {95, 215 - 80})
+     setSave('noteCurSkinPlayer', 'NOTE_assets-')
+     setSave('noteCurSkinOpponent', 'NOTE_assets-')
+end
+
 function onCreatePost()
      if songName ~= 'NoteSkin Settings' and songName ~= 'NoteSkin Debug' then
           setSave('songLocalName', songName)
           setSave('songLocalDiff', difficulty)
      end
+
+     local getNoteSkinFile = function(curSkin)
+          local curSkinNoteName = curSkin == 'NOTE_assets-' and 'NOTE_assets' or curSkin
+          local curSkinPath = 'mods/NoteSkin Selector Remastered/images/noteSkins/'..curSkinNoteName..'.png'
+          if curSkinNoteName:match('NOTE_assets-future') or curSkinNoteName:match('NOTE_assets-circle') or curSkinNoteName == 'NOTE_assets' then
+               curSkinPath = 'assets/shared/images/noteSkins/'..curSkinNoteName..'.png'
+          end
+          return curSkinPath
+     end
      
-     setUpNoteSkins()
-     funkinlua.createTimer('deley', 0.1, setUpNoteSkins()) -- override
+     local getNoteSkinPlayer   = getNoteSkinFile(saveNote_noteCurSkinPlayer)
+     local getNoteSkinOpponent = getNoteSkinFile(saveNote_noteCurSkinOpponent)
+     if checkFileExists(getNoteSkinPlayer, true) == false or checkFileExists(getNoteSkinOpponent, true) == false then
+          errorNoteSkinChecking()
+     else
+          setUpNoteSkins()
+          funkinlua.createTimer('delay', 0.1, setUpNoteSkins()) -- override
+     end
 end
 
-local doubleCliked = 0
-local enableTimer  = false
-local function loadToMainState(doubleEnabled)
-     if songName == 'NoteSkin Settings' then
-          return nil;
-     end
-
-     if doubleEnabled == true then
-          if keyboardJustPressed('TAB') then
-               doubleCliked = doubleCliked + 1
-               enableTimer  = true
-          end
-          if enableTimer == true then
-               funkinlua.createTimer('timer', 0.3, function() 
-                    doubleCliked = 0
-                    enableTimer  = false
-               end)
-               enableTimer = 'maybe'
-          end
-          if doubleCliked >= 2 then
+function onUpdate(elapsed)
+     if getModSetting('enable_double-tapping_safe', 'NoteSkin Selector Remastered') then
+          if funkinlua.keyboardJustDoublePressed('TAB') then
                loadNewSong('NoteSkin Settings')
           end
      else
@@ -156,8 +166,4 @@ local function loadToMainState(doubleEnabled)
                loadNewSong('NoteSkin Settings')
           end
      end
-end
-
-function onUpdate(elapsed)
-     loadToMainState(getModSetting('enable_double-tapping_safe', 'NoteSkin Selector Remastered'))
 end
