@@ -23,7 +23,7 @@ function checkerboardColorHex(hexString:String) {
 }
 
 var gridOverlayColor = checkerboardColorHex(0xFF00FFFF);
-var gridOverlay = FlxGridOverlay.createGrid(80, 80, 160, 160, true, 0xFF68CBFD, 0x0);
+var gridOverlay = FlxGridOverlay.createGrid(80, 80, 160, 160, true, 0xFFBEA7E5, 0x0);
 var gridBG:FlxBackdrop = new FlxBackdrop(gridOverlay);
 gridBG.velocity.set(20, 20);
 gridBG.alpha = 0;

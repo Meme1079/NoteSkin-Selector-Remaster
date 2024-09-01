@@ -1,5 +1,5 @@
 local globals   = require 'mods.NoteSkin Selector Remastered.modules.globals'
-local json      = require 'mods.NoteSkin Selector Remastered.libraries.json.json'
+local json      = require 'mods.NoteSkin Selector Remastered.libraries.json.main'
 local funkinlua = {}
 
 function funkinlua.clickObject(obj)

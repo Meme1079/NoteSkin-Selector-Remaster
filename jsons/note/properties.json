@@ -1,4 +1,23 @@
 {
+     "animations": {
+          "played": {
+               "leftConfirm": "left confirm",
+               "downConfirm": "down confirm",
+               "upConfirm": "up confirm",
+               "rightConfirm": "right confirm",
+
+               "leftPressed": "left press",
+               "downPressed": "down press",
+               "upPressed": "up press",
+               "rightPressed": "right press",
+
+               "leftColored": "purple0",
+               "downColored": "blue0",
+               "upColored": "green0",
+               "rightColored": "red0"
+          },
+          "idle": ["arrowLEFT", "arrowDOWN", "arrowUP", "arrowRIGHT"]
+     },
      "notetype": [
           "",
           "Hey!",

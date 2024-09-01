@@ -4,20 +4,20 @@ import backend.Highscore;
 import backend.Song;
 import states.LoadingState;
 
-createGlobalCallback('getKeyBinds', function(?noteType:Int = 0) {
+createGlobalCallback('getKeyBinds', function(noteType:Int = 1) {
      var binds = ClientPrefs.keyBinds;
      var input = InputFormatter.getKeyName;
      switch (noteType) {
-          case 0:  return input(binds.get('note_left')[0]);
-          case 1:  return input(binds.get('note_down')[0]);
-          case 2:  return input(binds.get('note_up')[0]);
-          case 3:  return input(binds.get('note_right')[0]);
+          case 1:  return input(binds.get('note_left')[0]);
+          case 2:  return input(binds.get('note_down')[0]);
+          case 3:  return input(binds.get('note_up')[0]);
+          case 4:  return input(binds.get('note_right')[0]);
           default: return 'invalid, stupid';
      }
 });
 
 // By, Rodney
-createGlobalCallback('loadNewSong', function(?name:String = null, ?difficultyNum:Int = -1, ?difficultyArray:Array<String> = null) {
+createGlobalCallback('loadNewSong', function(name:String = null, difficultyNum:Int = -1, difficultyArray:Array<String> = null) {
      if (difficultyArray != null) Difficulty.list = difficultyArray;
      if (name == null || name.length < 1) name = PlayState.SONG.song;
      if (difficultyNum == -1) difficultyNum = PlayState.storyDifficulty;

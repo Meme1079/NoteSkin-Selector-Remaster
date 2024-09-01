@@ -21,10 +21,24 @@
 		"value": false
 	},
 	{
+		"save": "enable_change_skins_mid-song",
+		"name": "Enable Change Skins Mid-Song",
+		"type": "bool",
+		"description": "If checked, allows the skin to change texture mid-song.\n Meaning it won't be constant throughout the song",
+		"value": false
+	},
+	{
+		"save": "disable_splash_animation_display",
+		"name": "Disable Display Animation",
+		"type": "bool",
+		"description": "Disables the animations for display icons",
+		"value": false
+	},
+	{
 		"save": "song_select",
 		"name": "Song Select:",
 		"type": "string",
-		"description": "Select the song to play",
+		"description": "Select the background song to play",
 		"value": "Extras Menu",
 		"options": [
                "Extras Menu",

@@ -1,69 +1,12 @@
-# Introduction
-A Remastered of NoteSkin Selector!, one of my old shitty scripts. This new and improve script allows you to select your note/splash skins in an easy and fast way. And heavily improves the current built-in noteskin system in the engine, because that one sucks ass. It can also be used for making note packs easily.
+# NoteSkin Selector Remastered
+NoteSkin Selector Remastered; new layout, new code, and more customizability.
 
-<img width="1280" alt="Screen Shot 2024-04-25 at 5 54 30 PM" src="https://github.com/Meme1079/NoteSkin-Selector-Remaster/assets/101881784/076cd83a-7faf-4ebf-9644-da59b1ee4fc7">
+## About
+This is a remastered of my old mods "NoteSkin Selector", one my old shitty mods created in 2022. It heavily improves everything from the old mod. It includes a new friendlier GUI layout for selecting skins more easily, a better clean and organized code, and basically, and a more improved version of the current built-in noteskin system in the engine, because that one sucks ass ngl.
 
-## Features
-- User-Friendly & Overhauled UI
-- Customize Background Music
-- Data Saving for Noteskins
-- Easy Implementation of NoteSkins
-- Note Animations Preview & Including an Editor for the Preview
+## Installation Requirements
+1. Computer
+2. Psych Engine 1.0.0 (Pre-Release)
+3. Should be inside the `mods` folder; without renaming the mod folder
 
-***
-
-# Current Update (Version 1.5.0)
-### Additions/Changes
-- Additions/Changes on the NoteSkin Debug State.
-     - Added an ability to erase all data offset files for clearing stuff, just pressed <kbd>SHIFT + B</kbd>.
-     - Added a delay when saving and deleting data offset files.
-     - Added an easter egg. _(You will never find this)_
-- Added support for animated noteskins for note preview animations.
-- The "Enable Double-Tapping Safe" setting will now work for when pressing <kbd>SHIFT</kbd> key.
-- Remove any external scripts for better performace and to avoid conflicts with other scripts.
-- Organized the files inside the modules folder, for coders like me.
-
-### Bug Fixes
-- Fixed a bug, when deleting a noteskin file in-game, it will crash the moment the countdown finished.
-- Fixed a bug on the note preview animations, when holding the <kbd>LEFT-BRACKET</kbd> key then changing the type of animation, it will display the last note animation that was playing.
-- Fixed a bug on the NoteSkin Debug State.
-     - When attempting to move the idle note offset animations, it will actually move it.
-     - When saving the offset positions, the positions will swap confirm and pressed positions, causing bugs.
-
-***
-
-# Controls
-- Tab - Accessing to the Noteskin State/Return back to current song you're in
-- Up/Down - Changing the page of the Noteskin State
-- Shift - Accessing to the Noteskin Preview Editor
-- Escape - Exit the Noteskin State
-
-***
-
-# QNA
-1. ***How do I add Noteskins?***
-     - If you already installed the noteskin you wanted. Rename the file name with the prefix `NOTE_assets-` followed by the name; Example: `NOTE_assets-Funny`. It should be inside of `images/noteSkins` folder.
-2. ***How do I access it?***
-     - Go to any song and press Tab, it will sent you to the noteskin state. If you want to re-enter the current song you're playing just press Tab again.
-3. ***Why isn't the splash skin finished?***
-     - It will be in a later update mainly version `2.0.0` of it. But I'll have to do version `1.5.0`, it's just for polishing stuff and maybe even adding "extra stuff".
-
-***
-
-# Stuff Used Here
-## Noteskins
-- Majin - [Vs. Sonic.EXE 2.0](https://gamebanana.com/mods/316022)
-- Arrow Funk - [Arrow Funk](https://gamebanana.com/mods/370234)
-- Bad - [FNF, but bad (REMAKE)](https://gamebanana.com/wips/79374)
-- Creepy - [Vs. Flippy](https://gamebanana.com/mods/300838)
-- DokiDoki - [FNF: Doki Doki Takeover Plus!](https://gamebanana.com/mods/47364)
-- M1KU - [Hatsune Miku - Project Funkin'](https://gamebanana.com/mods/485992)
-- MM, MM Luigi - [FNF: Mario's Madness](https://gamebanana.com/mods/359554)
-- Ourple - [Vs Ourple Guy](https://ourpleguy.neocities.org/)
-- TGT - [Tails Gets Trolled](https://gamebanana.com/mods/320596)
-
-## Music
-- File Select - Sonic 3 & Knuckles
-- Extras Menu - Sonic Mega Collection
-- Artistic Expression - [Friday Night Funkin' (Kawaisprite)](https://www.youtube.com/watch?v=yFHbQFH09Io)
-- Monkey - Original: [Mario Paint (Hirokazu Tanaka)](https://www.youtube.com/watch?v=gMRFXrbfKEo); Remix: [Mario's Madness (FriedFrick)](https://www.youtube.com/watch?v=x0AMU2nelAw)
+## 

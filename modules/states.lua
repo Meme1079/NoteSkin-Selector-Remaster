@@ -1,7 +1,7 @@
 local funkinlua = require 'mods.NoteSkin Selector Remastered.modules.funkinlua'
-local globals = {}
+local states = {}
 
-function globals.calculatePosition(skinType)
+function states.calculatePosition(skinType)
      local xpos = {20, 220 - 30, (220 + 170) - 30, (220 + (170 * 2)) - 30}
      local ypos = -155 -- increments, in each 4th value
 
@@ -21,7 +21,7 @@ function globals.calculatePosition(skinType)
      return result
 end
 
-function globals.calculatePageLimit(skinType)
+function states.calculatePageLimit(skinType)
      local yindex_limit = 0
      for skinIndex = 1, #skinType do
           local skinIndexNeg = skinIndex - 1
@@ -32,7 +32,7 @@ function globals.calculatePageLimit(skinType)
      return yindex_limit
 end
 
-function globals.getLocalSkins(state)
+function states.getLocalSkins(state)
      local results_note   = {'future', 'chip'}
      local results_splash = {'vanilla', 'sparkles', 'electric', 'diamond'}
 
@@ -49,8 +49,8 @@ function globals.getLocalSkins(state)
      return results
 end
 
-function globals.getSkins(state)
-     local results = globals.getLocalSkins(state)
+function states.getSkins(state)
+     local results = states.getLocalSkins(state)
      local pattern = state == 'note' and 'NOTE_assets' or state == 'splash' and 'noteSplashes'
      local folder  = state == 'note' and 'noteSkins'   or state == 'splash' and 'noteSplashes'
      for _,v in next, directoryFileList('mods/NoteSkin Selector Remastered/images/'..folder) do
@@ -61,9 +61,9 @@ function globals.getSkins(state)
      return results
 end
 
-function globals.getSkinNames(state)
-     local results_note   = {'Normal', 'Future', 'Chip'}
-     local results_splash = {'Normal', 'Vanilla', 'Sparkles', 'Electric', 'Diamond'}
+function states.getSkinNames(state)
+     local results_note   = {'Funkin', 'Future', 'Chip'}
+     local results_splash = {'Funkin', 'Vanilla', 'Sparkles', 'Electric', 'Diamond'}
      local results = state == 'note' and results_note or state == 'splash' and results_splash
 
      local pattern = state == 'note' and 'NOTE_assets' or state == 'splash' and 'noteSplashes'
@@ -76,7 +76,7 @@ function globals.getSkinNames(state)
      return results
 end
 
-function globals.getIndexSkins(state, stateSkins)
+function states.getIndexSkins(state, stateSkins)
      local hitboxTag = state == 'note' and 'note' or state == 'splash' and 'splash'
      local result = 1
      for index = 1, #noteSkins_getNoteSkins do
@@ -87,4 +87,4 @@ function globals.getIndexSkins(state, stateSkins)
      return result
 end
 
-return globals
+return states

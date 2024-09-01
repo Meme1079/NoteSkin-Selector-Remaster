@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextureAtlas imagePath="note-style.png">
+<TextureAtlas imagePath="note_style.png">
 	<!-- Created using the Spritesheet and XML generator -->
 	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
 	<SubTexture name="note-pixel0000" x="0" y="0" width="117" height="117" frameX="-19" frameY="-16" frameWidth="152" frameHeight="152"/>

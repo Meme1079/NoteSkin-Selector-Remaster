@@ -222,30 +222,30 @@
      },
      "mario's madness": {
           "confirm": {
-               "left": null,
-               "down": null,
-               "up": null,
+               "left": ["@funkin", "@funkin"],
+               "down": ["@funkin", "@funkin"],
+               "up": ["@funkin", "@funkin"],
                "right": [42, 47]
           },
           "pressed": {
-               "left": null,
+               "left": ["@funkin", "@funkin"],
                "down": [22, 20],
                "up": [22, 20],
-               "right": null
+               "right": ["@funkin", "@funkin"]
           }
      },
      "mm luigi": {
           "confirm": {
-               "left": null,
-               "down": null,
-               "up": null,
+               "left": ["@funkin", "@funkin"],
+               "down": ["@funkin", "@funkin"],
+               "up": ["@funkin", "@funkin"],
                "right": [42, 47]
           },
           "pressed": {
-               "left": null,
+               "left": ["@funkin", "@funkin"],
                "down": [22, 20],
                "up": [22, 20],
-               "right": null
+               "right": ["@funkin", "@funkin"]
           }
      }
 }

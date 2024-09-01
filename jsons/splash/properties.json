@@ -1,4 +1,18 @@
 {
+     "animations": {
+          "played": {
+               "leftSplash1": "@prefix purple 1",
+               "downSplash1": "@prefix blue 1",
+               "upSplash1": "@prefix green 1",
+               "rightSplash1": "@prefix red 1",
+
+               "leftSplash2": "@prefix purple 2",
+               "downSplash2": "@prefix blue 2",
+               "upSplash2": "@prefix green 2",
+               "rightSplash2": "@prefix red 2"
+          },
+          "idle": ["", "", "", ""]
+     },
      "notetype": [
           "",
           "Hey!",

@@ -34,6 +34,11 @@ function string:upperAtStart()
      return self:sub(1,1):upper()..self:sub(2, #self)
 end
 
+function string:catch(pattern, position)
+     local charIndex = {self:find(pattern)}
+     return self:sub(charIndex[1], charIndex[2]):match(pattern, position)
+end
+   
 --- Removes any whitespaces from a string
 ---@param self string The string to trim
 ---@param direction string The direcftion to trim `l` for left and `r` for right
