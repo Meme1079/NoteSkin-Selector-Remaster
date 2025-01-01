@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<TextureAtlas imagePath="note_animations.png">
-	<!-- Created using the Spritesheet and XML generator -->
-	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
-	<SubTexture name="note-confirm0000" x="0" y="0" width="151" height="149" frameX="-1" frameY="-4" frameWidth="152" frameHeight="152"/>
-	<SubTexture name="note-pressed0000" x="0" y="149" width="117" height="115" frameX="-18" frameY="-19" frameWidth="152" frameHeight="152"/>
-	<SubTexture name="note-colored0000" x="151" y="0" width="129" height="117" frameX="-7" frameY="-19" frameWidth="152" frameHeight="152"/>
-</TextureAtlas>

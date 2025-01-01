@@ -1,3 +1,0 @@
-NoteSkin Selector
-Meme1079::meme1079::Creator & Main Programmer::https://github.com/Meme1079::0x2711ed
-Rodney::haxe::Made the "loadNewSong()" function::https://github.com/RodneyAnImaginativePerson::0x1191ed

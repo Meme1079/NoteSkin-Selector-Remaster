@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="slider_button.png">
+	<!-- Created using the Spritesheet and XML generator -->
+	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
+	<SubTexture name="slider_button-static0000" x="0" y="0" width="76" height="94" frameX="-2" frameY="-3" frameWidth="80" frameHeight="100"/>
+	<SubTexture name="slider_button-pressed0000" x="152" y="0" width="76" height="94" frameX="-2" frameY="-3" frameWidth="80" frameHeight="100"/>
+	<SubTexture name="slider_button-unscrollable0000" x="76" y="0" width="76" height="94" frameX="-2" frameY="-3" frameWidth="80" frameHeight="100"/>
+</TextureAtlas>

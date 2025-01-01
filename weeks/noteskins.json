@@ -1,0 +1,40 @@
+{
+	"storyName": "IDK",
+	"difficulties": "Normal",
+	"hideFreeplay": true,
+	"weekBackground": "",
+	"weekBefore": "tutorial",
+	"freeplayColor": [
+		146,
+		113,
+		253
+	],
+	"startUnlocked": true,
+	"weekCharacters": [
+		"",
+		"bf",
+		"gf"
+	],
+	"songs": [
+		[
+			"Skin Selector",
+			"bf",
+			[
+				58,
+				27,
+				79
+			]
+		],
+		[
+			"Skin Debugging",
+			"bf",
+			[
+				58,
+				27,
+				79
+			]
+		]
+	],
+	"hideStoryMode": true,
+	"weekName": "Week ???"
+}
