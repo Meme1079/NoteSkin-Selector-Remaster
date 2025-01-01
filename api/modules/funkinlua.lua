@@ -65,6 +65,10 @@ function funkinlua.removeCallbackEvents(callback, index)
      callbackEvents[callback][index] = nil;
 end
 
+function funkinlua.clickObject(object)
+     return objectsOverlap(object, 'mouseHitBox') and mouseClicked('left')
+end
+
 local timers = {}
 function funkinlua.createTimer(tag, timer, callback)
      table.insert(timers, {tag, callback})

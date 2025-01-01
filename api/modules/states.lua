@@ -1,4 +1,5 @@
 local string  = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.string'
+local json   = require 'mods.NoteSkin Selector Remastered.api.libraries.json.main'
 
 local states = {}
 states.notes    = {prefix = 'NOTE_assets',  folder = 'noteSkins'}
@@ -9,14 +10,17 @@ function states.getTotalSkins(skin)
      local totalSkinPrefix = states[skin]['prefix']
      local totalSkinFolder = states[skin]['folder']
 
-     local directorySkinFolder = 'assets/shared/images/'..totalSkinFolder
-     for _,v in next, directoryFileList(directorySkinFolder) do
+     local directorySkinFolderPath = 'assets/shared/images/'..totalSkinFolder
+     local directorySkinFolder     = directoryFileList(directorySkinFolderPath)
+     for _,v in next, directorySkinFolder do
           if v:match('^('..totalSkinPrefix..'%-.+)%.png$') then
                totalSkins[#totalSkins + 1] = v:match('^('..totalSkinPrefix..'%-.+)%.png$')
           end
      end
-     local directorySkinModFolder = 'mods/NoteSkin Selector Remastered/images/'..totalSkinFolder
-     for _,v in next, directoryFileList(directorySkinModFolder) do
+
+     local directorySkinModFolderPath = 'mods/NoteSkin Selector Remastered/images/'..totalSkinFolder
+     local directorySkinModFolder     = directoryFileList(directorySkinModFolderPath)
+     for _,v in next, directorySkinModFolder do
           if v:match('^('..totalSkinPrefix..'%-.+)%.png$') then
                totalSkins[#totalSkins + 1] = v:match('^('..totalSkinPrefix..'%-.+)%.png$')
           end
@@ -29,14 +33,17 @@ function states.getTotalSkinNames(skin)
      local totalSkinPrefix = states[skin]['prefix']
      local totalSkinFolder = states[skin]['folder']
 
-     local directorySkinFolder = 'assets/shared/images/'..totalSkinFolder
-     for _,v in next, directoryFileList(directorySkinFolder) do
+     local directorySkinFolderPath = 'assets/shared/images/'..totalSkinFolder
+     local directorySkinFolder     = directoryFileList(directorySkinFolderPath)
+     for _,v in next, directorySkinFolder do
           if v:match('^('..totalSkinPrefix..'%-.+)%.png$') then
                totalSkins[#totalSkins + 1] = v:match('^'..totalSkinPrefix..'%-(.+)%.png$'):upperAtStart()
           end
      end
-     local directorySkinModFolder = 'mods/NoteSkin Selector Remastered/images/'..totalSkinFolder
-     for _,v in next, directoryFileList(directorySkinModFolder) do
+
+     local directorySkinModFolderPath = 'mods/NoteSkin Selector Remastered/images/'..totalSkinFolder
+     local directorySkinModFolder     = directoryFileList(directorySkinModFolderPath)
+     for _,v in next, directorySkinModFolder do
           if v:match('^('..totalSkinPrefix..'%-.+)%.png$') then
                totalSkins[#totalSkins + 1] = v:match('^'..totalSkinPrefix..'%-(.+)%.png$'):upperAtStart()
           end
@@ -46,12 +53,33 @@ end
 
 function states.getTotalSkinLimit(skin)
      local totalLimit = 0
-     for page = 1, #states.getTotalSkins(skin) do
+     local totalSkins = states.getTotalSkins(skin)
+     for page = 1, #totalSkins do
           if page % 16 == 0 then
                totalLimit = totalLimit + 1
           end
      end
      return totalLimit
+end
+
+function states.getTotalSkinObjects(skin)
+     local totalSkinObjects = {}
+     local totalSkinGroupIndex = 0
+     local totalSkins = states.getTotalSkins(skin)
+
+     totalSkinObjects[skin] = {}
+     for page = 1, #totalSkins do
+          if (page-1) % 16 == 0 then
+               totalSkinGroupIndex = totalSkinGroupIndex + 1
+               totalSkinObjects[skin][totalSkinGroupIndex] = {}
+          end
+     
+          if page % (16+1) ~= 0 then
+               local totalSkinObjectGroup = totalSkinObjects[skin][totalSkinGroupIndex]
+               totalSkinObjectGroup[#totalSkinObjectGroup + 1] = totalSkins[page]
+          end
+     end
+     return totalSkinObjects[skin]
 end
 
 function states.getPageSkinSliderPositions(skin, data)
