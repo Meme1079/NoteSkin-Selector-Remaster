@@ -1,51 +1,15 @@
 luaDebugMode = true
 
-local string = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.string'
-local json   = require 'mods.NoteSkin Selector Remastered.api.libraries.json.main'
+local SkinStates = require 'mods.NoteSkin Selector Remastered.api.classes.skins.SkinStates'
+
+local string    = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.string'
+local json      = require 'mods.NoteSkin Selector Remastered.api.libraries.json.main'
 local funkinlua = require 'mods.NoteSkin Selector Remastered.api.modules.funkinlua'
 local states    = require 'mods.NoteSkin Selector Remastered.api.modules.states'
 
-
-local g = states.getTotalSkinObjects('notes')
-function test(er)
-     if er == nil then return end
-
-     local skinPosX = 0
-     local skinPosY = 0
-     for grid = 1, #g[er] do
-          if (grid-1) % 4 == 0 then
-               skinPosX = 0
-               skinPosY = skinPosY + 1
-          else
-               skinPosX = skinPosX + 1
-          end
-     
-          local newSkinPosX = 20+(170*skinPosX)-(25*skinPosX)
-          local newSkinPosY = -20+(180*skinPosY)-(30*skinPosY)
-     
-          local skinDisplayGridIcon = 'displayGridIcon-'..tostring(grid)
-          makeAnimatedLuaSprite(skinDisplayGridIcon, 'ui/buttons/display_button', newSkinPosX, newSkinPosY)
-          addAnimationByPrefix(skinDisplayGridIcon, 'static', 'display_button-static')
-          addAnimationByPrefix(skinDisplayGridIcon, 'selected', 'display_button-selected')
-          addAnimationByPrefix(skinDisplayGridIcon, 'hover', 'display_button-hover')
-          playAnim(skinDisplayGridIcon, 'static')
-          scaleObject(skinDisplayGridIcon, 0.8, 0.8)
-          setProperty(skinDisplayGridIcon..'.camera', instanceArg('camHUD'), false, true)
-          setProperty(skinDisplayGridIcon..'.antialiasing', false)
-          addLuaSprite(skinDisplayGridIcon)
-     
-          local skinGraphicGridIcon = 'graphicGridIcon-'..tostring(grid)
-          makeAnimatedLuaSprite(skinGraphicGridIcon, 'noteSkins/'..g[er][grid], newSkinPosX + 16.5, newSkinPosY + 12)
-          addAnimationByPrefix(skinGraphicGridIcon, 'static', 'arrowUP')
-          playAnim(skinGraphicGridIcon, 'static')
-          scaleObject(skinGraphicGridIcon, 0.55, 0.55)
-          setProperty(skinGraphicGridIcon..'.camera', instanceArg('camHUD'), false, true)
-          addLuaSprite(skinGraphicGridIcon)
-     end
-end
-
-test(1)
-
+local test = SkinStates:new('notes', {'notes', 'splashes'}, {'noteSkins', 'noteSplashes'})
+test:precache()
+test:create(1)
 
 makeAnimatedLuaSprite('displaySliderIcon', 'ui/buttons/slider_button', 600, 127) -- min: 127; max: 643
 addAnimationByPrefix('displaySliderIcon', 'static', 'slider_button-static')
@@ -63,28 +27,6 @@ setObjectOrder('displaySliderTrack', getObjectOrder('displaySliderIcon') - 0)
 setProperty('displaySliderTrack.camera', instanceArg('camHUD'), false, true)
 setProperty('displaySliderTrack.antialiasing', false)
 addLuaSprite('displaySliderTrack')
-
-local sliderTrackPosition = states.getPageSkinSliderPositions('notes', 'positions')
-local sliderTrackDivider  = states.getPageSkinSliderPositions('notes', 'divider')
-local function displaySliderMarks(uniqueTag, color, widthBy, sliderTracks, sliderIndex)
-     local hitboxMarkSliderTrackTag = ('displaySliderMark${tag}${index}'):interpol({tag = uniqueTag:upperAtStart(), index = sliderIndex})
-     local hitboxMarkSliderTrackX = (600 + (getProperty('displaySliderIcon.width') / 2.7)) - widthBy[2]
-     local hitboxMarkSliderTrackY = sliderTracks[sliderIndex][1]
-
-     makeLuaSprite(hitboxMarkSliderTrackTag, nil, hitboxMarkSliderTrackX, hitboxMarkSliderTrackY)
-     makeGraphic(hitboxMarkSliderTrackTag, widthBy[1], 3, color)
-     setObjectOrder(hitboxMarkSliderTrackTag, getObjectOrder('displaySliderIcon') - 0)
-     setProperty(hitboxMarkSliderTrackTag..'.camera', instanceArg('camHUD'), false, true)
-     setProperty(hitboxMarkSliderTrackTag..'.antialiasing', false)
-     addLuaSprite(hitboxMarkSliderTrackTag)
-end
-for positionIndex = 1, #sliderTrackPosition do
-     displaySliderMarks('positions', '3b8527', {12 * 2, 12 / 2}, sliderTrackPosition, positionIndex)
-end
-for dividerIndex = 2, #sliderTrackDivider do
-     displaySliderMarks('divider', '847500', {12 * 1.5, 12 / 4}, sliderTrackDivider, dividerIndex)
-end
-
 
 function onCreatePost()
      makeLuaSprite('mouseHitBox', nil, getMouseX('camHUD') - 3, getMouseY('camHUD'))
@@ -105,65 +47,6 @@ function onCreatePost()
      playMusic(getModSetting('song_select', modFolder):lower(), 0.35, true)
 end
 
-local sliderTrackThumbPressed = false
-
-local ge = true
-local pk = 0
-function sliderTrackPageFunctionality()
-     if funkinlua.clickObject('displaySliderIcon') then
-          sliderTrackThumbPressed = true
-     end
-
-     if sliderTrackThumbPressed == true then
-          if mousePressed('left') then
-               playAnim('displaySliderIcon', 'pressed')
-
-               local displaySliderIconHeight = getProperty('displaySliderIcon.height')
-               setProperty('displaySliderIcon.y', getMouseY('camHUD') - displaySliderIconHeight / 2)
-          end
-          if mouseReleased('left') then
-               playAnim('displaySliderIcon', 'static')
-
-               funkinlua.createTimer(nil, 0.1, function() 
-                    sliderTrackThumbPressed = false 
-                    playAnim('displaySliderIcon', 'static')
-               end)
-          end
-     end
-
-     if getProperty('displaySliderIcon.y') <= 127 then
-          setProperty('displaySliderIcon.y', 127)
-     end
-     if getProperty('displaySliderIcon.y') >= 643 then
-          setProperty('displaySliderIcon.y', 643)
-     end
-
-     local p = function()
-          for positionIndex = 1, #sliderTrackPosition do
-               if sliderTrackThumbPressed == false then 
-                    break
-               end
-     
-               local checkThumbByPosition = getProperty('displaySliderIcon.y') <= sliderTrackPosition[positionIndex][1]
-               local checkThumbByDivider  = getProperty('displaySliderIcon.y') >= sliderTrackDivider[positionIndex][1]
-               if checkThumbByPosition and checkThumbByDivider then
-                    return sliderTrackPosition[positionIndex][2]
-               end
-          end
-          return false
-     end
-
-     local r = p()
-     if type(r) == 'number' and ge == true and r ~= pk then
-          pk = r
-          ge = false
-          test(r+1)
-     end
-     if r == false then
-          ge = true
-     end
-end
-
 function onUpdate(elapsed)
      if keyboardJustPressed('ONE')    then restartSong(true) end
      if keyboardJustPressed('ESCAPE') then exitSong()        end
@@ -175,8 +58,17 @@ function onUpdate(elapsed)
      setProperty('mouseHitBox.y', getMouseY('camHUD'))
 end
 
+-- this is temporary
+local d = 1
 function onUpdatePost(elapsed)
-     sliderTrackPageFunctionality()
+     if keyboardJustPressed('Q') then
+          d = d + 1
+          test:create(d)
+     end
+     if keyboardJustPressed('E') then
+          d = d - 1
+          test:create(d)
+     end
 end
 
 local allowCountdown = false;

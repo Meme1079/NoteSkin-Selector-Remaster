@@ -5,7 +5,7 @@ local states = {}
 states.notes    = {prefix = 'NOTE_assets',  folder = 'noteSkins'}
 states.splashes = {prefix = 'noteSplashes', folder = 'noteSplashes'}
 
-function states.getTotalSkins(skin)
+function states.getTotalSkins(skin, withPath)
      local totalSkins = {states[skin]['prefix']}
      local totalSkinPrefix = states[skin]['prefix']
      local totalSkinFolder = states[skin]['folder']
@@ -14,7 +14,8 @@ function states.getTotalSkins(skin)
      local directorySkinFolder     = directoryFileList(directorySkinFolderPath)
      for _,v in next, directorySkinFolder do
           if v:match('^('..totalSkinPrefix..'%-.+)%.png$') then
-               totalSkins[#totalSkins + 1] = v:match('^('..totalSkinPrefix..'%-.+)%.png$')
+               local includedPath = withPath == true and 'assets/shared/images/'..totalSkinFolder..'/' or ''
+               totalSkins[#totalSkins + 1] = includedPath..v:match('^('..totalSkinPrefix..'%-.+)%.png$')
           end
      end
 
@@ -22,7 +23,8 @@ function states.getTotalSkins(skin)
      local directorySkinModFolder     = directoryFileList(directorySkinModFolderPath)
      for _,v in next, directorySkinModFolder do
           if v:match('^('..totalSkinPrefix..'%-.+)%.png$') then
-               totalSkins[#totalSkins + 1] = v:match('^('..totalSkinPrefix..'%-.+)%.png$')
+               local includedPath = withPath == true and totalSkinFolder..'/' or ''
+               totalSkins[#totalSkins + 1] = includedPath..v:match('^('..totalSkinPrefix..'%-.+)%.png$')
           end
      end
      return totalSkins
@@ -62,24 +64,24 @@ function states.getTotalSkinLimit(skin)
      return totalLimit
 end
 
-function states.getTotalSkinObjects(skin)
+function states.getTotalSkinObjects(skin, index)
      local totalSkinObjects = {}
      local totalSkinGroupIndex = 0
      local totalSkins = states.getTotalSkins(skin)
 
      totalSkinObjects[skin] = {}
-     for page = 1, #totalSkins do
-          if (page-1) % 16 == 0 then
+     for pages = 1, #totalSkins do
+          if (pages-1) % (16+1) == 0 then
                totalSkinGroupIndex = totalSkinGroupIndex + 1
                totalSkinObjects[skin][totalSkinGroupIndex] = {}
           end
      
-          if page % (16+1) ~= 0 then
+          if pages % (16+1) ~= 0 then
                local totalSkinObjectGroup = totalSkinObjects[skin][totalSkinGroupIndex]
-               totalSkinObjectGroup[#totalSkinObjectGroup + 1] = totalSkins[page]
+               totalSkinObjectGroup[#totalSkinObjectGroup + 1] = totalSkins[pages]
           end
      end
-     return totalSkinObjects[skin]
+     return totalSkinObjects[skin][index]
 end
 
 function states.getPageSkinSliderPositions(skin, data)
