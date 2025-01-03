@@ -58,7 +58,6 @@ function onUpdate(elapsed)
      setProperty('mouseHitBox.y', getMouseY('camHUD'))
 end
 
--- this is temporary
 local d = 1
 function onUpdatePost(elapsed)
      if keyboardJustPressed('Q') then
@@ -69,6 +68,7 @@ function onUpdatePost(elapsed)
           d = d - 1
           test:create(d)
      end
+     --debugPrint(d)
 end
 
 local allowCountdown = false;

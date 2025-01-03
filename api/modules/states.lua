@@ -54,18 +54,20 @@ function states.getTotalSkinNames(skin)
 end
 
 function states.getTotalSkinLimit(skin)
-     local totalLimit = 0
+     local totalLimit = 1
      local totalSkins = states.getTotalSkins(skin)
      for page = 1, #totalSkins do
-          if page % 16 == 0 then
+          if page % (16+1) == 0 then
                totalLimit = totalLimit + 1
           end
      end
      return totalLimit
 end
 
-function states.getTotalSkinObjects(skin, index)
-     local totalSkinObjects = {}
+function states.getTotalSkinObjects(skin, index, byData)
+     local byData = byData == nil and 'skins' or byData:lower()
+
+     local totalSkinObjects    = {}
      local totalSkinGroupIndex = 0
      local totalSkins = states.getTotalSkins(skin)
 
@@ -78,7 +80,11 @@ function states.getTotalSkinObjects(skin, index)
      
           if pages % (16+1) ~= 0 then
                local totalSkinObjectGroup = totalSkinObjects[skin][totalSkinGroupIndex]
-               totalSkinObjectGroup[#totalSkinObjectGroup + 1] = totalSkins[pages]
+               if byData == 'skins' then
+                    totalSkinObjectGroup[#totalSkinObjectGroup + 1] = totalSkins[pages]
+               elseif byData == 'ids' then
+                    totalSkinObjectGroup[#totalSkinObjectGroup + 1] = pages
+               end
           end
      end
      return totalSkinObjects[skin][index]

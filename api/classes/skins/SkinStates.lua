@@ -50,7 +50,8 @@ function SkinStates:create(index)
      local index = index == nil and 1 or index
      local currentState = self.stateTypes[table.find(self.stateTypes, self.stateStart)]
 
-     local totalSkinObjects = states.getTotalSkinObjects(currentState, index)
+     local totalSkinObjects  = states.getTotalSkinObjects(currentState, index)
+     local totalSkinObjectID = states.getTotalSkinObjects(currentState, index, 'ids')
      local displaySkinPositions = function()
           local displaySkinIndexes   = {x = 0, y = 0}
           local displaySkinPositions = {}
@@ -69,26 +70,32 @@ function SkinStates:create(index)
           return displaySkinPositions
      end
 
-     for displays = 1, 16 do -- deletes pre-existing skin sections
-          local displaySkinIconTemplates = {state = currentState:upperAtStart(), index = displays}
-          local displaySkinIconButton = ('displaySkinIconButton${state}-${index}'):interpol(displaySkinIconTemplates)
-          local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${index}'):interpol(displaySkinIconTemplates)
+     local totalSkinLimit = states.getTotalSkinLimit(currentState)
+     for pages = 1, totalSkinLimit do
+          local totalSkinObjects = states.getTotalSkinObjects(currentState, pages)
+          local totalSkinObjectID = states.getTotalSkinObjects(currentState, pages, 'ids')
+          for displays = 1, #totalSkinObjects do
+               if pages == index then
+                    goto continue_removeNonCurrentPages
+               end
 
-          if not luaSpriteExists(displaySkinIconButton) and not luaSpriteExists(displaySkinIconSkin) then
-               break
+               local displaySkinIconTemplates = {state = currentState:upperAtStart(), ID = totalSkinObjectID[displays]}
+               local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
+               local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplates)
+               removeLuaSprite(displaySkinIconButton, true)
+               removeLuaSprite(displaySkinIconSkin, true)
+               ::continue_removeNonCurrentPages::
           end
-          removeLuaSprite(displaySkinIconButton, true)
-          removeLuaSprite(displaySkinIconSkin, true)
      end
-
+     
      local call_displaySkinPositions = displaySkinPositions()
      for displays = 1, #totalSkinObjects do
           local displaySkinPositionX = call_displaySkinPositions[displays][1]
           local displaySkinPositionY = call_displaySkinPositions[displays][2]
 
-          local displaySkinIconTemplates = {state = currentState:upperAtStart(), index = displays}
-          local displaySkinIconButton = ('displaySkinIconButton${state}-${index}'):interpol(displaySkinIconTemplates)
-          local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${index}'):interpol(displaySkinIconTemplates)
+          local displaySkinIconTemplates = {state = currentState:upperAtStart(), ID = totalSkinObjectID[displays]}
+          local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
+          local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplates)
           switch (currentState) {
                notes = function()
                     makeAnimatedLuaSprite(displaySkinIconButton, 'ui/buttons/display_button', displaySkinPositionX, displaySkinPositionY)
@@ -113,13 +120,10 @@ function SkinStates:create(index)
                end
           }
      end
-
-     
-
-     --debugPrint(#totalSkinObjects)
 end
 
 function SkinStates:switch()
+
 end
 
 function SkinStates:page()
