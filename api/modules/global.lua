@@ -9,4 +9,21 @@ function global.switch(value) -- calling operation (); first argument value
      end
 end
 
+function global.toAllMetatable(tab, default)
+     local duplicateMetaData = { 
+          __index    = function() return default end,
+          __newindex = function() return default end
+     }
+     local duplicate = {}
+     for keys, values in pairs(tab) do
+		if type(values) == "table" then
+               values = toAllMetatable(setmetatable(values, duplicateMetaData), default)
+          else
+               values = values
+          end
+          duplicate[keys] = values
+     end
+     return setmetatable(duplicate, duplicateMetaData)
+end
+
 return global

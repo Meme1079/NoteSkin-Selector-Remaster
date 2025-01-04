@@ -23,10 +23,10 @@ addLuaSprite('displaySliderIcon')
 
 makeLuaSprite('displaySliderTrack', nil, 600 + getProperty('displaySliderIcon.width') / 2.7, 127 + 3)
 makeGraphic('displaySliderTrack', 12, 570, '1d1e1f')
-setObjectOrder('displaySliderTrack', getObjectOrder('displaySliderIcon') - 0)
+setObjectOrder('displaySliderTrack', getObjectOrder('displaySliderIcon'))
 setProperty('displaySliderTrack.camera', instanceArg('camHUD'), false, true)
 setProperty('displaySliderTrack.antialiasing', false)
-addLuaSprite('displaySliderTrack')
+addLuaSprite('displaySliderTrack', true)
 
 function onCreatePost()
      makeLuaSprite('mouseHitBox', nil, getMouseX('camHUD') - 3, getMouseY('camHUD'))
@@ -67,8 +67,8 @@ function onUpdatePost(elapsed)
      if keyboardJustPressed('E') then
           d = d - 1
           test:create(d)
-     end
-     --debugPrint(d)
+     end 
+     --sliderTrackPageFunctionality()
 end
 
 local allowCountdown = false;

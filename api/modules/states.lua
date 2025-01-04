@@ -64,7 +64,7 @@ function states.getTotalSkinLimit(skin)
      return totalLimit
 end
 
-function states.getTotalSkinObjects(skin, index, byData)
+function states.getTotalSkinObjects(skin, byData)
      local byData = byData == nil and 'skins' or byData:lower()
 
      local totalSkinObjects    = {}
@@ -87,7 +87,7 @@ function states.getTotalSkinObjects(skin, index, byData)
                end
           end
      end
-     return totalSkinObjects[skin][index]
+     return totalSkinObjects[skin]
 end
 
 function states.getPageSkinSliderPositions(skin, data)
@@ -95,10 +95,10 @@ function states.getPageSkinSliderPositions(skin, data)
      local sliderTrackDivider  = {}
 
      local totalSkinMax = states.getTotalSkinLimit(skin)
-     local totalSliderHeight = 570
-     for pages = 0, totalSkinMax do
+     local totalSliderHeight = 570*1.493
+     for pages = 0, totalSkinMax-1 do
           local position = (pages / totalSkinMax) * totalSliderHeight
-          local divider  = ( ( ((pages-1) / totalSkinMax) + (pages / totalSkinMax ) ) / 2) * totalSliderHeight
+          local divider  = ( (((pages-1) / totalSkinMax) + (pages / totalSkinMax)) / 2) * totalSliderHeight
 
           sliderTrackPosition[#sliderTrackPosition + 1] = {position + 130, pages}
           sliderTrackDivider[#sliderTrackDivider + 1]   = {divider  + 130, pages}
