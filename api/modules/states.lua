@@ -1,5 +1,6 @@
 local string  = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.string'
-local json   = require 'mods.NoteSkin Selector Remastered.api.libraries.json.main'
+local json    = require 'mods.NoteSkin Selector Remastered.api.libraries.json.main'
+local global  = require 'mods.NoteSkin Selector Remastered.api.modules.global'
 
 local states = {}
 states.notes    = {prefix = 'NOTE_assets',  folder = 'noteSkins'}
@@ -90,27 +91,26 @@ function states.getTotalSkinObjects(skin, byData)
      return totalSkinObjects[skin]
 end
 
-function states.getPageSkinSliderPositions(skin, data)
-     local sliderTrackPosition = {}
-     local sliderTrackDivider  = {}
+function states.getPageSkinSliderPositions(skin)
+     local sliderTrackData = {}
+     sliderTrackData[skin] = {intervals = {}, semiIntervals = {}, pages = {}}
 
-     local totalSkinMax = states.getTotalSkinLimit(skin)
-     local totalSliderHeight = 570*1.493
-     for pages = 0, totalSkinMax-1 do
-          local position = (pages / totalSkinMax) * totalSliderHeight
-          local divider  = ( (((pages-1) / totalSkinMax) + (pages / totalSkinMax)) / 2) * totalSliderHeight
+     local totalSkinMax = states.getTotalSkinLimit(skin)-1
+     local totalSliderHeight = 570
+     for pages = 0, totalSkinMax+1 do
+          local intervals     = (pages / totalSkinMax) * totalSliderHeight
+          local semiIntervals = ( (((pages-1) / totalSkinMax) + (pages / totalSkinMax)) / 2) * totalSliderHeight
 
-          sliderTrackPosition[#sliderTrackPosition + 1] = {position + 130, pages}
-          sliderTrackDivider[#sliderTrackDivider + 1]   = {divider  + 130, pages}
+          table.insert(sliderTrackData[skin]['intervals'], intervals + 127)
+          table.insert(sliderTrackData[skin]['semiIntervals'], semiIntervals + 127)
+          table.insert(sliderTrackData[skin]['pages'], pages + 1)
      end
 
-     if data == 'positions' then
-          return sliderTrackPosition
-     end
-     if data == 'divider' then
-          return sliderTrackDivider
-     end
-     return {sliderTrackPosition, sliderTrackDivider}
+     local overIntervals     = (totalSkinMax + 1 / totalSkinMax) * totalSliderHeight
+     local overSemiIntervals = ( (((totalSkinMax-1) / totalSkinMax) + (totalSkinMax / totalSkinMax)) / 2) * totalSliderHeight
+     table.insert(sliderTrackData[skin]['intervals'], overIntervals + 127)
+     table.insert(sliderTrackData[skin]['semiIntervals'], overSemiIntervals + 127)
+     return sliderTrackData[skin]
 end
 
 return states

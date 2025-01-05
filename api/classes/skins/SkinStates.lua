@@ -10,8 +10,12 @@ local states    = require 'mods.NoteSkin Selector Remastered.api.modules.states'
 local global    = require 'mods.NoteSkin Selector Remastered.api.modules.global'
 
 local switch = global.switch
+local clickObject = funkinlua.clickObject
+local createTimer = funkinlua.createTimer
 
 local SkinStateSaves = SkinSaves:new('noteskin_selector', 'NoteSkin Selector')
+
+---@class SkinStates
 local SkinStates = {}
 
 --- Initializes the creation of a skin state to display skins
@@ -34,8 +38,7 @@ local totalSkinObjectID = {}
 local totalSkinLimit    = 0
 
 local totalSkinOneTime  = true
---- Loads a bunch of tables to each variables; improves optimization by about 10 milliseconds.
---- Can only be loaded once.
+--- Loads multiple tables to each corresponding variables, can only be loaded once to improves optimization by about 10 milliseconds.
 ---@return nil
 function SkinStates:loadTotalSkinData()
      if totalSkinOneTime == true then
@@ -121,11 +124,74 @@ function SkinStates:create(index)
      end
 end
 
-function SkinStates:switch()
+local sliderTrackPosition = states.getPageSkinSliderPositions('notes').intervals
+local sliderTrackDivider  = states.getPageSkinSliderPositions('notes').semiIntervals
+local sliderTrackThumbPressed = false
 
+local ge = true
+local pk = 0
+function SkinStates:page(test)
+     if clickObject('displaySliderIcon') then
+          sliderTrackThumbPressed = true
+     end
+
+     if sliderTrackThumbPressed == true then
+          if mousePressed('left') then
+               playAnim('displaySliderIcon', 'pressed')
+
+               local displaySliderIconHeight = getProperty('displaySliderIcon.height')
+               setProperty('displaySliderIcon.y', getMouseY('camHUD') - displaySliderIconHeight / 2)
+          end
+          if mouseReleased('left') then
+               playAnim('displaySliderIcon', 'static')
+
+               createTimer(nil, 0.1, function() 
+                    sliderTrackThumbPressed = false 
+                    playAnim('displaySliderIcon', 'static')
+               end)
+          end
+     end
+
+     if getProperty('displaySliderIcon.y') <= 127 then
+          setProperty('displaySliderIcon.y', 127)
+     end
+     if getProperty('displaySliderIcon.y') >= 643 then
+          setProperty('displaySliderIcon.y', 643)
+     end
+
+     local p = function()
+          local a = getProperty('displaySliderIcon.y')
+          
+
+          for positionIndex = 2, #sliderTrackPosition do
+               if sliderTrackThumbPressed == false then 
+                    break
+               end
+
+               local c1 = sliderTrackPosition[positionIndex-1]
+               local c2 = sliderTrackDivider[positionIndex-1]
+
+               if c1 > a and a <= c2 then
+                    return positionIndex-2
+               end
+          end
+          return false
+     end
+
+
+     local r = p()
+     if ge == true and type(r) == 'number' and r ~= pk then
+          self:create(r)
+
+          pk = r
+          ge = false
+     end
+     if type(r) == 'boolean' or r == pk then
+          ge = true
+     end
 end
 
-function SkinStates:page()
+function SkinStates:switch()
 end
 
 function SkinStates:hover()
