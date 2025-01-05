@@ -18,7 +18,7 @@ local SkinStateSaves = SkinSaves:new('noteskin_selector', 'NoteSkin Selector')
 ---@class SkinStates
 local SkinStates = {}
 
---- Initializes the creation of a skin state to display skins
+--- Initializes the creation of a skin state to display skins.
 ---@param stateStart string The given starting skin state to display first when created.
 ---@param stateTypes table[string] The given skin states within a group to display later.
 ---@param statePaths table[string] The given corresponding image paths to each skin states.
@@ -38,9 +38,9 @@ local totalSkinObjectID = {}
 local totalSkinLimit    = 0
 
 local totalSkinOneTime  = true
---- Loads multiple tables to each corresponding variables, can only be loaded once to improves optimization by about 10 milliseconds.
+--- Loads multiple tables to each corresponding variables, can only be loaded once executed.
 ---@return nil
-function SkinStates:loadTotalSkinData()
+function SkinStates:load_totalSkinData()
      if totalSkinOneTime == true then
           totalSkinObjects  = states.getTotalSkinObjects(self.currentState)
           totalSkinObjectID = states.getTotalSkinObjects(self.currentState, 'ids')
@@ -50,12 +50,44 @@ function SkinStates:loadTotalSkinData()
      end
 end
 
+local sliderTrackIntervals     = {}
+local sliderTrackSemiIntervals = {}
+
+local sliderTrackOneTime = true
+--- Loads multiple tables to each corresponding variables, can only be loaded once executed.
+---@return nil
+function SkinStates:load_pageSkinSliderData()
+     if sliderTrackOneTime == true then
+          sliderTrackIntervals     = states.getPageSkinSliderPositions(self.currentState).intervals
+          sliderTrackSemiIntervals = states.getPageSkinSliderPositions(self.currentState).semiIntervals
+
+          sliderTrackOneTime = false
+     end
+end
+
 --- Creates a chunk from the current skin state selected to display skins.
 ---@param index? integer The chunk position index to display.
 ---@return nil
 function SkinStates:create(index)
      local index = index == nil and 1 or index
-     self:loadTotalSkinData()
+     self:load_totalSkinData()
+
+     for pages = 1, totalSkinLimit do
+          for displays = 1, #totalSkinObjects[pages] do
+               if pages == index then
+                    goto continue_removeNonCurrentPages
+               end
+
+               local displaySkinIconTemplates = {state = (self.currentState):upperAtStart(), ID = totalSkinObjectID[pages][displays]}
+               local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
+               local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplates)
+               if luaSpriteExists(displaySkinIconButton) == true and luaSpriteExists(displaySkinIconSkin) == true then
+                    removeLuaSprite(displaySkinIconButton, true)
+                    removeLuaSprite(displaySkinIconSkin, true)
+               end
+               ::continue_removeNonCurrentPages::
+          end
+     end
        
      local function displaySkinPositions()
           local displaySkinIndexes   = {x = 0, y = 0}
@@ -73,23 +105,6 @@ function SkinStates:create(index)
                displaySkinPositions[#displaySkinPositions + 1] = {displaySkinPositionX, displaySkinPositionY}
           end
           return displaySkinPositions
-     end
-
-     for pages = 1, totalSkinLimit do
-          for displays = 1, #totalSkinObjects[pages] do
-               if pages == index then
-                    goto continue_removeNonCurrentPages
-               end
-
-               local displaySkinIconTemplates = {state = (self.currentState):upperAtStart(), ID = totalSkinObjectID[pages][displays]}
-               local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
-               local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplates)
-               if luaSpriteExists(displaySkinIconButton) == true and luaSpriteExists(displaySkinIconSkin) == true then
-                    removeLuaSprite(displaySkinIconButton, true)
-                    removeLuaSprite(displaySkinIconSkin, true)
-               end
-               ::continue_removeNonCurrentPages::
-          end
      end
 
      local call_displaySkinPositions = displaySkinPositions()
@@ -124,13 +139,25 @@ function SkinStates:create(index)
      end
 end
 
-local sliderTrackPosition = states.getPageSkinSliderPositions('notes').intervals
-local sliderTrackDivider  = states.getPageSkinSliderPositions('notes').semiIntervals
-local sliderTrackThumbPressed = false
+--- Creates and loads chunks from the current skin state, improves optimization significantly
+---@return nil
+function SkinStates:create_pre(index)
+     local index = index == nil and 1 or index
 
-local ge = true
-local pk = 0
-function SkinStates:page(test)
+     for pages = 1, totalSkinLimit do
+          self:create(pages)
+     end
+     self:create(index)
+end
+
+local sliderTrackThumbPressed = false
+local sliderTrackToggle       = false
+local sliderTrackCurrentPage  = 0
+--- Main functionlity of the slider for switching pages.
+---@return nil
+function SkinStates:page_slider()
+     self:load_pageSkinSliderData()
+
      if clickObject('displaySliderIcon') then
           sliderTrackThumbPressed = true
      end
@@ -144,11 +171,7 @@ function SkinStates:page(test)
           end
           if mouseReleased('left') then
                playAnim('displaySliderIcon', 'static')
-
-               createTimer(nil, 0.1, function() 
-                    sliderTrackThumbPressed = false 
-                    playAnim('displaySliderIcon', 'static')
-               end)
+               sliderTrackThumbPressed = false 
           end
      end
 
@@ -159,36 +182,36 @@ function SkinStates:page(test)
           setProperty('displaySliderIcon.y', 643)
      end
 
-     local p = function()
-          local a = getProperty('displaySliderIcon.y')
-          
-
-          for positionIndex = 2, #sliderTrackPosition do
+     local function sliderTrackCheckIntervals()
+          local displaySliderIconPositionY = getProperty('displaySliderIcon.y')
+          for positionIndex = 2, #sliderTrackIntervals do
                if sliderTrackThumbPressed == false then 
                     break
                end
 
-               local c1 = sliderTrackPosition[positionIndex-1]
-               local c2 = sliderTrackDivider[positionIndex-1]
-
-               if c1 > a and a <= c2 then
+               local sliderTrackBehindIntervals     = sliderTrackIntervals[positionIndex-1]
+               local sliderTrackBehindSemiIntervals = sliderTrackSemiIntervals[positionIndex-1]
+               if sliderTrackBehindIntervals > displaySliderIconPositionY and displaySliderIconPositionY <= sliderTrackBehindSemiIntervals then
                     return positionIndex-2
                end
           end
           return false
      end
 
+     local sliderTrackCurrentPageIndex = sliderTrackCheckIntervals()
+     if type(sliderTrackCurrentPageIndex) == 'number' and sliderTrackToggle == false and sliderTrackCurrentPageIndex ~= sliderTrackCurrentPage then
+          self:create(sliderTrackCurrentPageIndex)
+          playSound('keyboards/keyboard'..getRandomInt(1,3))
 
-     local r = p()
-     if ge == true and type(r) == 'number' and r ~= pk then
-          self:create(r)
+          sliderTrackCurrentPage = sliderTrackCurrentPageIndex
+          sliderTrackToggle = true
+     end
+     if type(sliderTrackCurrentPageIndex) == 'boolean' or sliderTrackCurrentPageIndex == sliderTrackCurrentPage then
+          sliderTrackToggle = false
+     end
+end
 
-          pk = r
-          ge = false
-     end
-     if type(r) == 'boolean' or r == pk then
-          ge = true
-     end
+function SkinStates:page_buttons()
 end
 
 function SkinStates:switch()

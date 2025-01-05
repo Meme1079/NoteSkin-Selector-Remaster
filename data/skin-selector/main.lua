@@ -9,6 +9,7 @@ local states    = require 'mods.NoteSkin Selector Remastered.api.modules.states'
 
 local Skins = SkinStates:new('notes', {'notes', 'splashes'}, {'noteSkins', 'noteSplashes'})
 Skins:precache()
+Skins:create_pre(1)
 Skins:create(1)
 
 makeAnimatedLuaSprite('displaySliderIcon', 'ui/buttons/slider_button', 600, 127) -- min: 127; max: 643
@@ -73,7 +74,7 @@ function onUpdatePost(elapsed)
           Skins:create(d)
      end  ]]
 
-     Skins:page()
+     Skins:page_slider()
      --sliderTrackPageFunctionality()
 end
 
