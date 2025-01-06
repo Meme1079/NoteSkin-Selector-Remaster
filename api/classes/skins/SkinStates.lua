@@ -234,7 +234,6 @@ function SkinStates:page_slider(snapToPage)
      sliderTrackSnapToPage()
 end
 
-
 function SkinStates:page_buttons()
 end
 

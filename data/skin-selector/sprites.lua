@@ -8,7 +8,6 @@ function setObjectCamera(object, camera)
      setProperty(object..'.camera', instanceArg(camera), false, true)
 end
 
-
 makeLuaSprite('selectorBackground', 'menuDesat', 0, 0)
 setObjectCamera('selectorBackground', 'camHUD')
 setObjectOrder('selectorBackground', 0)
@@ -24,66 +23,9 @@ setProperty('selectorSideCover.color', 0x000000)
 setProperty('selectorSideCover.velocity.y', 1000 / 20)
 addInstance('selectorSideCover', false)
 
---[[ makeLuaText('skinPageCurCount', 'Page 1 / 100', 1000, -400, 675)
-setObjectCamera('skinPageCurCount', 'camHUD')
-setTextFont('skinPageCurCount', 'sonic.ttf')
-setTextAlignment('skinPageCurCount', 'center')
-setTextSize('skinPageCurCount', 30)
-setProperty('skinPageCurCount.antialiasing', false)
-addLuaText('skinPageCurCount')
-
-local a = 300
-local b = 430 * 1.13
-
-makeLuaSprite('oidouwe', 'ui/buttons', a + 10, 678 - 2)
-setObjectCamera('oidouwe', 'camHUD')
-scaleObject('oidouwe', 0.4, 0.4)
-setProperty('oidouwe.color', 0x282028)
-setProperty('oidouwe.antialiasing', false)
-addLuaSprite('oidouwe')
-
-makeLuaSprite('oidouwe1', 'ui/buttons', b + 10, 678 - 2)
-setObjectCamera('oidouwe1', 'camHUD')
-scaleObject('oidouwe1', 0.4, 0.4)
-setProperty('oidouwe1.color', 0x282028)
-setProperty('oidouwe1.antialiasing', false)
-addLuaSprite('oidouwe1')
-
-makeLuaText('ioew', 'UP', 0, a + 50, 678 - 6)
-setObjectCamera('ioew', 'camHUD')
-setTextFont('ioew', 'sonic.ttf')
-setTextSize('ioew', 38)
-addLuaText('ioew')
-
-makeLuaText('ioew1', 'DOWN', 0, b + 50, 678 - 6)
-setObjectCamera('ioew1', 'camHUD')
-setTextFont('ioew1', 'sonic.ttf')
-setTextSize('ioew1', 38)
-addLuaText('ioew1')
-
-makeLuaSprite('ouew', 'ui/iconButton', a - 17, 678 - 19)
-setObjectCamera('ouew', 'camHUD')
-scaleObject('ouew', 0.4, 0.4)
-setProperty('ouew.antialiasing', false)
-addLuaSprite('ouew')
-
-makeLuaSprite('ouew2', 'ui/iconButton', b - 17, 678 - 19)
-setObjectCamera('ouew2', 'camHUD')
-scaleObject('ouew2', 0.4, 0.4)
-setProperty('ouew2.antialiasing', false)
-addLuaSprite('ouew2')
-
-makeLuaSprite('skinPageArrowDown', 'ui/buttons_arrow', a, 678)
-setObjectCamera('skinPageArrowDown', 'camHUD')
-scaleObject('skinPageArrowDown', 0.13, 0.13)
-setProperty('skinPageArrowDown.flipY', true)
-addLuaSprite('skinPageArrowDown')
-
-makeLuaSprite('skinPageArrowUp', 'ui/buttons_arrow', b, 675)
-setObjectCamera('skinPageArrowUp', 'camHUD')
-scaleObject('skinPageArrowUp', 0.13, 0.13)
-addLuaSprite('skinPageArrowUp') ]]
-
+function onCreatePost()
+     addHScript('hscripts/skin-selector/background.hx')
+end
 
 local hueChangeSwitch = true
 local hueChangeCPM    = 0.09

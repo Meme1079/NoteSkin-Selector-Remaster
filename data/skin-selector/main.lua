@@ -51,12 +51,8 @@ function onCreatePost()
           callMethod('uiGroup.remove', {instanceArg(camUI[i])})
      end
 
-     if not getModSetting('remove_checker_bg', modFolder) then
-          runHaxeCode('hscripts/skin-selector/background.hx')
-     end
      playMusic(getModSetting('song_select', modFolder):lower(), 0.35, true)
 end
-
 
 function onUpdate(elapsed)
      if keyboardJustPressed('ONE')    then restartSong(true) end
