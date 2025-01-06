@@ -1,4 +1,4 @@
-## Version 2.0.0 (Pre-Release)
+<!-- ## Version 2.0.0 (Pre-Release)
 ### Additions/Changes
 - Overhual the main source-code of the mod for organization and an ability to soft-code new states.
 - Organized some file locations.
@@ -13,7 +13,17 @@
 - Added some new sounds.
 
 > [!NOTE]
-> The Noteskin Debug State is temporarily removed becuase. I wanna rush it out becuase it has been 4 months without an update, so cut me some slack. This will be re-added back in the version `2.0.0 (Release)`.
+> The Noteskin Debug State is temporarily removed becuase. I wanna rush it out becuase it has been 4 months without an update, so cut me some slack. This will be re-added back in the version `2.0.0 (Release)`. -->
+
+## Version 2.0.0
+### Additions/Changes
+- Overhual the main source-code of the mod for organization and an ability to soft-code new states.
+- Organized file locations.
+- Additions/Changes to the GUI 
+     - Completely redesign a new GUI (inspired by OreUI from Minecraft)
+     - New textures
+     - Added a slider for selecting skins, cuz its cool!
+
 
 ## Version 1.5.0
 ### Additions/Changes

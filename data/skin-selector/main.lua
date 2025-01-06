@@ -23,6 +23,14 @@ setProperty('displaySliderIcon.antialiasing', false)
 precacheImage('ui/buttons/slider_button')
 addLuaSprite('displaySliderIcon')
 
+--[[ makeLuaText('test', '1 / 45', 0, 0, 0)
+setTextFont('test', 'phantummuff.ttf')
+setTextSize('test', 20)
+setTextBorder('test', 2, '000000')
+setProperty('test.camera', instanceArg('camHUD'), false, true)
+setProperty('test.antialiasing', false)
+addLuaText('test') ]]
+
 makeLuaSprite('displaySliderTrack', nil, 600 + getProperty('displaySliderIcon.width') / 2.7, 127 + 3)
 makeGraphic('displaySliderTrack', 12, 570, '1d1e1f')
 setObjectOrder('displaySliderTrack', getObjectOrder('displaySliderIcon'))

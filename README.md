@@ -6,7 +6,7 @@ This is a remastered of my old mods "NoteSkin Selector", one my old shitty mods 
 
 ## Installation Requirements
 1. Computer
-2. Psych Engine 1.0.0 (Pre-Release)
+2. Psych Engine 1.0.0 (Release)
 3. Should be inside the `mods` folder; without renaming the mod folder
 
 ## Features

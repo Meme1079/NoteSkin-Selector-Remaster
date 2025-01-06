@@ -79,7 +79,7 @@ function states.getTotalSkinObjects(skin, byData)
                totalSkinObjects[skin][totalSkinGroupIndex] = {}
           end
      
-          if pages % (16+1) ~= 0 then
+          if pages % (16) ~= 0 then
                local totalSkinObjectGroup = totalSkinObjects[skin][totalSkinGroupIndex]
                if byData == 'skins' then
                     totalSkinObjectGroup[#totalSkinObjectGroup + 1] = totalSkins[pages]

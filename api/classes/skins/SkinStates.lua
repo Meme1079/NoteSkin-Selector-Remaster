@@ -140,6 +140,7 @@ function SkinStates:create(index)
 end
 
 --- Creates and loads chunks from the current skin state, improves optimization significantly
+---@param index? integer The chunk position index to display.
 ---@return nil
 function SkinStates:create_pre(index)
      local index = index == nil and 1 or index
@@ -185,10 +186,7 @@ function SkinStates:page_slider()
      local function sliderTrackCheckIntervals()
           local displaySliderIconPositionY = getProperty('displaySliderIcon.y')
           for positionIndex = 2, #sliderTrackIntervals do
-               if sliderTrackThumbPressed == false then 
-                    break
-               end
-
+               
                local sliderTrackBehindIntervals     = sliderTrackIntervals[positionIndex-1]
                local sliderTrackBehindSemiIntervals = sliderTrackSemiIntervals[positionIndex-1]
                if sliderTrackBehindIntervals > displaySliderIconPositionY and displaySliderIconPositionY <= sliderTrackBehindSemiIntervals then
@@ -199,16 +197,30 @@ function SkinStates:page_slider()
      end
 
      local sliderTrackCurrentPageIndex = sliderTrackCheckIntervals()
-     if type(sliderTrackCurrentPageIndex) == 'number' and sliderTrackToggle == false and sliderTrackCurrentPageIndex ~= sliderTrackCurrentPage then
-          self:create(sliderTrackCurrentPageIndex)
-          playSound('keyboards/keyboard'..getRandomInt(1,3))
-
+     local checkThumbPressed  = sliderTrackCurrentPageIndex ~= false and sliderTrackToggle == false
+     local checkThumbReleased = sliderTrackCurrentPageIndex == false and sliderTrackToggle == true
+     if checkThumbPressed and sliderTrackCurrentPageIndex ~= sliderTrackCurrentPage then
+          if sliderTrackThumbPressed == true then 
+               self:create(sliderTrackCurrentPageIndex)
+               playSound('keyboards/keyboard'..getRandomInt(1,3))
+          end
+          
           sliderTrackCurrentPage = sliderTrackCurrentPageIndex
           sliderTrackToggle = true
      end
-     if type(sliderTrackCurrentPageIndex) == 'boolean' or sliderTrackCurrentPageIndex == sliderTrackCurrentPage then
+     if checkThumbReleased or sliderTrackCurrentPageIndex == sliderTrackCurrentPage then
           sliderTrackToggle = false
      end
+
+     if sliderTrackThumbPressed == false and mouseReleased('left') then
+          if sliderTrackCurrentPageIndex == totalSkinLimit then
+               setProperty('displaySliderIcon.y', 643)
+               return
+          end
+          setProperty('displaySliderIcon.y', sliderTrackIntervals[sliderTrackCurrentPageIndex])
+     end
+     
+     --debugPrint({sliderTrackCurrentPageIndex ~= sliderTrackCurrentPage})
 end
 
 function SkinStates:page_buttons()
