@@ -218,10 +218,9 @@ function SkinStates:page_slider(snapToPage)
           end
      end
      local function sliderTrackSnapToPage()
-          if snapToPage == false then -- gosh this weird code looks weird
-               return
-          end
-          
+          if snapToPage == false then return end -- gosh this weird code looks weird
+          if totalSkinLimit < 2  then return end -- fixes a weird bug
+
           if sliderTrackThumbPressed == false and mouseReleased('left') then
                if sliderTrackCurrentPageIndex == totalSkinLimit then
                     setProperty('displaySliderIcon.y', 643)
