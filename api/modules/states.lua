@@ -74,12 +74,12 @@ function states.getTotalSkinObjects(skin, byData)
 
      totalSkinObjects[skin] = {}
      for pages = 1, #totalSkins do
-          if (pages-1) % (16+1) == 0 then
+          if (pages-1) % 16 == 0 then --! DO NOT REMOVE PARENTHESIS
                totalSkinGroupIndex = totalSkinGroupIndex + 1
                totalSkinObjects[skin][totalSkinGroupIndex] = {}
           end
      
-          if pages % (16) ~= 0 then
+          if pages % 16+1 ~= 0 then   --! DO NOT ADD PARENTHESIS
                local totalSkinObjectGroup = totalSkinObjects[skin][totalSkinGroupIndex]
                if byData == 'skins' then
                     totalSkinObjectGroup[#totalSkinObjectGroup + 1] = totalSkins[pages]

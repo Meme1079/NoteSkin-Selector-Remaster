@@ -155,16 +155,22 @@ local sliderTrackThumbPressed = false
 local sliderTrackToggle       = false
 local sliderTrackCurrentPage  = 0
 --- Main functionlity of the slider for switching pages.
+---@param snapToPage? boolean Whether to enable snap to page when scrolling through pages.
 ---@return nil
-function SkinStates:page_slider()
+function SkinStates:page_slider(snapToPage)
+     local snapToPage = snapToPage == nil and true or false
      self:load_pageSkinSliderData()
 
      if clickObject('displaySliderIcon') then
           sliderTrackThumbPressed = true
      end
 
-     if sliderTrackThumbPressed == true then
-          if mousePressed('left') then
+     if totalSkinLimit >= 2 then
+          if sliderTrackThumbPressed == false then
+               goto skip_sliderScrollFunctionality -- pls don't ask about this
+          end
+
+          if mousePressed('left')  then
                playAnim('displaySliderIcon', 'pressed')
 
                local displaySliderIconHeight = getProperty('displaySliderIcon.height')
@@ -174,7 +180,10 @@ function SkinStates:page_slider()
                playAnim('displaySliderIcon', 'static')
                sliderTrackThumbPressed = false 
           end
+     else
+          playAnim('displaySliderIcon', 'unscrollable')
      end
+     ::skip_sliderScrollFunctionality::
 
      if getProperty('displaySliderIcon.y') <= 127 then
           setProperty('displaySliderIcon.y', 127)
@@ -186,7 +195,6 @@ function SkinStates:page_slider()
      local function sliderTrackCheckIntervals()
           local displaySliderIconPositionY = getProperty('displaySliderIcon.y')
           for positionIndex = 2, #sliderTrackIntervals do
-               
                local sliderTrackBehindIntervals     = sliderTrackIntervals[positionIndex-1]
                local sliderTrackBehindSemiIntervals = sliderTrackSemiIntervals[positionIndex-1]
                if sliderTrackBehindIntervals > displaySliderIconPositionY and displaySliderIconPositionY <= sliderTrackBehindSemiIntervals then
@@ -197,31 +205,40 @@ function SkinStates:page_slider()
      end
 
      local sliderTrackCurrentPageIndex = sliderTrackCheckIntervals()
-     local checkThumbPressed  = sliderTrackCurrentPageIndex ~= false and sliderTrackToggle == false
-     local checkThumbReleased = sliderTrackCurrentPageIndex == false and sliderTrackToggle == true
-     if checkThumbPressed and sliderTrackCurrentPageIndex ~= sliderTrackCurrentPage then
-          if sliderTrackThumbPressed == true then 
-               self:create(sliderTrackCurrentPageIndex)
-               playSound('keyboards/keyboard'..getRandomInt(1,3))
+     local function sliderTrackSwitchPages()
+          local checkThumbPressed  = sliderTrackCurrentPageIndex ~= false and sliderTrackToggle == false
+          local checkThumbReleased = sliderTrackCurrentPageIndex == false and sliderTrackToggle == true  -- semi-useful
+          if checkThumbPressed and sliderTrackCurrentPageIndex ~= sliderTrackCurrentPage then
+               if sliderTrackThumbPressed == true then 
+                    self:create(sliderTrackCurrentPageIndex)
+                    playSound('keyboards/keyboard'..getRandomInt(1,3))
+               end
+               
+               sliderTrackCurrentPage = sliderTrackCurrentPageIndex
+               sliderTrackToggle = true
           end
-          
-          sliderTrackCurrentPage = sliderTrackCurrentPageIndex
-          sliderTrackToggle = true
+          if checkThumbReleased or sliderTrackCurrentPageIndex == sliderTrackCurrentPage then
+               sliderTrackToggle = false
+          end
      end
-     if checkThumbReleased or sliderTrackCurrentPageIndex == sliderTrackCurrentPage then
-          sliderTrackToggle = false
-     end
-
-     if sliderTrackThumbPressed == false and mouseReleased('left') then
-          if sliderTrackCurrentPageIndex == totalSkinLimit then
-               setProperty('displaySliderIcon.y', 643)
+     local function sliderTrackSnapToPage()
+          if snapToPage == false then -- gosh this weird code looks weird
                return
           end
-          setProperty('displaySliderIcon.y', sliderTrackIntervals[sliderTrackCurrentPageIndex])
+          
+          if sliderTrackThumbPressed == false and mouseReleased('left') then
+               if sliderTrackCurrentPageIndex == totalSkinLimit then
+                    setProperty('displaySliderIcon.y', 643)
+                    return
+               end
+               setProperty('displaySliderIcon.y', sliderTrackIntervals[sliderTrackCurrentPageIndex])
+          end
      end
-     
-     --debugPrint({sliderTrackCurrentPageIndex ~= sliderTrackCurrentPage})
+
+     sliderTrackSwitchPages()
+     sliderTrackSnapToPage()
 end
+
 
 function SkinStates:page_buttons()
 end
