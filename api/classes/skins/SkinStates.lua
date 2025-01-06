@@ -165,12 +165,8 @@ function SkinStates:page_slider(snapToPage)
           sliderTrackThumbPressed = true
      end
 
-     if totalSkinLimit >= 2 then
-          if sliderTrackThumbPressed == false then
-               goto skip_sliderScrollFunctionality -- pls don't ask about this
-          end
-
-          if mousePressed('left')  then
+     if sliderTrackThumbPressed == true and totalSkinLimit >= 2 then
+          if mousePressed('left') then
                playAnim('displaySliderIcon', 'pressed')
 
                local displaySliderIconHeight = getProperty('displaySliderIcon.height')
@@ -180,10 +176,10 @@ function SkinStates:page_slider(snapToPage)
                playAnim('displaySliderIcon', 'static')
                sliderTrackThumbPressed = false 
           end
-     else
+     end
+     if totalSkinLimit < 2 then
           playAnim('displaySliderIcon', 'unscrollable')
      end
-     ::skip_sliderScrollFunctionality::
 
      if getProperty('displaySliderIcon.y') <= 127 then
           setProperty('displaySliderIcon.y', 127)
