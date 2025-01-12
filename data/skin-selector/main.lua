@@ -7,11 +7,6 @@ local json      = require 'mods.NoteSkin Selector Remastered.api.libraries.json.
 local funkinlua = require 'mods.NoteSkin Selector Remastered.api.modules.funkinlua'
 local states    = require 'mods.NoteSkin Selector Remastered.api.modules.states'
 
-local Skins = SkinStates:new('notes', {'notes', 'splashes'}, {'noteSkins', 'noteSplashes'})
-Skins:precache()
-Skins:create_pre(1)
-Skins:create(1)
-
 -- Display Sliders --
 
 makeAnimatedLuaSprite('displaySliderIcon', 'ui/buttons/slider_button', 600, 127) -- min: 127; max: 643
@@ -42,14 +37,13 @@ setProperty('genInfoStateName.camera', instanceArg('camHUD'), false, true)
 setProperty('genInfoStateName.antialiasing', false)
 addLuaText('genInfoStateName')
 
-makeLuaText('genInfoStatePage', ' Page 001 / 010', 0, 7^2.767, 17)
+makeLuaText('genInfoStatePage', ' Page 001 / 100', 0, 7^2.767, 17)
 setTextFont('genInfoStatePage', 'sonic.ttf')
 setTextSize('genInfoStatePage', 30)
 setTextBorder('genInfoStatePage', 3, '000000')
 setProperty('genInfoStatePage.camera', instanceArg('camHUD'), false, true)
 setProperty('genInfoStatePage.antialiasing', false)
 addLuaText('genInfoStatePage')
-
 
 -- Search Bar --
 
@@ -85,12 +79,19 @@ setObjectOrder('mouseHitBox', 90E34) -- fuck you
 setProperty('mouseHitBox.visible', false)
 addLuaSprite('mouseHitBox', true)
 
+-- Skins --
+
+local Skins = SkinStates:new('notes', {'notes', 'splashes'}, {'noteSkins', 'noteSplashes'})
+Skins:precache()
+Skins:create_pre(1)
+Skins:create(1)
+Skins:page_setup()
+
 function onCreatePost()
      local camUI = {'iconP1', 'iconP2', 'healthBar', 'scoreTxt', 'botplayTxt'}
      for i = 1, #camUI do
           callMethod('uiGroup.remove', {instanceArg(camUI[i])})
      end
-
      playMusic(getModSetting('song_select', modFolder):lower(), 0.35, true)
 end
 
@@ -106,7 +107,7 @@ function onUpdate(elapsed)
 
      if searchBarInput_onFocus() and keyboardJustPressed('ENTER') then
           local er = states.getTotalSkinObjects('notes', 'names')[1]
-          local pr = getVar('searchBarInputContent'):gsub('%-(.-)', '%1'):lower():upperAtStart()
+          local pr = getVar('searchBarInputContent'):gsub('%-(.-)', '%1'):lower()
 
           debugPrint( table.find(er, pr) )
      end
@@ -114,6 +115,7 @@ end
 
 function onUpdatePost(elapsed)
      Skins:page_slider()
+     Skins:page_moved()
 end
 
 local sliderTrackPosition = states.getPageSkinSliderPositions('notes').intervals

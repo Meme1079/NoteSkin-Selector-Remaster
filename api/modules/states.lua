@@ -85,7 +85,7 @@ function states.getTotalSkinObjects(skin, byData)
                if byData == 'skins' then
                     totalSkinObjectGroup[#totalSkinObjectGroup + 1] = totalSkins[pages]
                elseif byData == 'names' then
-                    totalSkinObjectGroup[#totalSkinObjectGroup + 1] = totalSkinNames[pages]
+                    totalSkinObjectGroup[#totalSkinObjectGroup + 1] = totalSkinNames[pages]:lower()
                elseif byData == 'ids' then
                     totalSkinObjectGroup[#totalSkinObjectGroup + 1] = pages
                end

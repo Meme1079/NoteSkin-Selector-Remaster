@@ -144,13 +144,13 @@ end
 ---@return nil
 function SkinStates:create_pre(index)
      local index = index == nil and 1 or index
-
      for pages = 1, totalSkinLimit do
           self:create(pages)
      end
      self:create(index)
 end
 
+local pageCurrentIndex = 1
 local sliderTrackThumbPressed = false
 local sliderTrackToggle       = false
 local sliderTrackCurrentPage  = 0
@@ -208,6 +208,10 @@ function SkinStates:page_slider(snapToPage)
                if sliderTrackThumbPressed == true then 
                     self:create(sliderTrackCurrentPageIndex)
                     playSound('keyboards/keyboard'..getRandomInt(1,3))
+                    pageCurrentIndex = sliderTrackCurrentPageIndex
+
+                    local genInfoStatePageTemplate = {cur = ('%.3d'):format(sliderTrackCurrentPageIndex), max = ('%.3d'):format(totalSkinLimit) }
+                    setTextString('genInfoStatePage', (' Page ${cur} / ${max}'):interpol(genInfoStatePageTemplate))
                end
                
                sliderTrackCurrentPage = sliderTrackCurrentPageIndex
@@ -234,14 +238,37 @@ function SkinStates:page_slider(snapToPage)
      sliderTrackSnapToPage()
 end
 
-local movedCurPages = 0
+--- Alternative functionlity of the slider for switching pages.
+---@return nil
 function SkinStates:page_moved()
-     if keyboardJustPressed('Q') then
-          movedCurPages = movedCurPages - 1
+     local changeGenInfoPage = function()
+          local genInfoStatePageTemplate = {cur = ('%.3d'):format(pageCurrentIndex), max = ('%.3d'):format(totalSkinLimit) }
+          setTextString('genInfoStatePage', (' Page ${cur} / ${max}'):interpol(genInfoStatePageTemplate))
      end
-     if keyboardJustPressed('E') then
-          movedCurPages = movedCurPages + 1
+
+     if (searchBarInput_onFocus() == false and keyboardJustPressed('Q')) and pageCurrentIndex > 1 then
+          pageCurrentIndex = pageCurrentIndex - 1
+          changeGenInfoPage()
+
+          self:create(pageCurrentIndex)
+          setProperty('displaySliderIcon.y', sliderTrackIntervals[pageCurrentIndex])
+          playSound('keyboards/keyboard'..getRandomInt(1,3))
      end
+     if (searchBarInput_onFocus() == false and keyboardJustPressed('E')) and pageCurrentIndex < totalSkinLimit then
+          pageCurrentIndex = pageCurrentIndex + 1
+          changeGenInfoPage()
+
+          self:create(pageCurrentIndex)
+          setProperty('displaySliderIcon.y', sliderTrackIntervals[pageCurrentIndex])
+          playSound('keyboards/keyboard'..getRandomInt(1,3))
+     end
+end
+
+--- Setups the current page text, that's it.
+---@return nil
+function SkinStates:page_setup()
+     local genInfoStatePageTemplate = {cur = ('%.3d'):format(pageCurrentIndex), max = ('%.3d'):format(totalSkinLimit) }
+     setTextString('genInfoStatePage', (' Page ${cur} / ${max}'):interpol(genInfoStatePageTemplate))
 end
 
 function SkinStates:switch()

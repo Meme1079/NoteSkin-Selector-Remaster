@@ -13,7 +13,9 @@ function onCreate() {
      searchBarInput.behindText.visible   = false;
      searchBarInput.caret.alpha  = 0;
      searchBarInput.cameras      = [game.camHUD];
-     searchBarInput.onChange     = function(preText:String, curText:String) {
+     searchBarInput.onChange     = function(preText:String, curText:String) {          
+          FlxG.sound.play(Paths.sound( 'keyclicks/keyClick' + Std.string(FlxG.random.int(1,8)) ));
+          
           if (curText.length > 0) {
                game.getLuaObject('searchBarInputPlaceHolder').text = '';          
           } else {
