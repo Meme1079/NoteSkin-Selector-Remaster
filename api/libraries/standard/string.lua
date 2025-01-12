@@ -31,9 +31,17 @@ end
 --- Capitalize the first character of the string
 ---@return string
 function string:upperAtStart()
-     return self:sub(1,1):upper()..self:sub(2, #self)
+     local result = ''
+     for chunks in self:gmatch('[%w%p%s]*') do
+          result = result .. chunks:sub(1,1):upper()..chunks:sub(2, #chunks)
+     end
+     return result
 end
 
+--- Catches the matched string content
+---@param pattern string The specified pattern to catch the match
+---@param position? integer The starting index position of the string to find the first match
+---@return string
 function string:catch(pattern, position)
      local charIndex = {self:find(pattern)}
      return self:sub(charIndex[1], charIndex[2]):match(pattern, position)
@@ -76,8 +84,8 @@ end
 --- Counts the number of patterns in a given string
 ---@param self string The string to count the pattern
 ---@param pattern string The pattern to be counted on the given string
----@param startInd number An optional parameter, The starting position to start counting; Default value: 1
----@param endInd number An optional parameter, The starting position to end the counting
+---@param startInd? number The starting position to start counting; Default value: 1
+---@param endInd? number The starting position to end the counting
 ---@return string
 function string:count(pattern, startInd, endInd)
      local startInd = startInd == nil and 1 or endInd

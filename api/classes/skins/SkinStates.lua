@@ -234,7 +234,14 @@ function SkinStates:page_slider(snapToPage)
      sliderTrackSnapToPage()
 end
 
-function SkinStates:page_buttons()
+local movedCurPages = 0
+function SkinStates:page_moved()
+     if keyboardJustPressed('Q') then
+          movedCurPages = movedCurPages - 1
+     end
+     if keyboardJustPressed('E') then
+          movedCurPages = movedCurPages + 1
+     end
 end
 
 function SkinStates:switch()

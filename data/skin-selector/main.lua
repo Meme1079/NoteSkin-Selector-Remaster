@@ -12,6 +12,8 @@ Skins:precache()
 Skins:create_pre(1)
 Skins:create(1)
 
+-- Display Sliders --
+
 makeAnimatedLuaSprite('displaySliderIcon', 'ui/buttons/slider_button', 600, 127) -- min: 127; max: 643
 addAnimationByPrefix('displaySliderIcon', 'static', 'slider_button-static')
 addAnimationByPrefix('displaySliderIcon', 'pressed', 'slider_button-pressed')
@@ -30,73 +32,60 @@ setProperty('displaySliderTrack.camera', instanceArg('camHUD'), false, true)
 setProperty('displaySliderTrack.antialiasing', false)
 addLuaSprite('displaySliderTrack', true)
 
+-- General Infos --
 
-local p = 55
-makeLuaSprite('windowTest1', 'ui/buttons/button_test5', 20, p)
-scaleObject('windowTest1', 0.8, 0.8)
-setProperty('windowTest1.camera', instanceArg('camHUD'), false, true)
-setProperty('windowTest1.antialiasing', false)
-addLuaSprite('windowTest1', true)
+makeLuaText('genInfoStateName', ' Notes', 0, 7, 13)
+setTextFont('genInfoStateName', 'sonic.ttf')
+setTextSize('genInfoStateName', 35)
+setTextBorder('genInfoStateName', 3, '000000')
+setProperty('genInfoStateName.camera', instanceArg('camHUD'), false, true)
+setProperty('genInfoStateName.antialiasing', false)
+addLuaText('genInfoStateName')
 
-makeLuaText('testy', 'Search Skins...', 0, 35, p + 12)
-setTextFont('testy', 'sonic.ttf')
-setTextSize('testy', 31)
-setTextColor('testy', 'b3b3b5')
-setTextBorder('testy', -1)
-setProperty('testy.camera', instanceArg('camHUD'), false, true)
-setProperty('testy.antialiasing', false)
-addLuaText('testy')
+makeLuaText('genInfoStatePage', ' Page 001 / 010', 0, 7^2.767, 17)
+setTextFont('genInfoStatePage', 'sonic.ttf')
+setTextSize('genInfoStatePage', 30)
+setTextBorder('genInfoStatePage', 3, '000000')
+setProperty('genInfoStatePage.camera', instanceArg('camHUD'), false, true)
+setProperty('genInfoStatePage.antialiasing', false)
+addLuaText('genInfoStatePage')
 
-makeLuaSprite('corn', nil, 0, 0)
-makeGraphic('corn', 3, 25, 'ffffff')
-setObjectCamera('corn', 'camHUD')
-addLuaSprite('corn', true)
 
-runHaxeCode([[
-import flixel.FlxG;
-import backend.ui.PsychUIInputText;
-import backend.ClientPrefs;
-import backend.Paths;
+-- Search Bar --
 
-var test = new PsychUIInputText(34, 54+12, 385, '', 31);
-test.textObj.font = Paths.mods('NoteSkin Selector Remastered/fonts/sonic.ttf');
-test.textObj.color = FlxColor.WHITE;
-test.textObj.antialiasing = false;
-test.bg.visible = false;
-test.behindText.visible = false;
-test.caret.alpha = 0;
-test.cameras = [game.camHUD];
-add(test);
+makeLuaSprite('searchBarBackground', 'ui/buttons/search_inputs', 20, 55)
+scaleObject('searchBarBackground', 0.8, 0.8)
+setProperty('searchBarBackground.camera', instanceArg('camHUD'), false, true)
+setProperty('searchBarBackground.antialiasing', false)
+precacheImage('ui/buttons/search_inputs')
+addLuaSprite('searchBarBackground', true)
 
-game.getLuaObject('corn').x = test.caret.x + 1;
-game.getLuaObject('corn').y = test.caret.y;
-test.onChange = function(preText:String, curText:String) {
-     game.getLuaObject('corn').x = test.caret.x + 1;
+makeLuaText('searchBarInputPlaceHolder', 'Search Skins...', 0, 35, 55 + 12)
+setTextFont('searchBarInputPlaceHolder', 'sonic.ttf')
+setTextSize('searchBarInputPlaceHolder', 31)
+setTextColor('searchBarInputPlaceHolder', 'b3b3b5')
+setTextBorder('searchBarInputPlaceHolder', -1)
+setProperty('searchBarInputPlaceHolder.camera', instanceArg('camHUD'), false, true)
+setProperty('searchBarInputPlaceHolder.antialiasing', false)
+addLuaText('searchBarInputPlaceHolder')
 
-     if (curText.length > 0) {
-          game.getLuaObject('testy').text = '';          
-     } else {
-          game.getLuaObject('testy').text = 'Search Skins...';
-     }
+makeLuaSprite('searchBarInputCaret', nil, 0, 0)
+makeGraphic('searchBarInputCaret', 3, 25, 'ffffff')
+setObjectCamera('searchBarInputCaret', 'camHUD')
+addLuaSprite('searchBarInputCaret', true)
 
-     ClientPrefs.toggleVolumeKeys(false);
-     new FlxTimer().start(0.1, () -> { ClientPrefs.toggleVolumeKeys(true); });
-}
-test.onPressEnter = function(e) {
-     setVar('gems', test.text);
-}
+addHScript('hscripts/skin-selector/searchBar_functionality')
 
-setVar('test', test);
-]])
+-- Mouse Hitbox --
+
+makeLuaSprite('mouseHitBox', nil, getMouseX('camHUD') - 3, getMouseY('camHUD'))
+makeGraphic('mouseHitBox', 10, 10, 'ff0000')
+setProperty('mouseHitBox.camera', instanceArg('camHUD'), false, true)
+setObjectOrder('mouseHitBox', 90E34) -- fuck you
+setProperty('mouseHitBox.visible', false)
+addLuaSprite('mouseHitBox', true)
 
 function onCreatePost()
-     makeLuaSprite('mouseHitBox', nil, getMouseX('camHUD') - 3, getMouseY('camHUD'))
-     makeGraphic('mouseHitBox', 10, 10, 'ff0000')
-     setProperty('mouseHitBox.camera', instanceArg('camHUD'), false, true)
-     setObjectOrder('mouseHitBox', 90E34) -- fuck you
-     setProperty('mouseHitBox.visible', false)
-     addLuaSprite('mouseHitBox', true)
-
      local camUI = {'iconP1', 'iconP2', 'healthBar', 'scoreTxt', 'botplayTxt'}
      for i = 1, #camUI do
           callMethod('uiGroup.remove', {instanceArg(camUI[i])})
@@ -106,42 +95,25 @@ function onCreatePost()
 end
 
 function onUpdate(elapsed)
-     if keyboardJustPressed('ONE') then restartSong(true) end
-     if keyboardJustPressed('ESCAPE')      then exitSong()        end
+     if not searchBarInput_onFocus() and keyboardJustPressed('ONE')    then restartSong(true) end
+     if not searchBarInput_onFocus() and keyboardJustPressed('ESCAPE') then exitSong()        end
 
      if mouseClicked('left')  then playSound('clicks/clickDown', 0.8) end
-     if mouseReleased('left') then playSound('clicks/clickUp', 0.8) end
+     if mouseReleased('left') then playSound('clicks/clickUp', 0.8)   end
 
      setProperty('mouseHitBox.x', getMouseX('camHUD') - 3)
      setProperty('mouseHitBox.y', getMouseY('camHUD'))
 
-     if keyboardJustPressed('ENTER') then
+     if searchBarInput_onFocus() and keyboardJustPressed('ENTER') then
           local er = states.getTotalSkinObjects('notes', 'names')[1]
-          --local pe = table.find(states.getTotalSkinObjects('notes')[1], getVar('gems'):)
-          -- json.stringify(er, nil, 5)
-          debugPrint( table.find(er, getVar('gems'):gsub('%-(.-)', '%1')) )
-     end
+          local pr = getVar('searchBarInputContent'):gsub('%-(.-)', '%1'):lower():upperAtStart()
 
-     runHaxeCode([[
-          game.getLuaObject('corn').visible = getVar('test').caret.visible;
-     ]])
+          debugPrint( table.find(er, pr) )
+     end
 end
 
-
-
---local d = 1
 function onUpdatePost(elapsed)
-     --[[ if keyboardJustPressed('Q') then
-          d = d + 1
-          Skins:create(d)
-     end
-     if keyboardJustPressed('E') then
-          d = d - 1
-          Skins:create(d)
-     end  ]]
-
      Skins:page_slider()
-     --sliderTrackPageFunctionality()
 end
 
 local sliderTrackPosition = states.getPageSkinSliderPositions('notes').intervals
