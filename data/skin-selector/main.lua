@@ -23,20 +23,71 @@ setProperty('displaySliderIcon.antialiasing', false)
 precacheImage('ui/buttons/slider_button')
 addLuaSprite('displaySliderIcon')
 
---[[ makeLuaText('test', '1 / 45', 0, 0, 0)
-setTextFont('test', 'phantummuff.ttf')
-setTextSize('test', 20)
-setTextBorder('test', 2, '000000')
-setProperty('test.camera', instanceArg('camHUD'), false, true)
-setProperty('test.antialiasing', false)
-addLuaText('test') ]]
-
 makeLuaSprite('displaySliderTrack', nil, 600 + getProperty('displaySliderIcon.width') / 2.7, 127 + 3)
 makeGraphic('displaySliderTrack', 12, 570, '1d1e1f')
 setObjectOrder('displaySliderTrack', getObjectOrder('displaySliderIcon'))
 setProperty('displaySliderTrack.camera', instanceArg('camHUD'), false, true)
 setProperty('displaySliderTrack.antialiasing', false)
 addLuaSprite('displaySliderTrack', true)
+
+
+local p = 55
+makeLuaSprite('windowTest1', 'ui/buttons/button_test5', 20, p)
+scaleObject('windowTest1', 0.8, 0.8)
+setProperty('windowTest1.camera', instanceArg('camHUD'), false, true)
+setProperty('windowTest1.antialiasing', false)
+addLuaSprite('windowTest1', true)
+
+makeLuaText('testy', 'Search Skins...', 0, 35, p + 12)
+setTextFont('testy', 'sonic.ttf')
+setTextSize('testy', 31)
+setTextColor('testy', 'b3b3b5')
+setTextBorder('testy', -1)
+setProperty('testy.camera', instanceArg('camHUD'), false, true)
+setProperty('testy.antialiasing', false)
+addLuaText('testy')
+
+makeLuaSprite('corn', nil, 0, 0)
+makeGraphic('corn', 3, 25, 'ffffff')
+setObjectCamera('corn', 'camHUD')
+addLuaSprite('corn', true)
+
+runHaxeCode([[
+import flixel.FlxG;
+import backend.ui.PsychUIInputText;
+import backend.ClientPrefs;
+import backend.Paths;
+
+var test = new PsychUIInputText(34, 54+12, 385, '', 31);
+test.textObj.font = Paths.mods('NoteSkin Selector Remastered/fonts/sonic.ttf');
+test.textObj.color = FlxColor.WHITE;
+test.textObj.antialiasing = false;
+test.bg.visible = false;
+test.behindText.visible = false;
+test.caret.alpha = 0;
+test.cameras = [game.camHUD];
+add(test);
+
+game.getLuaObject('corn').x = test.caret.x + 1;
+game.getLuaObject('corn').y = test.caret.y;
+test.onChange = function(preText:String, curText:String) {
+     game.getLuaObject('corn').x = test.caret.x + 1;
+
+     if (curText.length > 0) {
+          game.getLuaObject('testy').text = '';          
+     } else {
+          game.getLuaObject('testy').text = 'Search Skins...';
+     }
+
+     ClientPrefs.toggleVolumeKeys(false);
+     new FlxTimer().start(0.1, () -> { ClientPrefs.toggleVolumeKeys(true); });
+}
+test.onPressEnter = function(e) {
+     setVar('gems', test.text);
+}
+
+setVar('test', test);
+]])
 
 function onCreatePost()
      makeLuaSprite('mouseHitBox', nil, getMouseX('camHUD') - 3, getMouseY('camHUD'))
@@ -55,14 +106,25 @@ function onCreatePost()
 end
 
 function onUpdate(elapsed)
-     if keyboardJustPressed('ONE')    then restartSong(true) end
-     if keyboardJustPressed('ESCAPE') then exitSong()        end
+     if keyboardJustPressed('ONE') then restartSong(true) end
+     if keyboardJustPressed('ESCAPE')      then exitSong()        end
 
      if mouseClicked('left')  then playSound('clicks/clickDown', 0.8) end
      if mouseReleased('left') then playSound('clicks/clickUp', 0.8) end
 
      setProperty('mouseHitBox.x', getMouseX('camHUD') - 3)
      setProperty('mouseHitBox.y', getMouseY('camHUD'))
+
+     if keyboardJustPressed('ENTER') then
+          local er = states.getTotalSkinObjects('notes', 'names')[1]
+          --local pe = table.find(states.getTotalSkinObjects('notes')[1], getVar('gems'):)
+          -- json.stringify(er, nil, 5)
+          debugPrint( table.find(er, getVar('gems'):gsub('%-(.-)', '%1')) )
+     end
+
+     runHaxeCode([[
+          game.getLuaObject('corn').visible = getVar('test').caret.visible;
+     ]])
 end
 
 

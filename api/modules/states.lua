@@ -68,11 +68,12 @@ end
 function states.getTotalSkinObjects(skin, byData)
      local byData = byData == nil and 'skins' or byData:lower()
 
-     local totalSkinObjects    = {}
      local totalSkinGroupIndex = 0
-     local totalSkins = states.getTotalSkins(skin)
-
+     local totalSkinObjects    = {}
      totalSkinObjects[skin] = {}
+
+     local totalSkinNames = states.getTotalSkinNames(skin)
+     local totalSkins     = states.getTotalSkins(skin)
      for pages = 1, #totalSkins do
           if (pages-1) % 16 == 0 then --! DO NOT REMOVE PARENTHESIS
                totalSkinGroupIndex = totalSkinGroupIndex + 1
@@ -83,6 +84,8 @@ function states.getTotalSkinObjects(skin, byData)
                local totalSkinObjectGroup = totalSkinObjects[skin][totalSkinGroupIndex]
                if byData == 'skins' then
                     totalSkinObjectGroup[#totalSkinObjectGroup + 1] = totalSkins[pages]
+               elseif byData == 'names' then
+                    totalSkinObjectGroup[#totalSkinObjectGroup + 1] = totalSkinNames[pages]
                elseif byData == 'ids' then
                     totalSkinObjectGroup[#totalSkinObjectGroup + 1] = pages
                end
