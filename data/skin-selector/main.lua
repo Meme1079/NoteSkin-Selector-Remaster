@@ -92,30 +92,34 @@ function onCreatePost()
      for i = 1, #camUI do
           callMethod('uiGroup.remove', {instanceArg(camUI[i])})
      end
-     playMusic(getModSetting('song_select', modFolder):lower(), 0.35, true)
+     playMusic(getModSetting('song_select', modFolder):lower(), 0.15, true)
 end
 
 function onUpdate(elapsed)
      if not searchBarInput_onFocus() and keyboardJustPressed('ONE')    then restartSong(true) end
      if not searchBarInput_onFocus() and keyboardJustPressed('ESCAPE') then exitSong()        end
 
-     if mouseClicked('left')  then playSound('clicks/clickDown', 0.8) end
-     if mouseReleased('left') then playSound('clicks/clickUp', 0.8)   end
+     if mouseClicked('left')  then playSound('clicks/clickDown', 0.5) end
+     if mouseReleased('left') then playSound('clicks/clickUp', 0.5)   end
 
      setProperty('mouseHitBox.x', getMouseX('camHUD') - 3)
      setProperty('mouseHitBox.y', getMouseY('camHUD'))
 
      if searchBarInput_onFocus() and keyboardJustPressed('ENTER') then
-          local er = states.getTotalSkinObjects('notes', 'names')[1]
+          --[[ local er = states.getTotalSkinObjects('notes', 'names')
+          local qr = states.getTotalSkinObjects('notes', 'ids')
           local pr = getVar('searchBarInputContent'):gsub('%-(.-)', '%1'):lower()
 
-          debugPrint( table.find(er, pr) )
+          for i = 1, #er do
+               debugPrint(er[i])
+          end ]]
      end
 end
 
 function onUpdatePost(elapsed)
      Skins:page_slider()
      Skins:page_moved()
+     Skins:found()
 end
 
 local sliderTrackPosition = states.getPageSkinSliderPositions('notes').intervals

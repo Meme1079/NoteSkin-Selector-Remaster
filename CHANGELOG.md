@@ -17,14 +17,19 @@
 
 ## Version 2.0.0
 ### Additions/Changes
-- Overhual the main source-code of the mod for organization and an ability to soft-code new states.
+- Overhual the main GUI with a new redesign, cuz it looks cool. _(inspired by OreUI from Minecraft)_
+- Overhual the main source-code of the mod for organization and an ability to soft-code new skin states.
+     - Loads separated chunks of object sprites for skins when switching pages.
+- Additions/Changes on the NoteSkin Selector State.
+     - Added a functional slider for switching skin pages.
+          - It automatically snaps to its nearest page index.
+          - It also automatically disables itself if there's only currently `1` page index.
+     - Added a functional search bar for fining & selecting skins.
+          - Automatically selects the searched skin.
+     - Increase the skin grid selections from `3x4` to `4x4`, cuz it's better.
 - Organized file locations.
-- Additions/Changes to the GUI 
-     - Completely redesign a new GUI (inspired by OreUI from Minecraft)
-     - New textures
-     - Added a slider for selecting skins, cuz its cool!
-
-
+     - Added an `api` folder to group: `classes`, `libraries`, and `modules` for convenient sake.
+     
 ## Version 1.5.0
 ### Additions/Changes
 - Additions/Changes on the NoteSkin Debug State.

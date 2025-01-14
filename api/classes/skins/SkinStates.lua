@@ -33,8 +33,9 @@ function SkinStates:new(stateStart, stateTypes, statePaths)
      return self
 end
 
-local totalSkinObjects  = {}
-local totalSkinObjectID = {}
+local totalSkinObjects     = {}
+local totalSkinObjectID    = {}
+local totalSkinObjectNames = {}
 local totalSkinLimit    = 0
 
 local totalSkinOneTime  = true
@@ -42,9 +43,10 @@ local totalSkinOneTime  = true
 ---@return nil
 function SkinStates:load_totalSkinData()
      if totalSkinOneTime == true then
-          totalSkinObjects  = states.getTotalSkinObjects(self.currentState)
-          totalSkinObjectID = states.getTotalSkinObjects(self.currentState, 'ids')
-          totalSkinLimit    = states.getTotalSkinLimit(self.currentState)
+          totalSkinObjects     = states.getTotalSkinObjects(self.currentState)
+          totalSkinObjectID    = states.getTotalSkinObjects(self.currentState, 'ids')
+          totalSkinObjectNames = states.getTotalSkinObjects(self.currentState, 'names')
+          totalSkinLimit       = states.getTotalSkinLimit(self.currentState)
 
           totalSkinOneTime = false
      end
@@ -207,7 +209,7 @@ function SkinStates:page_slider(snapToPage)
           if checkThumbPressed and sliderTrackCurrentPageIndex ~= sliderTrackCurrentPage then
                if sliderTrackThumbPressed == true then 
                     self:create(sliderTrackCurrentPageIndex)
-                    playSound('keyboards/keyboard'..getRandomInt(1,3))
+                    playSound('ding', 0.5)
                     pageCurrentIndex = sliderTrackCurrentPageIndex
 
                     local genInfoStatePageTemplate = {cur = ('%.3d'):format(sliderTrackCurrentPageIndex), max = ('%.3d'):format(totalSkinLimit) }
@@ -252,7 +254,7 @@ function SkinStates:page_moved()
 
           self:create(pageCurrentIndex)
           setProperty('displaySliderIcon.y', sliderTrackIntervals[pageCurrentIndex])
-          playSound('keyboards/keyboard'..getRandomInt(1,3))
+          playSound('ding', 0.5)
      end
      if (searchBarInput_onFocus() == false and keyboardJustPressed('E')) and pageCurrentIndex < totalSkinLimit then
           pageCurrentIndex = pageCurrentIndex + 1
@@ -260,7 +262,13 @@ function SkinStates:page_moved()
 
           self:create(pageCurrentIndex)
           setProperty('displaySliderIcon.y', sliderTrackIntervals[pageCurrentIndex])
-          playSound('keyboards/keyboard'..getRandomInt(1,3))
+          playSound('ding', 0.5)
+     end
+
+     if pageCurrentIndex == totalSkinLimit then
+          setTextColor('genInfoStatePage', 'ff0000')
+     else
+          setTextColor('genInfoStatePage', 'ffffff')
      end
 end
 
@@ -271,10 +279,47 @@ function SkinStates:page_setup()
      setTextString('genInfoStatePage', (' Page ${cur} / ${max}'):interpol(genInfoStatePageTemplate))
 end
 
+function SkinStates:found()
+     if not (searchBarInput_onFocus() and keyboardJustPressed('ENTER')) then
+          return nil
+     end
+
+     for i = 1, totalSkinLimit do
+          local erp = getVar('searchBarInputContent'):gsub('%-(.-)', '%1'):lower()
+          local per = table.find(totalSkinObjectNames[i], erp)
+
+          if per ~= nil then
+               pageCurrentIndex = i
+               self:create(pageCurrentIndex)
+               self:page_setup()
+
+               setProperty('displaySliderIcon.y', sliderTrackIntervals[pageCurrentIndex])
+               playSound('ding', 0.5)
+               return
+          end
+
+          if i == totalSkinLimit then
+
+
+               playSound('cancel')
+
+               runHaxeCode([[
+                    getVar('searchBarInput').caretIndex = 0;
+                    getVar('searchBarInput').set_text('');
+
+
+                    game.getLuaObject('searchBarInputPlaceHolder').text = 'Invalid Skin!';
+                    game.getLuaObject('searchBarInputPlaceHolder').color = 0xFFB50000;
+               ]])
+          end
+     end
+end
+
 function SkinStates:switch()
 end
 
 function SkinStates:hover()
+
 end
 
 function SkinStates:selection()
