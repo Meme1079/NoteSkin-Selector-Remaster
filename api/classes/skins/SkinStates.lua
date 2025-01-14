@@ -12,6 +12,9 @@ local global    = require 'mods.NoteSkin Selector Remastered.api.modules.global'
 local switch = global.switch
 local clickObject = funkinlua.clickObject
 local createTimer = funkinlua.createTimer
+local keyboardJustConditionPressed  = funkinlua.keyboardJustConditionPressed
+local keyboardJustConditionPress    = funkinlua.keyboardJustConditionPress
+local keyboardJustConditionReleased = funkinlua.keyboardJustConditionReleased
 
 local SkinStateSaves = SkinSaves:new('noteskin_selector', 'NoteSkin Selector')
 
@@ -248,7 +251,7 @@ function SkinStates:page_moved()
           setTextString('genInfoStatePage', (' Page ${cur} / ${max}'):interpol(genInfoStatePageTemplate))
      end
 
-     if (searchBarInput_onFocus() == false and keyboardJustPressed('Q')) and pageCurrentIndex > 1 then
+     if keyboardJustConditionPressed('Q', searchBarInput_onFocus() == false) and pageCurrentIndex > 1 then
           pageCurrentIndex = pageCurrentIndex - 1
           changeGenInfoPage()
 
@@ -256,7 +259,7 @@ function SkinStates:page_moved()
           setProperty('displaySliderIcon.y', sliderTrackIntervals[pageCurrentIndex])
           playSound('ding', 0.5)
      end
-     if (searchBarInput_onFocus() == false and keyboardJustPressed('E')) and pageCurrentIndex < totalSkinLimit then
+     if keyboardJustConditionPressed('E', searchBarInput_onFocus() == false) and pageCurrentIndex < totalSkinLimit then
           pageCurrentIndex = pageCurrentIndex + 1
           changeGenInfoPage()
 
@@ -279,38 +282,32 @@ function SkinStates:page_setup()
      setTextString('genInfoStatePage', (' Page ${cur} / ${max}'):interpol(genInfoStatePageTemplate))
 end
 
+--- Searches and finds the given skin.
+---@return nil
 function SkinStates:found()
      if not (searchBarInput_onFocus() and keyboardJustPressed('ENTER')) then
           return nil
      end
 
-     for i = 1, totalSkinLimit do
-          local erp = getVar('searchBarInputContent'):gsub('%-(.-)', '%1'):lower()
-          local per = table.find(totalSkinObjectNames[i], erp)
-
-          if per ~= nil then
-               pageCurrentIndex = i
+     for skins = 1, totalSkinLimit do
+          local searchBarInputContent = getVar('searchBarInputContent'):gsub('%-(.-)', '%1'):lower()
+          if table.find(totalSkinObjectNames[skins], searchBarInputContent) ~= nil then
+               pageCurrentIndex = skins
                self:create(pageCurrentIndex)
                self:page_setup()
 
-               setProperty('displaySliderIcon.y', sliderTrackIntervals[pageCurrentIndex])
+               setProperty('displaySliderIcon.y', sliderTrackIntervals[skins])
                playSound('ding', 0.5)
-               return
+               break
           end
 
-          if i == totalSkinLimit then
+          if skins == totalSkinLimit then
+               setProperty(getVar('searchBarInput')..'.caretIndex', 0)
+               callMethod(getVar('searchBarInput')..'.set_text', {''})
 
-
+               setProperty('searchBarInputPlaceHolder.text', 'Invalid Skin!')
+               setProperty('searchBarInputPlaceHolder.color', 0xB50000)
                playSound('cancel')
-
-               runHaxeCode([[
-                    getVar('searchBarInput').caretIndex = 0;
-                    getVar('searchBarInput').set_text('');
-
-
-                    game.getLuaObject('searchBarInputPlaceHolder').text = 'Invalid Skin!';
-                    game.getLuaObject('searchBarInputPlaceHolder').color = 0xFFB50000;
-               ]])
           end
      end
 end

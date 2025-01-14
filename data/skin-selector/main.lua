@@ -7,6 +7,10 @@ local json      = require 'mods.NoteSkin Selector Remastered.api.libraries.json.
 local funkinlua = require 'mods.NoteSkin Selector Remastered.api.modules.funkinlua'
 local states    = require 'mods.NoteSkin Selector Remastered.api.modules.states'
 
+local keyboardJustConditionPressed  = funkinlua.keyboardJustConditionPressed
+local keyboardJustConditionPress    = funkinlua.keyboardJustConditionPress
+local keyboardJustConditionReleased = funkinlua.keyboardJustConditionReleased
+
 -- Display Sliders --
 
 makeAnimatedLuaSprite('displaySliderIcon', 'ui/buttons/slider_button', 600, 127) -- min: 127; max: 643
@@ -96,24 +100,13 @@ function onCreatePost()
 end
 
 function onUpdate(elapsed)
-     if not searchBarInput_onFocus() and keyboardJustPressed('ONE')    then restartSong(true) end
-     if not searchBarInput_onFocus() and keyboardJustPressed('ESCAPE') then exitSong()        end
-
+     if keyboardJustConditionPressed('ONE',    not searchBarInput_onFocus()) then restartSong(true) end
+     if keyboardJustConditionPressed('ESCAPE', not searchBarInput_onFocus()) then exitSong()        end
      if mouseClicked('left')  then playSound('clicks/clickDown', 0.5) end
      if mouseReleased('left') then playSound('clicks/clickUp', 0.5)   end
 
      setProperty('mouseHitBox.x', getMouseX('camHUD') - 3)
      setProperty('mouseHitBox.y', getMouseY('camHUD'))
-
-     if searchBarInput_onFocus() and keyboardJustPressed('ENTER') then
-          --[[ local er = states.getTotalSkinObjects('notes', 'names')
-          local qr = states.getTotalSkinObjects('notes', 'ids')
-          local pr = getVar('searchBarInputContent'):gsub('%-(.-)', '%1'):lower()
-
-          for i = 1, #er do
-               debugPrint(er[i])
-          end ]]
-     end
 end
 
 function onUpdatePost(elapsed)

@@ -40,22 +40,30 @@ function onCreate() {
      game.getLuaObject('searchBarInputCaret').x = searchBarInput.caret.x + 1;
      game.getLuaObject('searchBarInputCaret').y = searchBarInput.caret.y;
      setVar('searchBarInput', searchBarInput);
+}
 
-     createGlobalCallback('searchBarInput_onFocus', function() {
-          return PsychUIInputText.focusOn != null && PsychUIInputText.focusOn == searchBarInput;
-     });
+var searchBarInputFocusToggle = false;
+function searchBarInput_onFocus() {
+     return PsychUIInputText.focusOn != null && PsychUIInputText.focusOn == getVar('searchBarInput');
+}
+function onCreatePost() {
+     createGlobalCallback('searchBarInput_onFocus', searchBarInput_onFocus);
 }
 
 function onUpdate(elapsed:Float) {
      game.getLuaObject('searchBarInputCaret').x       = getVar('searchBarInput').caret.x + 1;
      game.getLuaObject('searchBarInputCaret').visible = getVar('searchBarInput').caret.visible;
 
-     var searchBarInput_onFocus = PsychUIInputText.focusOn != null && PsychUIInputText.focusOn == getVar('searchBarInput');
-     if (searchBarInput_onFocus == true) {
+     if (searchBarInput_onFocus() == true && searchBarInputFocusToggle == false) {
           ClientPrefs.toggleVolumeKeys(false);
           game.allowDebugKeys = false;
-     } else {
+
+          searchBarInputFocusToggle = true;
+     }
+     if (searchBarInput_onFocus() == false && searchBarInputFocusToggle == false){
           ClientPrefs.toggleVolumeKeys(true);
           game.allowDebugKeys = true;
+
+          searchBarInputFocusToggle = false;
      }
 }

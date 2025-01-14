@@ -43,6 +43,24 @@ function funkinlua.keyboardJustDoubleReleased(key)
      end
 end
 
+function funkinlua.keyboardJustConditionPressed(key, condition)
+     if condition and keyboardJustPressed(key:upper()) then
+          return true
+     end
+end
+
+function funkinlua.keyboardJustConditionPress(key, condition)
+     if condition and keyboardJustPress(key:upper()) then
+          return true
+     end
+end
+
+function funkinlua.keyboardJustConditionReleased(key, condition)
+     if condition and keyboardJustReleased(key:upper()) then
+          return true
+     end
+end
+
 local callbackEvents = {}
 function funkinlua.addCallbackEvents(callback, codeContent)
      if not _G[callback] then

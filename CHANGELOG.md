@@ -1,20 +1,3 @@
-<!-- ## Version 2.0.0 (Pre-Release)
-### Additions/Changes
-- Overhual the main source-code of the mod for organization and an ability to soft-code new states.
-- Organized some file locations.
-- Additions/Changes on the NoteSkin State.
-     - Added a display icon background to make it easier to see.
-     - Change the highlight icon to match the newer display icon.
-     - Change the NoteSkin State title format.
-- Added the support for splash skins.
-     - Added a display offsets for x, y, and size of the icon to modify the `display.json` for splash skins.
-- Added a new setting "Disable Display Animation", which is self-explanatory in its name.
-- Added an at-selector for the `preview.json`; just look at the `AT-SELECTOR DOCS.md` in the json folder.
-- Added some new sounds.
-
-> [!NOTE]
-> The Noteskin Debug State is temporarily removed becuase. I wanna rush it out becuase it has been 4 months without an update, so cut me some slack. This will be re-added back in the version `2.0.0 (Release)`. -->
-
 ## Version 2.0.0
 ### Additions/Changes
 - Overhual the main GUI with a new redesign, cuz it looks cool. _(inspired by OreUI from Minecraft)_
@@ -30,6 +13,9 @@
 - Organized file locations.
      - Added an `api` folder to group: `classes`, `libraries`, and `modules` for convenient sake.
      
+> [!NOTE]
+> The Noteskin Debug State is temporarily removed becuase. I wanna rush it out becuase it has been 4 months without an update, so cut me some slack. This will be re-added back in the version `2.5.0`.
+
 ## Version 1.5.0
 ### Additions/Changes
 - Additions/Changes on the NoteSkin Debug State.
