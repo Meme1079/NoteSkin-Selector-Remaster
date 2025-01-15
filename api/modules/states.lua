@@ -2,6 +2,8 @@ local string  = require 'mods.NoteSkin Selector Remastered.api.libraries.standar
 local json    = require 'mods.NoteSkin Selector Remastered.api.libraries.json.main'
 local global  = require 'mods.NoteSkin Selector Remastered.api.modules.global'
 
+require 'table.new'
+
 local states = {}
 states.notes    = {prefix = 'NOTE_assets',  folder = 'noteSkins'}
 states.splashes = {prefix = 'noteSplashes', folder = 'noteSplashes'}
@@ -69,15 +71,15 @@ function states.getTotalSkinObjects(skin, byData)
      local byData = byData == nil and 'skins' or byData:lower()
 
      local totalSkinGroupIndex = 0
-     local totalSkinObjects    = {}
-     totalSkinObjects[skin] = {}
+     local totalSkinObjects = table.new(0xff, 0)
+     totalSkinObjects[skin] = table.new(0xff, 0)
 
      local totalSkinNames = states.getTotalSkinNames(skin)
      local totalSkins     = states.getTotalSkins(skin)
      for pages = 1, #totalSkins do
           if (pages-1) % 16 == 0 then --! DO NOT REMOVE PARENTHESIS
                totalSkinGroupIndex = totalSkinGroupIndex + 1
-               totalSkinObjects[skin][totalSkinGroupIndex] = {}
+               totalSkinObjects[skin][totalSkinGroupIndex] = table.new(16, 0)
           end
      
           if pages % 16+1 ~= 0 then   --! DO NOT ADD PARENTHESIS
@@ -95,8 +97,8 @@ function states.getTotalSkinObjects(skin, byData)
 end
 
 function states.getPageSkinSliderPositions(skin)
-     local sliderTrackData = {}
-     sliderTrackData[skin] = {intervals = {}, semiIntervals = {}, pages = {}}
+     local sliderTrackData = table.new(3, 0)
+     sliderTrackData[skin] = {intervals = table.new(0xff, 0), semiIntervals = table.new(0xff, 0), pages = table.new(0xff, 0)}
 
      local totalSkinMax = states.getTotalSkinLimit(skin)-1
      local totalSliderHeight = 570

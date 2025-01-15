@@ -113,6 +113,7 @@ function onUpdatePost(elapsed)
      Skins:page_slider()
      Skins:page_moved()
      Skins:found()
+     Skins:hover()
 end
 
 local sliderTrackPosition = states.getPageSkinSliderPositions('notes').intervals

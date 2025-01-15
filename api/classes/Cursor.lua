@@ -11,7 +11,6 @@ function Cursor:new(size, xOffset, yOffset)
 end
 
 function Cursor:load(image)
-     
      local codeContents = 'FlxG.mouse.load(new FlxSprite().loadGraphic(Paths.image(\"ui/cursors/cursor-${image}\")).pixels, ${size}, ${xOffset}, ${yOffset});'
      local codeElements = {image = image, size = self.size, xOffset = self.xOffset, yOffset = self.yOffset}
      setPropertyFromClass('flixel.FlxG', 'mouse.visible', true)

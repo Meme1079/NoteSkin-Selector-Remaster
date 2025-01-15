@@ -39,9 +39,9 @@ end
 local totalSkinObjects     = {}
 local totalSkinObjectID    = {}
 local totalSkinObjectNames = {}
-local totalSkinLimit    = 0
+local totalSkinLimit = 0
 
-local totalSkinOneTime  = true
+local totalSkinOneTime = true
 --- Loads multiple tables to each corresponding variables, can only be loaded once executed.
 ---@return nil
 function SkinStates:load_totalSkinData()
@@ -312,15 +312,37 @@ function SkinStates:found()
      end
 end
 
-function SkinStates:switch()
-end
 
+local p = {
+     true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
+     true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
+     true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true
+}
 function SkinStates:hover()
+     --[[ local q = totalSkinObjectID[pageCurrentIndex]
+     if keyboardJustConditionPress('O', searchBarInput_onFocus() == false) then
+          debugPrint({q-16, q})
+     end ]]
+     local q = totalSkinObjectID[pageCurrentIndex]
 
+     for i = q[1], q[#q] do
+          if objectsOverlap('displaySkinIconButtonNotes-'..i, 'mouseHitBox') == true and p[i] == true then
+               playAnim('displaySkinIconButtonNotes-'..i, 'hover', true)
+               p[i] = false
+          end
+          if objectsOverlap('displaySkinIconButtonNotes-'..i, 'mouseHitBox') == false and p[i] == false then
+               playAnim('displaySkinIconButtonNotes-'..i, 'static', true)
+               p[i] = true
+          end
+     end
 end
 
 function SkinStates:selection()
 end
+
+function SkinStates:switch()
+end
+
 
 --- Precaches the images to each skin states for optimizations.
 ---@return nil
