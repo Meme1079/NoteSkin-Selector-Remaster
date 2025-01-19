@@ -87,6 +87,14 @@ function funkinlua.clickObject(object)
      return objectsOverlap(object, 'mouseHitBox') and mouseClicked('left')
 end
 
+function funkinlua.pressedObject(object)
+     return objectsOverlap(object, 'mouseHitBox') and mousePressed('left')
+end
+
+function funkinlua.releasedObject(object)
+     return objectsOverlap(object, 'mouseHitBox') and mouseReleased('left')
+end
+
 local timers = {}
 function funkinlua.createTimer(tag, timer, callback)
      table.insert(timers, {tag, callback})

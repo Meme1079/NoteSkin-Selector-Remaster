@@ -1,8 +1,6 @@
-local Cursor = require 'mods.NoteSkin Selector Remastered.api.classes.Cursor'
 
 
-local SkinCursor = Cursor:new()
-SkinCursor:load('default')
+
 
 function setObjectCamera(object, camera)
      setProperty(object..'.camera', instanceArg(camera), false, true)

@@ -1,6 +1,7 @@
 luaDebugMode = true
 
 local SkinSaves = require 'mods.NoteSkin Selector Remastered.api.classes.skins.SkinSaves'
+local Cursor    = require 'mods.NoteSkin Selector Remastered.api.classes.Cursor'
 
 local string    = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.string'
 local table     = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.table'
@@ -9,14 +10,20 @@ local funkinlua = require 'mods.NoteSkin Selector Remastered.api.modules.funkinl
 local states    = require 'mods.NoteSkin Selector Remastered.api.modules.states'
 local global    = require 'mods.NoteSkin Selector Remastered.api.modules.global'
 
+require 'table.new'
+
 local switch = global.switch
-local clickObject = funkinlua.clickObject
-local createTimer = funkinlua.createTimer
+local createTimer    = funkinlua.createTimer
+local clickObject    = funkinlua.clickObject
+local pressedObject  = funkinlua.pressedObject
+local releasedObject = funkinlua.releasedObject
 local keyboardJustConditionPressed  = funkinlua.keyboardJustConditionPressed
 local keyboardJustConditionPress    = funkinlua.keyboardJustConditionPress
 local keyboardJustConditionReleased = funkinlua.keyboardJustConditionReleased
 
 local SkinStateSaves = SkinSaves:new('noteskin_selector', 'NoteSkin Selector')
+local SkinCursor     = Cursor:new()
+SkinCursor:load('default')
 
 ---@class SkinStates
 local SkinStates = {}
@@ -36,38 +43,31 @@ function SkinStates:new(stateStart, stateTypes, statePaths)
      return self
 end
 
-local totalSkinObjects     = {}
-local totalSkinObjectID    = {}
-local totalSkinObjectNames = {}
 local totalSkinLimit = 0
+local totalSkinObjects         = table.new(0xff, 0)
+local totalSkinObjectID        = table.new(0xff, 0)
+local totalSkinObjectNames     = table.new(0xff, 0)
 
-local totalSkinOneTime = true
---- Loads multiple tables to each corresponding variables, can only be loaded once executed.
+local totalSkinObjectHovered   = table.new(0xff, 0)
+local totalSkinObjectClicked   = table.new(0xff, 0)
+local totalSkinObjectSelected  = table.new(0xff, 0)
+
+local sliderTrackIntervals     = table.new(0xff, 0)
+local sliderTrackSemiIntervals = table.new(0xff, 0)
+--- Loads table data for the methods to use later.
 ---@return nil
-function SkinStates:load_totalSkinData()
-     if totalSkinOneTime == true then
-          totalSkinObjects     = states.getTotalSkinObjects(self.currentState)
-          totalSkinObjectID    = states.getTotalSkinObjects(self.currentState, 'ids')
-          totalSkinObjectNames = states.getTotalSkinObjects(self.currentState, 'names')
-          totalSkinLimit       = states.getTotalSkinLimit(self.currentState)
+function SkinStates:load()
+     totalSkinObjects         = states.getTotalSkinObjects(self.currentState)
+     totalSkinObjectID        = states.getTotalSkinObjects(self.currentState, 'ids')
+     totalSkinObjectNames     = states.getTotalSkinObjects(self.currentState, 'names')
+     totalSkinLimit           = states.getTotalSkinLimit(self.currentState)
 
-          totalSkinOneTime = false
-     end
-end
+     totalSkinObjectHovered   = states.getTotalSkinObjects(self.currentState, 'bools')
+     totalSkinObjectClicked   = states.getTotalSkinObjects(self.currentState, 'bools')
+     totalSkinObjectSelected  = states.getTotalSkinObjects(self.currentState, 'bools')
 
-local sliderTrackIntervals     = {}
-local sliderTrackSemiIntervals = {}
-
-local sliderTrackOneTime = true
---- Loads multiple tables to each corresponding variables, can only be loaded once executed.
----@return nil
-function SkinStates:load_pageSkinSliderData()
-     if sliderTrackOneTime == true then
-          sliderTrackIntervals     = states.getPageSkinSliderPositions(self.currentState).intervals
-          sliderTrackSemiIntervals = states.getPageSkinSliderPositions(self.currentState).semiIntervals
-
-          sliderTrackOneTime = false
-     end
+     sliderTrackIntervals     = states.getPageSkinSliderPositions(self.currentState).intervals
+     sliderTrackSemiIntervals = states.getPageSkinSliderPositions(self.currentState).semiIntervals
 end
 
 --- Creates a chunk from the current skin state selected to display skins.
@@ -75,7 +75,6 @@ end
 ---@return nil
 function SkinStates:create(index)
      local index = index == nil and 1 or index
-     self:load_totalSkinData()
 
      for pages = 1, totalSkinLimit do
           for displays = 1, #totalSkinObjects[pages] do
@@ -124,10 +123,11 @@ function SkinStates:create(index)
           switch (self.currentState) {
                notes = function()
                     makeAnimatedLuaSprite(displaySkinIconButton, 'ui/buttons/display_button', displaySkinPositionX, displaySkinPositionY)
-                    addAnimationByPrefix(displaySkinIconButton, 'static', 'display_button-static')
-                    addAnimationByPrefix(displaySkinIconButton, 'selected', 'display_button-selected')
-                    addAnimationByPrefix(displaySkinIconButton, 'hover', 'display_button-hover')
-                    playAnim(displaySkinIconButton, 'static')
+                    addAnimationByPrefix(displaySkinIconButton, 'static', 'static')
+                    addAnimationByPrefix(displaySkinIconButton, 'selected', 'selected')
+                    addAnimationByPrefix(displaySkinIconButton, 'hover', 'hovered-static')
+                    addAnimationByPrefix(displaySkinIconButton, 'pressed', 'hovered-pressed')
+                    playAnim(displaySkinIconButton, 'static', false)
                     scaleObject(displaySkinIconButton, 0.8, 0.8)
                     setProperty(displaySkinIconButton..'.camera', instanceArg('camHUD'), false, true)
                     setProperty(displaySkinIconButton..'.antialiasing', false)
@@ -147,12 +147,10 @@ end
 --- Creates and loads chunks from the current skin state, improves optimization significantly
 ---@param index? integer The chunk position index to display.
 ---@return nil
-function SkinStates:create_pre(index)
-     local index = index == nil and 1 or index
-     for pages = 1, totalSkinLimit do
+function SkinStates:create_pre()
+     for pages = totalSkinLimit, 1, -1 do
           self:create(pages)
      end
-     self:create(index)
 end
 
 local pageCurrentIndex = 1
@@ -164,12 +162,10 @@ local sliderTrackCurrentPage  = 0
 ---@return nil
 function SkinStates:page_slider(snapToPage)
      local snapToPage = snapToPage == nil and true or false
-     self:load_pageSkinSliderData()
 
      if clickObject('displaySliderIcon') then
           sliderTrackThumbPressed = true
      end
-
      if sliderTrackThumbPressed == true and totalSkinLimit >= 2 then
           if mousePressed('left') then
                playAnim('displaySliderIcon', 'pressed')
@@ -211,11 +207,12 @@ function SkinStates:page_slider(snapToPage)
           local checkThumbReleased = sliderTrackCurrentPageIndex == false and sliderTrackToggle == true  -- semi-useful
           if checkThumbPressed and sliderTrackCurrentPageIndex ~= sliderTrackCurrentPage then
                if sliderTrackThumbPressed == true then 
-                    self:create(sliderTrackCurrentPageIndex)
-                    playSound('ding', 0.5)
                     pageCurrentIndex = sliderTrackCurrentPageIndex
-
-                    local genInfoStatePageTemplate = {cur = ('%.3d'):format(sliderTrackCurrentPageIndex), max = ('%.3d'):format(totalSkinLimit) }
+                    self:create(sliderTrackCurrentPageIndex)
+                    self:selection_sync()
+                    playSound('ding', 0.5)
+                    
+                    local genInfoStatePageTemplate = { cur = ('%.3d'):format(sliderTrackCurrentPageIndex), max = ('%.3d'):format(totalSkinLimit) }
                     setTextString('genInfoStatePage', (' Page ${cur} / ${max}'):interpol(genInfoStatePageTemplate))
                end
                
@@ -256,16 +253,18 @@ function SkinStates:page_moved()
           changeGenInfoPage()
 
           self:create(pageCurrentIndex)
-          setProperty('displaySliderIcon.y', sliderTrackIntervals[pageCurrentIndex])
+          self:selection_sync()
           playSound('ding', 0.5)
+          setProperty('displaySliderIcon.y', sliderTrackIntervals[pageCurrentIndex])
      end
      if keyboardJustConditionPressed('E', searchBarInput_onFocus() == false) and pageCurrentIndex < totalSkinLimit then
           pageCurrentIndex = pageCurrentIndex + 1
           changeGenInfoPage()
 
           self:create(pageCurrentIndex)
-          setProperty('displaySliderIcon.y', sliderTrackIntervals[pageCurrentIndex])
+          self:selection_sync()
           playSound('ding', 0.5)
+          setProperty('displaySliderIcon.y', sliderTrackIntervals[pageCurrentIndex])
      end
 
      if pageCurrentIndex == totalSkinLimit then
@@ -295,6 +294,7 @@ function SkinStates:found()
                pageCurrentIndex = skins
                self:create(pageCurrentIndex)
                self:page_setup()
+               self:selection_sync(true)
 
                setProperty('displaySliderIcon.y', sliderTrackIntervals[skins])
                playSound('ding', 0.5)
@@ -312,33 +312,153 @@ function SkinStates:found()
      end
 end
 
+local s2017x = 0
+local d2011x = 0
+local lordx  = 0
 
-local p = {
-     true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-     true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true,
-     true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true
-}
-function SkinStates:hover()
-     --[[ local q = totalSkinObjectID[pageCurrentIndex]
-     if keyboardJustConditionPress('O', searchBarInput_onFocus() == false) then
-          debugPrint({q-16, q})
-     end ]]
-     local q = totalSkinObjectID[pageCurrentIndex]
+local xeno   = 0
+local sunky  = false
+function SkinStates:selection()
+     local skinObjectsPerIDs      = totalSkinObjectID[pageCurrentIndex]
+     local skinObjectsPerHovered  = totalSkinObjectHovered[pageCurrentIndex]
+     local skinObjectsPerClicked  = totalSkinObjectClicked[pageCurrentIndex]
+     local skinObjectsPerSelected = totalSkinObjectSelected[pageCurrentIndex]
+     for pageSkins = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
+          local curPage = pageSkins - (16 * (pageCurrentIndex - 1))
 
-     for i = q[1], q[#q] do
-          if objectsOverlap('displaySkinIconButtonNotes-'..i, 'mouseHitBox') == true and p[i] == true then
-               playAnim('displaySkinIconButtonNotes-'..i, 'hover', true)
-               p[i] = false
+          local displaySkinIconTemplate = {state = (self.currentState):upperAtStart(), ID = pageSkins}
+          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+
+          local function a_1()
+               SkinCursor:reload('grabbing')
+               playAnim(displaySkinIconButton, 'pressed', true)
+               skinObjectsPerClicked[curPage] = true
+     
+               xeno = pageSkins
+               sunky = true
           end
-          if objectsOverlap('displaySkinIconButtonNotes-'..i, 'mouseHitBox') == false and p[i] == false then
-               playAnim('displaySkinIconButtonNotes-'..i, 'static', true)
-               p[i] = true
+          local function b_1()
+               SkinCursor:reload('default')
+               playAnim(displaySkinIconButton, 'selected', true)
+
+               d2011x = s2017x
+               s2017x = pageSkins
+               lordx  = pageCurrentIndex
+               sunky = false
+               
+               skinObjectsPerSelected[curPage] = true
+               skinObjectsPerClicked[curPage]  = false
+          end
+
+          local function a_2()
+               SkinCursor:reload('grabbing')
+               playAnim(displaySkinIconButton, 'pressed', true)
+               skinObjectsPerClicked[curPage] = true
+
+               xeno = pageSkins
+               sunky = true
+          end
+          local function b_2()
+               SkinCursor:reload('default')
+               playAnim(displaySkinIconButton, 'static', true)
+
+               s2017x = 0
+               xeno = 0
+               sunky = false
+
+               skinObjectsPerSelected[curPage] = false
+               skinObjectsPerClicked[curPage]  = false
+               skinObjectsPerHovered[curPage]  = false
+          end
+
+          if skinObjectsPerSelected[curPage] == false then
+               if clickObject(displaySkinIconButton) == true and skinObjectsPerClicked[curPage] == false then
+                    a_1()
+               end
+               if (mouseReleased('left') and xeno == pageSkins) and skinObjectsPerClicked[curPage] == true then
+                    b_1()
+               end
+          end
+          if skinObjectsPerSelected[curPage] == true then
+               if clickObject(displaySkinIconButton) == true and skinObjectsPerClicked[curPage] == false then
+                    a_1()
+               end
+               if (mouseReleased('left') and xeno == pageSkins) and skinObjectsPerClicked[curPage] == true then
+                    b_2()
+               end
+          end
+
+          local function c()
+               if sunky == false then 
+                    SkinCursor:reload('pointer')
+               end
+
+               playAnim(displaySkinIconButton, 'hover', true)
+               skinObjectsPerHovered[curPage] = true
+          end
+          local function d()
+               if sunky == false then 
+                    SkinCursor:reload('default')
+               end
+
+               playAnim(displaySkinIconButton, 'static', true)
+               skinObjectsPerHovered[curPage] = false
+          end
+          
+          if xeno ~= pageSkins then
+               if objectsOverlap(displaySkinIconButton, 'mouseHitBox') == true and skinObjectsPerHovered[curPage] == false then
+                    c()
+               end
+               if objectsOverlap(displaySkinIconButton, 'mouseHitBox') == false and skinObjectsPerHovered[curPage] == true then
+                    d()
+               end
+          end
+
+          if pageSkins == d2011x then
+               skinObjectsPerSelected[curPage] = false
           end
      end
 end
 
-function SkinStates:selection()
+function SkinStates:selection_sync(e)
+     local e = e == nil and false or true
+
+     local skinObjectsPerIDs      = totalSkinObjectID[pageCurrentIndex]
+     local skinObjectsPerHovered  = totalSkinObjectHovered[pageCurrentIndex]
+     local skinObjectsPerClicked  = totalSkinObjectClicked[pageCurrentIndex]
+     local skinObjectsPerSelected = totalSkinObjectSelected[pageCurrentIndex]
+
+     if e == true then
+          local searchBarInputContent       = getVar('searchBarInputContent')
+          local searchBarInputContentFilter = searchBarInputContent ~= nil and searchBarInputContent:gsub('%-(.-)', '%1'):lower() or ''
+
+          for pageSkins = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
+               local curPage = pageSkins - (16 * (pageCurrentIndex - 1))
+               if totalSkinObjectNames[pageCurrentIndex][curPage] == searchBarInputContent then
+                    xeno = pageSkins
+                    d2011x = s2017x
+                    s2017x = pageSkins
+                    lordx  = pageCurrentIndex
+                    sunky = false
+
+                    local displaySkinIconTemplate = {state = (self.currentState):upperAtStart(), ID = pageSkins}
+                    local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+                    playAnim(displaySkinIconButton, 'selected', true)
+
+                    skinObjectsPerSelected[curPage] = true
+                    skinObjectsPerClicked[curPage]  = false
+               end
+          end
+     end
+
+     if xeno ~= 0 and lordx == pageCurrentIndex then
+          local displaySkinIconTemplate = {state = (self.currentState):upperAtStart(), ID = xeno}
+          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+
+          playAnim(displaySkinIconButton, 'selected', true)
+     end     
 end
+
 
 function SkinStates:switch()
 end

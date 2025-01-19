@@ -87,7 +87,7 @@ addLuaSprite('mouseHitBox', true)
 
 local Skins = SkinStates:new('notes', {'notes', 'splashes'}, {'noteSkins', 'noteSplashes'})
 Skins:precache()
-Skins:create_pre(1)
+Skins:load()
 Skins:create(1)
 Skins:page_setup()
 
@@ -110,10 +110,10 @@ function onUpdate(elapsed)
 end
 
 function onUpdatePost(elapsed)
+     Skins:selection()
      Skins:page_slider()
      Skins:page_moved()
      Skins:found()
-     Skins:hover()
 end
 
 local sliderTrackPosition = states.getPageSkinSliderPositions('notes').intervals
