@@ -45,7 +45,7 @@ This is a completely remastered one of my old mods "NoteSkin Selector", created 
      - Added an `api` folder to group: `classes`, `libraries`, and `modules` for convenient sake.
      
 > [!NOTE]
-> The Noteskin Debug State is temporarily removed becuase. I wanna rush it out becuase it has been 8 months without an update, so cut me some slack. This will be re-added back in the version 2.5.0.
+> The Noteskin Debug State is temporarily removed becuase. I wanna rush it out becuase it has been 8 months without an update, so cut me some slack. This will be re-added back in the version 3.0.0.
 
 ***
 

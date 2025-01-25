@@ -96,7 +96,7 @@ addLuaSprite('mouseHitBox', true)
 local Skins = SkinStates:new('notes', {'notes', 'splashes'}, {'noteSkins', 'noteSplashes'})
 Skins:precache()
 Skins:load()
-Skins:create(1)
+Skins:create_preload()
 Skins:page_setup()
 
 function onCreatePost()

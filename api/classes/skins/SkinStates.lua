@@ -191,9 +191,8 @@ function SkinStates:create(index)
                end
           }
      end
-end
 
-function SkinStates:create_preview()
+     self:preview()
 end
 
 --- Creates and loads chunks from the current skin state, improves optimization significantly
@@ -203,6 +202,33 @@ function SkinStates:create_preload()
      for pages = totalSkinLimit, 1, -1 do
           self:create(pages)
      end
+end
+
+function SkinStates:preview()
+     local p = {'left', 'down', 'up', 'right'}
+     for funky = 1, 4 do
+          local tag = 'fart'..funky
+          
+          makeAnimatedLuaSprite(tag, 'noteSkins/NOTE_assets', 790+(105*(funky-1)), 135)
+          addAnimationByPrefix(tag, 'leftConfirm', 'left confirm', 24, false)
+          addAnimationByPrefix(tag, 'downConfirm', 'down confirm', 24, false)
+          addAnimationByPrefix(tag, 'upConfirm', 'up confirm', 24, false)
+          addAnimationByPrefix(tag, 'rightConfirm', 'right confirm', 24, false)
+          addAnimationByPrefix(tag, 'leftPressed', 'left press', 24, false)
+          addAnimationByPrefix(tag, 'downPressed', 'down press', 24, false)
+          addAnimationByPrefix(tag, 'upPressed', 'up press', 24, false)
+          addAnimationByPrefix(tag, 'rightPressed', 'right press', 24, false)
+          addAnimationByPrefix(tag, 'leftColored', 'purple0', 24, false)
+          addAnimationByPrefix(tag, 'downColored', 'blue0', 24, false)
+          addAnimationByPrefix(tag, 'upColored', 'green0', 24, false)
+          addAnimationByPrefix(tag, 'rightColored', 'red0', 24, false)
+          addAnimationByPrefix(tag, p[funky], 'arrow'..p[funky]:upper(), 24, true)
+          playAnim(tag, p[funky])
+          scaleObject(tag, 0.65, 0.65)
+          setObjectCamera(tag, 'camHUD')
+          addLuaSprite(tag, true)
+     end
+     
 end
 
 local pageCurrentIndex = 1
