@@ -77,7 +77,7 @@ function Parser:string(str, pos)
 end
 
 function Parser:array(str, pos)
-    local arr = table.new(10, 0)
+    local arr = table.new(0xff, 0)
     local val
     local i = 1
     local c
@@ -102,7 +102,7 @@ function Parser:array(str, pos)
 end
 
 function Parser:table(str, pos)
-    local obj = table.new(0, 10)
+    local obj = table.new(0, 0xff)
     local key
     local val
     local c

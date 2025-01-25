@@ -49,6 +49,14 @@ setProperty('genInfoStatePage.camera', instanceArg('camHUD'), false, true)
 setProperty('genInfoStatePage.antialiasing', false)
 addLuaText('genInfoStatePage')
 
+makeLuaText('genInfoVersion', 'Ver 2.0.0', 0, 1195, 5)
+setTextFont('genInfoVersion', 'sonic.ttf')
+setTextSize('genInfoVersion', 20)
+setTextColor('genInfoVersion', 'fccf03')
+setObjectCamera('genInfoVersion', 'camHUD')
+setProperty('genInfoVersion.antialiasing', false)
+addLuaText('genInfoVersion')
+
 -- Search Bar --
 
 makeLuaSprite('searchBarBackground', 'ui/buttons/search_inputs', 20, 55)
@@ -96,6 +104,7 @@ function onCreatePost()
      for i = 1, #camUI do
           callMethod('uiGroup.remove', {instanceArg(camUI[i])})
      end
+     --setProperty('camHUD.zoom', 0.5)
      playMusic(getModSetting('song_select', modFolder):lower(), 0.15, true)
 end
 

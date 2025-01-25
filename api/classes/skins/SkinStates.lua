@@ -10,9 +10,7 @@ local funkinlua = require 'mods.NoteSkin Selector Remastered.api.modules.funkinl
 local states    = require 'mods.NoteSkin Selector Remastered.api.modules.states'
 local global    = require 'mods.NoteSkin Selector Remastered.api.modules.global'
 
-require 'table.new'
-
-local switch = global.switch
+local switch         = global.switch
 local createTimer    = funkinlua.createTimer
 local clickObject    = funkinlua.clickObject
 local pressedObject  = funkinlua.pressedObject
@@ -43,31 +41,63 @@ function SkinStates:new(stateStart, stateTypes, statePaths)
      return self
 end
 
-local totalSkinLimit = 0
-local totalSkinObjects         = table.new(0xff, 0)
-local totalSkinObjectID        = table.new(0xff, 0)
-local totalSkinObjectNames     = table.new(0xff, 0)
+local metadata_preview = {}
+local metadata_skins   = {}
 
-local totalSkinObjectHovered   = table.new(0xff, 0)
-local totalSkinObjectClicked   = table.new(0xff, 0)
-local totalSkinObjectSelected  = table.new(0xff, 0)
+local totalSkinLimit       = {}
+local totalSkinObjects     = {}
+local totalSkinObjectID    = {}
+local totalSkinObjectNames = {}
 
-local sliderTrackIntervals     = table.new(0xff, 0)
-local sliderTrackSemiIntervals = table.new(0xff, 0)
+local totalSkinObjectHovered  = {}
+local totalSkinObjectClicked  = {}
+local totalSkinObjectSelected = {}
+
+local sliderTrackIntervals     = {}
+local sliderTrackSemiIntervals = {}
+
+local selectSkinPagePositionIndex = {} -- lordx
+local selectSkinInitSelectedIndex = {} -- d2011x
+local selectSkinPreSelectedIndex  = {} -- xeno
+local selectSkinCurSelectedIndex  = {} -- s2017x
+local selectSkinHasBeenClicked    = {} -- sunky
 --- Loads table data for the methods to use later.
 ---@return nil
 function SkinStates:load()
-     totalSkinObjects         = states.getTotalSkinObjects(self.currentState)
-     totalSkinObjectID        = states.getTotalSkinObjects(self.currentState, 'ids')
-     totalSkinObjectNames     = states.getTotalSkinObjects(self.currentState, 'names')
-     totalSkinLimit           = states.getTotalSkinLimit(self.currentState)
+     local function setToCurrentState(supvalue)
+          local skinCurrentState = self.currentState
+          local metaCurrentState = {}
+          function metaCurrentState:__index(index)
+               local newindex = #self == 1 and 1 or index
+               return self[skinCurrentState][newindex]
+          end
+          function metaCurrentState:__newindex(value, index)
+               local newindex = #self == 1 and 1 or index
+               self[skinCurrentState][newindex] = value
+          end
+          return #self == 1 and setmetatable(supvalue, metaCurrentState) or setmetatable({supvalue}, metaCurrentState)[1]
+     end
 
-     totalSkinObjectHovered   = states.getTotalSkinObjects(self.currentState, 'bools')
-     totalSkinObjectClicked   = states.getTotalSkinObjects(self.currentState, 'bools')
-     totalSkinObjectSelected  = states.getTotalSkinObjects(self.currentState, 'bools')
+     metadata_preview = json.parse(getTextFromFile('json/'..self.currentState..'/preview_metadata.json'))
+     metadata_skins   = json.parse(getTextFromFile('json/'..self.currentState..'/preview_metadata.json'))
+    
+     totalSkinLimit       = setToCurrentState(states.getTotalSkinLimit(self.currentState))
+     totalSkinObjects     = setToCurrentState(states.getTotalSkinObjects(self.currentState))
+     totalSkinObjectID    = setToCurrentState(states.getTotalSkinObjects(self.currentState, 'ids'))
+     totalSkinObjectNames = setToCurrentState(states.getTotalSkinObjects(self.currentState, 'names'))
+     
+     totalSkinObjectHovered  = setToCurrentState(states.getTotalSkinObjects(self.currentState, 'bools'))
+     totalSkinObjectClicked  = setToCurrentState(states.getTotalSkinObjects(self.currentState, 'bools'))
+     totalSkinObjectSelected = setToCurrentState(states.getTotalSkinObjects(self.currentState, 'bools'))
 
-     sliderTrackIntervals     = states.getPageSkinSliderPositions(self.currentState).intervals
-     sliderTrackSemiIntervals = states.getPageSkinSliderPositions(self.currentState).semiIntervals
+     sliderTrackIntervals     = setToCurrentState(states.getPageSkinSliderPositions(self.currentState).intervals)
+     sliderTrackSemiIntervals = setToCurrentState(states.getPageSkinSliderPositions(self.currentState).semiIntervals)
+
+     selectSkinPagePositionIndex = setToCurrentState(0)
+     selectSkinInitSelectedIndex = setToCurrentState(0)
+     selectSkinPreSelectedIndex  = setToCurrentState(0)
+     selectSkinCurSelectedIndex  = setToCurrentState(0)
+     selectSkinHasBeenClicked    = setToCurrentState(false)
 end
 
 --- Creates a chunk from the current skin state selected to display skins.
@@ -119,35 +149,57 @@ function SkinStates:create(index)
           local displaySkinIconTemplates = {state = (self.currentState):upperAtStart(), ID = totalSkinObjectID[index][displays]}
           local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
           local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplates)
+          makeAnimatedLuaSprite(displaySkinIconButton, 'ui/buttons/display_button', displaySkinPositionX, displaySkinPositionY)
+          addAnimationByPrefix(displaySkinIconButton, 'static', 'static')
+          addAnimationByPrefix(displaySkinIconButton, 'selected', 'selected')
+          addAnimationByPrefix(displaySkinIconButton, 'hover', 'hovered-static')
+          addAnimationByPrefix(displaySkinIconButton, 'pressed', 'hovered-pressed')
+          playAnim(displaySkinIconButton, 'static', true)
+          scaleObject(displaySkinIconButton, 0.8, 0.8)
+          setObjectCamera(displaySkinIconButton, 'camHUD')
+          setProperty(displaySkinIconButton..'.antialiasing', false)
+          addLuaSprite(displaySkinIconButton)
+
+          local skinObjectNames    = totalSkinObjectNames[index][displays]:gsub('%s+', '_')
+          local skinObjectMetadata = metadata_preview[skinObjectNames]['display']
+          local function getMetadataOffsets()
+               local curOffsetX = getProperty(displaySkinIconSkin..'.offset.x')
+               local curOffsetY = getProperty(displaySkinIconSkin..'.offset.y')
+               return {curOffsetX + skinObjectMetadata['offsets'][1], curOffsetY + skinObjectMetadata['offsets'][2]}
+          end
 
           switch (self.currentState) {
                notes = function()
-                    makeAnimatedLuaSprite(displaySkinIconButton, 'ui/buttons/display_button', displaySkinPositionX, displaySkinPositionY)
-                    addAnimationByPrefix(displaySkinIconButton, 'static', 'static')
-                    addAnimationByPrefix(displaySkinIconButton, 'selected', 'selected')
-                    addAnimationByPrefix(displaySkinIconButton, 'hover', 'hovered-static')
-                    addAnimationByPrefix(displaySkinIconButton, 'pressed', 'hovered-pressed')
-                    playAnim(displaySkinIconButton, 'static', false)
-                    scaleObject(displaySkinIconButton, 0.8, 0.8)
-                    setProperty(displaySkinIconButton..'.camera', instanceArg('camHUD'), false, true)
-                    setProperty(displaySkinIconButton..'.antialiasing', false)
-                    addLuaSprite(displaySkinIconButton)
-
-                    makeAnimatedLuaSprite(displaySkinIconSkin, 'noteSkins/'..totalSkinObjects[index][displays], displaySkinPositionX + 16.5, displaySkinPositionY + 12)
-                    addAnimationByPrefix(displaySkinIconSkin, 'static', 'arrowUP')
+                    local skinIconImagePath = 'noteSkins/'..totalSkinObjects[index][displays]
+                    local skinIconPositionX = displaySkinPositionX + 16.5
+                    local skinIconPositionY = displaySkinPositionY + 12
+                    makeAnimatedLuaSprite(displaySkinIconSkin, skinIconImagePath, skinIconPositionX, skinIconPositionY)
+                    scaleObject(displaySkinIconSkin, skinObjectMetadata.size[1], skinObjectMetadata.size[2])
+                    addAnimationByPrefix(displaySkinIconSkin, 'static', skinObjectMetadata.prefixes)
+                    addOffset(displaySkinIconSkin, 'static', getMetadataOffsets()[1], getMetadataOffsets()[2])
+                    playAnim(displaySkinIconSkin, 'static')
+                    setObjectCamera(displaySkinIconSkin, 'camHUD')
+                    addLuaSprite(displaySkinIconSkin)
+               end,
+               splashes = function()
+                    makeAnimatedLuaSprite(displaySkinIconSkin, 'noteSplashes/'..totalSkinObjects[index][displays], displaySkinPositionX + 16.5, displaySkinPositionY + 12)
+                    addAnimationByPrefix(displaySkinIconSkin, 'static', 'note splash green 1')
                     playAnim(displaySkinIconSkin, 'static')
                     scaleObject(displaySkinIconSkin, 0.55, 0.55)
-                    setProperty(displaySkinIconSkin..'.camera', instanceArg('camHUD'), false, true)
+                    setObjectCamera(displaySkinIconSkin, 'camHUD')
                     addLuaSprite(displaySkinIconSkin)
                end
           }
      end
 end
 
+function SkinStates:create_preview()
+end
+
 --- Creates and loads chunks from the current skin state, improves optimization significantly
 ---@param index? integer The chunk position index to display.
 ---@return nil
-function SkinStates:create_pre()
+function SkinStates:create_preload()
      for pages = totalSkinLimit, 1, -1 do
           self:create(pages)
      end
@@ -315,11 +367,6 @@ function SkinStates:found()
      end
 end
 
-local selectionSkin_dataPagePositionIndex = 0   -- lordx
-local selectionSkin_dataInitSelectedIndex = 0   -- d2011x
-local selectionSkin_dataPreSelectedIndex  = 0   -- xeno
-local selectionSkin_dataCurSelectedIndex  = 0   -- s2017x
-local selectionSkin_dataHasBeenClicked = false  -- sunky
 --- Selects the certain skin by a click or a search
 ---@return nil
 function SkinStates:selection()
@@ -336,22 +383,22 @@ function SkinStates:selection()
                if clickObject(displaySkinIconButton) == true and skinObjectsPerClicked[curPage] == false then
                     SkinCursor:reload('grabbing')
                     playAnim(displaySkinIconButton, 'pressed', true)
-          
-                    selectionSkin_dataPreSelectedIndex = pageSkins
-                    selectionSkin_dataHasBeenClicked   = true
+
+                    selectSkinPreSelectedIndex = pageSkins
+                    selectSkinHasBeenClicked   = true
 
                     skinObjectsPerClicked[curPage] = true
                end
 
-               local released = (mouseReleased('left') and selectionSkin_dataPreSelectedIndex == pageSkins)
+               local released = (mouseReleased('left') and selectSkinPreSelectedIndex == pageSkins)
                if released == true and skinObjectsPerClicked[curPage] == true then
                     SkinCursor:reload('default')
                     playAnim(displaySkinIconButton, 'selected', true)
      
-                    selectionSkin_dataInitSelectedIndex = selectionSkin_dataCurSelectedIndex
-                    selectionSkin_dataCurSelectedIndex  = pageSkins
-                    selectionSkin_dataPagePositionIndex = pageCurrentIndex
-                    selectionSkin_dataHasBeenClicked    = false
+                    selectSkinInitSelectedIndex = selectSkinCurSelectedIndex
+                    selectSkinCurSelectedIndex  = pageSkins
+                    selectSkinPagePositionIndex = pageCurrentIndex
+                    selectSkinHasBeenClicked    = false
                     
                     skinObjectsPerSelected[curPage] = true
                     skinObjectsPerClicked[curPage]  = false
@@ -362,20 +409,20 @@ function SkinStates:selection()
                     SkinCursor:reload('grabbing')
                     playAnim(displaySkinIconButton, 'pressed', true)
 
-                    selectionSkin_dataPreSelectedIndex = pageSkins
-                    selectionSkin_dataHasBeenClicked   = true
+                    selectSkinPreSelectedIndex = pageSkins
+                    selectSkinHasBeenClicked   = true
 
                     skinObjectsPerClicked[curPage] = true
                end
 
-               local released = (mouseReleased('left') and selectionSkin_dataPreSelectedIndex == pageSkins)
+               local released = (mouseReleased('left') and selectSkinPreSelectedIndex == pageSkins)
                if released == true and skinObjectsPerClicked[curPage] == true then
                     SkinCursor:reload('default')
                     playAnim(displaySkinIconButton, 'static', true)
      
-                    selectionSkin_dataCurSelectedIndex = 0
-                    selectionSkin_dataPreSelectedIndex = 0
-                    selectionSkin_dataHasBeenClicked   = false
+                    selectSkinCurSelectedIndex = 0
+                    selectSkinPreSelectedIndex = 0
+                    selectSkinHasBeenClicked   = false
      
                     skinObjectsPerSelected[curPage] = false
                     skinObjectsPerClicked[curPage]  = false
@@ -383,16 +430,16 @@ function SkinStates:selection()
                end
           end
           
-          if selectionSkin_dataPreSelectedIndex ~= pageSkins then
+          if selectSkinPreSelectedIndex ~= pageSkins then
                if objectsOverlap(displaySkinIconButton, 'mouseHitBox') == true and skinObjectsPerHovered[curPage] == false then
-                    if selectionSkin_dataHasBeenClicked == false then 
+                    if selectSkinHasBeenClicked == false then 
                          SkinCursor:reload('pointer')
                     end
                     playAnim(displaySkinIconButton, 'hover', true)
                     skinObjectsPerHovered[curPage] = true
                end
                if objectsOverlap(displaySkinIconButton, 'mouseHitBox') == false and skinObjectsPerHovered[curPage] == true then
-                    if selectionSkin_dataHasBeenClicked == false then 
+                    if selectSkinHasBeenClicked == false then 
                          SkinCursor:reload('default')
                     end
                     playAnim(displaySkinIconButton, 'static', true)
@@ -400,7 +447,7 @@ function SkinStates:selection()
                end
           end
 
-          if pageSkins == selectionSkin_dataInitSelectedIndex then
+          if pageSkins == selectSkinInitSelectedIndex then
                skinObjectsPerSelected[curPage] = false
           end
      end
@@ -422,10 +469,10 @@ function SkinStates:selection_sync(bySearch)
           for pageSkins = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
                local curPage = pageSkins - (16 * (pageCurrentIndex - 1))
                if totalSkinObjectNames[pageCurrentIndex][curPage] == searchBarInputContent then
-                    selectionSkin_dataInitSelectedIndex = selectionSkin_dataCurSelectedIndex
-                    selectionSkin_dataPreSelectedIndex  = pageSkins
-                    selectionSkin_dataCurSelectedIndex  = pageSkins
-                    selectionSkin_dataPagePositionIndex = pageCurrentIndex
+                    selectSkinInitSelectedIndex = selectSkinCurSelectedIndex
+                    selectSkinPreSelectedIndex  = pageSkins
+                    selectSkinCurSelectedIndex  = pageSkins
+                    selectSkinPagePositionIndex = pageCurrentIndex
      
                     local displaySkinIconTemplate = {state = (self.currentState):upperAtStart(), ID = pageSkins}
                     local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
@@ -437,13 +484,15 @@ function SkinStates:selection_sync(bySearch)
           end
      end
 
-     if selectionSkin_dataPreSelectedIndex ~= 0 and selectionSkin_dataPagePositionIndex == pageCurrentIndex then
-          local displaySkinIconTemplate = {state = (self.currentState):upperAtStart(), ID = selectionSkin_dataPreSelectedIndex}
+     if selectSkinPreSelectedIndex ~= 0 and selectSkinPagePositionIndex == pageCurrentIndex then
+          local displaySkinIconTemplate = {state = (self.currentState):upperAtStart(), ID = selectSkinPreSelectedIndex}
           local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
           playAnim(displaySkinIconButton, 'selected', true)
      end 
 end
 
+function SkinStates:fart()
+end
 
 function SkinStates:switch()
 end

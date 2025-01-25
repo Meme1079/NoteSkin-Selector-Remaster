@@ -7,14 +7,14 @@ This is a completely remastered one of my old mods "NoteSkin Selector", created 
 ## Installation Requirements
 1. Computer
      - Windows, MacOS, and Linux are only supported when playing this mod. 
-     - Android, Switch, Browser and other devices are not supported due to controls. _(Pls don't ask a port for this mod)_
+     - Android, Switch, Browser and other devices are not supported due to controller issues. 
+          - Never ask a FUCKING port of this, especially Android I ain't doin' that shit.
 2. Psych Engine & P-Slice
      - Some version of Psych Engine are only supported when playing this mod:
           - 1.0.0 (Pre-Release)
           - 1.0.0
           - 1.0.1
-          - 0.7.3 ***(Coming soon)***
-
+          - 0.7.3
 
 ## Features
 - A new user-friendly graphical user interface (GUI)

@@ -1,0 +1,138 @@
+{
+     "funkin": {
+          "rgbshader": true,
+          "types": ["", "Hey!", "No Animation", "Alt Animation", "GF Sing"],
+          "strums": {
+               "offsets": [0, 0],
+               "height": 0
+          }
+     },
+     "chip": {
+          "rgbshader": true,
+          "types": ["", "Hey!", "No Animation", "Alt Animation", "GF Sing"],
+          "strums": {
+               "offsets": [0, 0],
+               "height": 0
+          }
+     },
+     "future": {
+          "rgbshader": true,
+          "types": ["", "Hey!", "No Animation", "Alt Animation", "GF Sing"],
+          "strums": {
+               "offsets": [0, 0],
+               "height": 0
+          }
+     },
+     "arrow_funk": {
+          "rgbshader": true,
+          "types": ["", "Hey!", "No Animation", "Alt Animation", "GF Sing"],
+          "strums": {
+               "offsets": [0, 0],
+               "height": 0
+          }
+     },
+     "bad": {
+          "rgbshader": true,
+          "types": ["", "Hey!", "No Animation", "Alt Animation", "GF Sing"],
+          "strums": {
+               "offsets": [0, 0],
+               "height": 0
+          }
+     },
+     "creepy": {
+          "rgbshader": false,
+          "types": ["", "Hey!", "No Animation", "Alt Animation", "GF Sing"],
+          "strums": {
+               "offsets": [0, 0],
+               "height": 0
+          }
+     },
+     "dokidoki": {
+          "rgbshader": false,
+          "types": ["", "Hey!", "No Animation", "Alt Animation", "GF Sing"],
+          "strums": {
+               "offsets": [0, 0],
+               "height": 0
+          }
+     },
+     "m1ku": {
+          "rgbshader": false,
+          "types": ["", "Hey!", "No Animation", "Alt Animation", "GF Sing"],
+          "strums": {
+               "offsets": [0, 0],
+               "height": 0
+          }
+     },
+     "majin": {
+          "rgbshader": false,
+          "types": ["", "Hey!", "No Animation", "Alt Animation", "GF Sing"],
+          "strums": {
+               "offsets": [0, 0],
+               "height": 0
+          }
+     },
+     "mario's_madness": {
+          "rgbshader": false,
+          "types": ["", "Hey!", "No Animation", "Alt Animation", "GF Sing"],
+          "strums": {
+               "offsets": [0, 0],
+               "height": 0
+          }
+     },
+     "mm_luigi": {
+          "rgbshader": false,
+          "types": ["", "Hey!", "No Animation", "Alt Animation", "GF Sing"],
+          "strums": {
+               "offsets": [0, 0],
+               "height": 0
+          }
+     },
+     "ourple": {
+          "rgbshader": false,
+          "types": ["", "Hey!", "No Animation", "Alt Animation", "GF Sing"],
+          "strums": {
+               "offsets": [0, 0],
+               "height": 0
+          }
+     },
+     "ron": {
+          "rgbshader": false,
+          "types": ["", "Hey!", "No Animation", "Alt Animation", "GF Sing"],
+          "strums": {
+               "offsets": [0, 0],
+               "height": 0
+          }
+     },
+     "rush": {
+          "rgbshader": false,
+          "types": ["", "Hey!", "No Animation", "Alt Animation", "GF Sing"],
+          "strums": {
+               "offsets": [0, 0],
+               "height": 0
+          }
+     },
+     "tabi_dark": {
+          "rgbshader": false,
+          "types": ["", "Hey!", "No Animation", "Alt Animation", "GF Sing"],
+          "strums": {
+               "offsets": [0, 0],
+               "height": 0
+          }
+     },
+     "tabi": {
+          "rgbshader": false,
+          "types": ["", "Hey!", "No Animation", "Alt Animation", "GF Sing"],
+          "strums": {
+               "offsets": [0, 0],
+               "height": 0
+          }
+     },
+     "tgt": {
+          "rgbshader": false,
+          "types": ["", "Hey!", "No Animation", "Alt Animation", "GF Sing"],
+          "strums": {
+               "offsets": [0, 0],
+               "height": 0
+          }
+     }
+}
