@@ -1,3 +1,4 @@
+require 'table.new'
 local global = {}
 
 function global.switch(value) -- calling operation (); first argument value
@@ -14,10 +15,11 @@ function global.toAllMetatable(tab, default)
           __index    = function() return default end,
           __newindex = function() return default end
      }
+
      local duplicate = table.new(0xff, 0)
      for keys, values in pairs(tab) do
           if type(values) == "table" then
-               values = toAllMetatable(setmetatable(values, duplicateMetaData), default)
+               values = global.toAllMetatable(setmetatable(values, duplicateMetaData), default)
           else
                values = values
           end

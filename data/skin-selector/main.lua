@@ -97,6 +97,7 @@ local Skins = SkinStates:new('notes', {'notes', 'splashes'}, {'noteSkins', 'note
 Skins:precache()
 Skins:load()
 Skins:create_preload()
+Skins:preview()
 Skins:page_setup()
 
 function onCreatePost()
