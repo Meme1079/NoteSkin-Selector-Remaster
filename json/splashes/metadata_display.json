@@ -1,0 +1,68 @@
+{
+     "funkin": {
+          "prefixes": "note splash green 1",
+          "frames": 16,
+          "size": [0.45, 0.45],
+          "offsets": [0, 0]
+     },
+     "diamond": {
+          "prefixes": "note splash diamond green 1",
+          "frames": 16,
+          "size": [0.45, 0.45],
+          "offsets": [0, 0]
+     },
+     "electric": {
+          "prefixes": "splash electro green 1",
+          "frames": 16,
+          "size": [0.45, 0.45],
+          "offsets": [0, 0]
+     },
+     "sparkles": {
+          "prefixes": "splash sparkles green 1",
+          "frames": 16,
+          "size": [0.45, 0.45],
+          "offsets": [0, 0]
+     },
+     "vanilla": {
+          "prefixes": "vanilla splash green 1",
+          "frames": 16,
+          "size": [0.45, 0.45],
+          "offsets": [0, 0]
+     },
+     "arrow_funk": {
+          "prefixes": "note splash green 1",
+          "frames": 16,
+          "size": [0.45, 0.45],
+          "offsets": [0, 0]
+     },
+     "dokidoki": {
+          "prefixes": "note splash green 1",
+          "frames": 16,
+          "size": [0.45, 0.45],
+          "offsets": [0, 0]
+     },
+     "m1ku": {
+          "prefixes": "note splash green 1",
+          "frames": 16,
+          "size": [0.45, 0.45],
+          "offsets": [0, 0]
+     },
+     "milk": {
+          "prefixes": "note splash green 1",
+          "frames": 16,
+          "size": [0.45, 0.45],
+          "offsets": [0, 0]
+     },
+     "rush": {
+          "prefixes": "note splash green 1",
+          "frames": 16,
+          "size": [0.45, 0.45],
+          "offsets": [0, 0]
+     },
+     "tgt": {
+          "prefixes": "note splash green 1",
+          "frames": 16,
+          "size": [0.45, 0.45],
+          "offsets": [0, 0]
+     }
+}

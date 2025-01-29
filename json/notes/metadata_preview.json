@@ -1,0 +1,1362 @@
+{
+     "funkin": {
+          "animations": {
+               "confirm": {
+                    "left_confirm": {
+                         "prefix": "left confirm",
+                         "offsets": [0,0]
+                    },
+                    "down_confirm": {
+                         "prefix": "down confirm",
+                         "offsets": [0,0]
+                    },
+                    "up_confirm": {
+                         "prefix": "up_confirm",
+                         "offsets": [0,0]
+                    },
+                    "right_confirm": {
+                         "prefix": "right_confirm",
+                         "offsets": [0,0]
+                    }
+               },
+               "pressed": {
+                    "left_pressed": {
+                         "prefix": "left press",
+                         "offsets": [0,0]
+                    },
+                    "down_pressed": {
+                         "prefix": "down press",
+                         "offsets": [0,0]
+                    },
+                    "up_pressed": {
+                         "prefix": "up press",
+                         "offsets": [0,0]
+                    },
+                    "right_pressed": {
+                         "prefix": "right press",
+                         "offsets": [0,0]
+                    }
+               },
+               "colored": {
+                    "left_colored": {
+                         "prefix": "purple0",
+                         "offsets": [0,0]
+                    },
+                    "down_colored": {
+                         "prefix": "blue0",
+                         "offsets": [0,0]
+                    },
+                    "up_colored": {
+                         "prefix": "green0",
+                         "offsets": [0,0]
+                    },
+                    "right_colored": {
+                         "prefix": "red0",
+                         "offsets": [0,0]
+                    }
+               },
+               "strums": {
+                    "left": {
+                         "prefix": "arrowLEFT",
+                         "offsets": [0,0]
+                    },
+                    "down": {
+                         "prefix": "arrowDOWN",
+                         "offsets": [0,0]
+                    },
+                    "up": {
+                         "prefix": "arrowUP",
+                         "offsets": [0,0]
+                    },
+                    "right": {
+                         "prefix": "arrowRIGHT",
+                         "offsets": [0,0]
+                    }
+               }
+          },
+          "size": [0.65, 0.65],
+          "initial": ["left", "down", "up", "right"],
+          "frames": 24,
+          "loop": false
+     },
+     "chip": {
+          "animations": {
+               "confirm": {
+                    "left_confirm": {
+                         "prefix": "left confirm",
+                         "offsets": [0,0]
+                    },
+                    "down_confirm": {
+                         "prefix": "down confirm",
+                         "offsets": [0,0]
+                    },
+                    "up_confirm": {
+                         "prefix": "up_confirm",
+                         "offsets": [0,0]
+                    },
+                    "right_confirm": {
+                         "prefix": "right_confirm",
+                         "offsets": [0,0]
+                    }
+               },
+               "pressed": {
+                    "left_pressed": {
+                         "prefix": "left press",
+                         "offsets": [0,0]
+                    },
+                    "down_pressed": {
+                         "prefix": "down press",
+                         "offsets": [0,0]
+                    },
+                    "up_pressed": {
+                         "prefix": "up press",
+                         "offsets": [0,0]
+                    },
+                    "right_pressed": {
+                         "prefix": "right press",
+                         "offsets": [0,0]
+                    }
+               },
+               "colored": {
+                    "left_colored": {
+                         "prefix": "purple0",
+                         "offsets": [0,0]
+                    },
+                    "down_colored": {
+                         "prefix": "blue0",
+                         "offsets": [0,0]
+                    },
+                    "up_colored": {
+                         "prefix": "green0",
+                         "offsets": [0,0]
+                    },
+                    "right_colored": {
+                         "prefix": "red0",
+                         "offsets": [0,0]
+                    }
+               },
+               "strums": {
+                    "left": {
+                         "prefix": "arrowLEFT",
+                         "offsets": [0,0]
+                    },
+                    "down": {
+                         "prefix": "arrowDOWN",
+                         "offsets": [0,0]
+                    },
+                    "up": {
+                         "prefix": "arrowUP",
+                         "offsets": [0,0]
+                    },
+                    "right": {
+                         "prefix": "arrowRIGHT",
+                         "offsets": [0,0]
+                    }
+               }
+          },
+          "size": [0.65, 0.65],
+          "initial": ["left", "down", "up", "right"],
+          "frames": 24,
+          "loop": false
+     },
+     "future": {
+          "animations": {
+               "confirm": {
+                    "left_confirm": {
+                         "prefix": "left confirm",
+                         "offsets": [0,0]
+                    },
+                    "down_confirm": {
+                         "prefix": "down confirm",
+                         "offsets": [0,0]
+                    },
+                    "up_confirm": {
+                         "prefix": "up_confirm",
+                         "offsets": [0,0]
+                    },
+                    "right_confirm": {
+                         "prefix": "right_confirm",
+                         "offsets": [0,0]
+                    }
+               },
+               "pressed": {
+                    "left_pressed": {
+                         "prefix": "left press",
+                         "offsets": [0,0]
+                    },
+                    "down_pressed": {
+                         "prefix": "down press",
+                         "offsets": [0,0]
+                    },
+                    "up_pressed": {
+                         "prefix": "up press",
+                         "offsets": [0,0]
+                    },
+                    "right_pressed": {
+                         "prefix": "right press",
+                         "offsets": [0,0]
+                    }
+               },
+               "colored": {
+                    "left_colored": {
+                         "prefix": "purple0",
+                         "offsets": [0,0]
+                    },
+                    "down_colored": {
+                         "prefix": "blue0",
+                         "offsets": [0,0]
+                    },
+                    "up_colored": {
+                         "prefix": "green0",
+                         "offsets": [0,0]
+                    },
+                    "right_colored": {
+                         "prefix": "red0",
+                         "offsets": [0,0]
+                    }
+               },
+               "strums": {
+                    "left": {
+                         "prefix": "arrowLEFT",
+                         "offsets": [0,0]
+                    },
+                    "down": {
+                         "prefix": "arrowDOWN",
+                         "offsets": [0,0]
+                    },
+                    "up": {
+                         "prefix": "arrowUP",
+                         "offsets": [0,0]
+                    },
+                    "right": {
+                         "prefix": "arrowRIGHT",
+                         "offsets": [0,0]
+                    }
+               }
+          },
+          "size": [0.65, 0.65],
+          "initial": ["left", "down", "up", "right"],
+          "frames": 24,
+          "loop": false
+     },
+     "arrow_funk": {
+          "animations": {
+               "confirm": {
+                    "left_confirm": {
+                         "prefix": "left confirm",
+                         "offsets": [0,0]
+                    },
+                    "down_confirm": {
+                         "prefix": "down confirm",
+                         "offsets": [0,0]
+                    },
+                    "up_confirm": {
+                         "prefix": "up_confirm",
+                         "offsets": [0,0]
+                    },
+                    "right_confirm": {
+                         "prefix": "right_confirm",
+                         "offsets": [0,0]
+                    }
+               },
+               "pressed": {
+                    "left_pressed": {
+                         "prefix": "left press",
+                         "offsets": [0,0]
+                    },
+                    "down_pressed": {
+                         "prefix": "down press",
+                         "offsets": [0,0]
+                    },
+                    "up_pressed": {
+                         "prefix": "up press",
+                         "offsets": [0,0]
+                    },
+                    "right_pressed": {
+                         "prefix": "right press",
+                         "offsets": [0,0]
+                    }
+               },
+               "colored": {
+                    "left_colored": {
+                         "prefix": "purple0",
+                         "offsets": [0,0]
+                    },
+                    "down_colored": {
+                         "prefix": "blue0",
+                         "offsets": [0,0]
+                    },
+                    "up_colored": {
+                         "prefix": "green0",
+                         "offsets": [0,0]
+                    },
+                    "right_colored": {
+                         "prefix": "red0",
+                         "offsets": [0,0]
+                    }
+               },
+               "strums": {
+                    "left": {
+                         "prefix": "arrowLEFT",
+                         "offsets": [0,0]
+                    },
+                    "down": {
+                         "prefix": "arrowDOWN",
+                         "offsets": [0,0]
+                    },
+                    "up": {
+                         "prefix": "arrowUP",
+                         "offsets": [0,0]
+                    },
+                    "right": {
+                         "prefix": "arrowRIGHT",
+                         "offsets": [0,0]
+                    }
+               }
+          },
+          "size": [0.65, 0.65],
+          "initial": ["left", "down", "up", "right"],
+          "frames": 24,
+          "loop": false
+     },
+     "bad": {
+          "animations": {
+               "confirm": {
+                    "left_confirm": {
+                         "prefix": "left confirm",
+                         "offsets": [0,0]
+                    },
+                    "down_confirm": {
+                         "prefix": "down confirm",
+                         "offsets": [0,0]
+                    },
+                    "up_confirm": {
+                         "prefix": "up_confirm",
+                         "offsets": [0,0]
+                    },
+                    "right_confirm": {
+                         "prefix": "right_confirm",
+                         "offsets": [0,0]
+                    }
+               },
+               "pressed": {
+                    "left_pressed": {
+                         "prefix": "left press",
+                         "offsets": [0,0]
+                    },
+                    "down_pressed": {
+                         "prefix": "down press",
+                         "offsets": [0,0]
+                    },
+                    "up_pressed": {
+                         "prefix": "up press",
+                         "offsets": [0,0]
+                    },
+                    "right_pressed": {
+                         "prefix": "right press",
+                         "offsets": [0,0]
+                    }
+               },
+               "colored": {
+                    "left_colored": {
+                         "prefix": "purple0",
+                         "offsets": [0,0]
+                    },
+                    "down_colored": {
+                         "prefix": "blue0",
+                         "offsets": [0,0]
+                    },
+                    "up_colored": {
+                         "prefix": "green0",
+                         "offsets": [0,0]
+                    },
+                    "right_colored": {
+                         "prefix": "red0",
+                         "offsets": [0,0]
+                    }
+               },
+               "strums": {
+                    "left": {
+                         "prefix": "arrowLEFT",
+                         "offsets": [0,0]
+                    },
+                    "down": {
+                         "prefix": "arrowDOWN",
+                         "offsets": [0,0]
+                    },
+                    "up": {
+                         "prefix": "arrowUP",
+                         "offsets": [0,0]
+                    },
+                    "right": {
+                         "prefix": "arrowRIGHT",
+                         "offsets": [0,0]
+                    }
+               }
+          },
+          "size": [0.65, 0.65],
+          "initial": ["left", "down", "up", "right"],
+          "frames": 24,
+          "loop": false
+     },
+     "creepy": {
+          "animations": {
+               "confirm": {
+                    "left_confirm": {
+                         "prefix": "left confirm",
+                         "offsets": [0,0]
+                    },
+                    "down_confirm": {
+                         "prefix": "down confirm",
+                         "offsets": [0,0]
+                    },
+                    "up_confirm": {
+                         "prefix": "up_confirm",
+                         "offsets": [0,0]
+                    },
+                    "right_confirm": {
+                         "prefix": "right_confirm",
+                         "offsets": [0,0]
+                    }
+               },
+               "pressed": {
+                    "left_pressed": {
+                         "prefix": "left press",
+                         "offsets": [0,0]
+                    },
+                    "down_pressed": {
+                         "prefix": "down press",
+                         "offsets": [0,0]
+                    },
+                    "up_pressed": {
+                         "prefix": "up press",
+                         "offsets": [0,0]
+                    },
+                    "right_pressed": {
+                         "prefix": "right press",
+                         "offsets": [0,0]
+                    }
+               },
+               "colored": {
+                    "left_colored": {
+                         "prefix": "purple0",
+                         "offsets": [0,0]
+                    },
+                    "down_colored": {
+                         "prefix": "blue0",
+                         "offsets": [0,0]
+                    },
+                    "up_colored": {
+                         "prefix": "green0",
+                         "offsets": [0,0]
+                    },
+                    "right_colored": {
+                         "prefix": "red0",
+                         "offsets": [0,0]
+                    }
+               },
+               "strums": {
+                    "left": {
+                         "prefix": "arrowLEFT",
+                         "offsets": [0,0]
+                    },
+                    "down": {
+                         "prefix": "arrowDOWN",
+                         "offsets": [0,0]
+                    },
+                    "up": {
+                         "prefix": "arrowUP",
+                         "offsets": [0,0]
+                    },
+                    "right": {
+                         "prefix": "arrowRIGHT",
+                         "offsets": [0,0]
+                    }
+               }
+          },
+          "size": [0.65, 0.65],
+          "initial": ["left", "down", "up", "right"],
+          "frames": 24,
+          "loop": false
+     },
+     "dokidoki": {
+          "animations": {
+               "confirm": {
+                    "left_confirm": {
+                         "prefix": "left confirm",
+                         "offsets": [0,0]
+                    },
+                    "down_confirm": {
+                         "prefix": "down confirm",
+                         "offsets": [0,0]
+                    },
+                    "up_confirm": {
+                         "prefix": "up_confirm",
+                         "offsets": [0,0]
+                    },
+                    "right_confirm": {
+                         "prefix": "right_confirm",
+                         "offsets": [0,0]
+                    }
+               },
+               "pressed": {
+                    "left_pressed": {
+                         "prefix": "left press",
+                         "offsets": [0,0]
+                    },
+                    "down_pressed": {
+                         "prefix": "down press",
+                         "offsets": [0,0]
+                    },
+                    "up_pressed": {
+                         "prefix": "up press",
+                         "offsets": [0,0]
+                    },
+                    "right_pressed": {
+                         "prefix": "right press",
+                         "offsets": [0,0]
+                    }
+               },
+               "colored": {
+                    "left_colored": {
+                         "prefix": "purple0",
+                         "offsets": [0,0]
+                    },
+                    "down_colored": {
+                         "prefix": "blue0",
+                         "offsets": [0,0]
+                    },
+                    "up_colored": {
+                         "prefix": "green0",
+                         "offsets": [0,0]
+                    },
+                    "right_colored": {
+                         "prefix": "red0",
+                         "offsets": [0,0]
+                    }
+               },
+               "strums": {
+                    "left": {
+                         "prefix": "arrowLEFT",
+                         "offsets": [0,0]
+                    },
+                    "down": {
+                         "prefix": "arrowDOWN",
+                         "offsets": [0,0]
+                    },
+                    "up": {
+                         "prefix": "arrowUP",
+                         "offsets": [0,0]
+                    },
+                    "right": {
+                         "prefix": "arrowRIGHT",
+                         "offsets": [0,0]
+                    }
+               }
+          },
+          "size": [0.65, 0.65],
+          "initial": ["left", "down", "up", "right"],
+          "frames": 24,
+          "loop": false
+     },
+     "m1ku": {
+          "animations": {
+               "confirm": {
+                    "left_confirm": {
+                         "prefix": "left confirm",
+                         "offsets": [0,0]
+                    },
+                    "down_confirm": {
+                         "prefix": "down confirm",
+                         "offsets": [0,0]
+                    },
+                    "up_confirm": {
+                         "prefix": "up_confirm",
+                         "offsets": [0,0]
+                    },
+                    "right_confirm": {
+                         "prefix": "right_confirm",
+                         "offsets": [0,0]
+                    }
+               },
+               "pressed": {
+                    "left_pressed": {
+                         "prefix": "left press",
+                         "offsets": [0,0]
+                    },
+                    "down_pressed": {
+                         "prefix": "down press",
+                         "offsets": [0,0]
+                    },
+                    "up_pressed": {
+                         "prefix": "up press",
+                         "offsets": [0,0]
+                    },
+                    "right_pressed": {
+                         "prefix": "right press",
+                         "offsets": [0,0]
+                    }
+               },
+               "colored": {
+                    "left_colored": {
+                         "prefix": "purple0",
+                         "offsets": [0,0]
+                    },
+                    "down_colored": {
+                         "prefix": "blue0",
+                         "offsets": [0,0]
+                    },
+                    "up_colored": {
+                         "prefix": "green0",
+                         "offsets": [0,0]
+                    },
+                    "right_colored": {
+                         "prefix": "red0",
+                         "offsets": [0,0]
+                    }
+               },
+               "strums": {
+                    "left": {
+                         "prefix": "arrowLEFT",
+                         "offsets": [0,0]
+                    },
+                    "down": {
+                         "prefix": "arrowDOWN",
+                         "offsets": [0,0]
+                    },
+                    "up": {
+                         "prefix": "arrowUP",
+                         "offsets": [0,0]
+                    },
+                    "right": {
+                         "prefix": "arrowRIGHT",
+                         "offsets": [0,0]
+                    }
+               }
+          },
+          "size": [0.65, 0.65],
+          "initial": ["left", "down", "up", "right"],
+          "frames": 24,
+          "loop": false
+     },
+     "majin": {
+          "animations": {
+               "confirm": {
+                    "left_confirm": {
+                         "prefix": "left confirm",
+                         "offsets": [0,0]
+                    },
+                    "down_confirm": {
+                         "prefix": "down confirm",
+                         "offsets": [0,0]
+                    },
+                    "up_confirm": {
+                         "prefix": "up_confirm",
+                         "offsets": [0,0]
+                    },
+                    "right_confirm": {
+                         "prefix": "right_confirm",
+                         "offsets": [0,0]
+                    }
+               },
+               "pressed": {
+                    "left_pressed": {
+                         "prefix": "left press",
+                         "offsets": [0,0]
+                    },
+                    "down_pressed": {
+                         "prefix": "down press",
+                         "offsets": [0,0]
+                    },
+                    "up_pressed": {
+                         "prefix": "up press",
+                         "offsets": [0,0]
+                    },
+                    "right_pressed": {
+                         "prefix": "right press",
+                         "offsets": [0,0]
+                    }
+               },
+               "colored": {
+                    "left_colored": {
+                         "prefix": "purple0",
+                         "offsets": [0,0]
+                    },
+                    "down_colored": {
+                         "prefix": "blue0",
+                         "offsets": [0,0]
+                    },
+                    "up_colored": {
+                         "prefix": "green0",
+                         "offsets": [0,0]
+                    },
+                    "right_colored": {
+                         "prefix": "red0",
+                         "offsets": [0,0]
+                    }
+               },
+               "strums": {
+                    "left": {
+                         "prefix": "arrowLEFT",
+                         "offsets": [0,0]
+                    },
+                    "down": {
+                         "prefix": "arrowDOWN",
+                         "offsets": [0,0]
+                    },
+                    "up": {
+                         "prefix": "arrowUP",
+                         "offsets": [0,0]
+                    },
+                    "right": {
+                         "prefix": "arrowRIGHT",
+                         "offsets": [0,0]
+                    }
+               }
+          },
+          "size": [0.65, 0.65],
+          "initial": ["left", "down", "up", "right"],
+          "frames": 24,
+          "loop": false
+     },
+     "mario's_madness": {
+          "animations": {
+               "confirm": {
+                    "left_confirm": {
+                         "prefix": "left confirm",
+                         "offsets": [0,0]
+                    },
+                    "down_confirm": {
+                         "prefix": "down confirm",
+                         "offsets": [0,0]
+                    },
+                    "up_confirm": {
+                         "prefix": "up_confirm",
+                         "offsets": [0,0]
+                    },
+                    "right_confirm": {
+                         "prefix": "right_confirm",
+                         "offsets": [0,0]
+                    }
+               },
+               "pressed": {
+                    "left_pressed": {
+                         "prefix": "left press",
+                         "offsets": [0,0]
+                    },
+                    "down_pressed": {
+                         "prefix": "down press",
+                         "offsets": [0,0]
+                    },
+                    "up_pressed": {
+                         "prefix": "up press",
+                         "offsets": [0,0]
+                    },
+                    "right_pressed": {
+                         "prefix": "right press",
+                         "offsets": [0,0]
+                    }
+               },
+               "colored": {
+                    "left_colored": {
+                         "prefix": "purple0",
+                         "offsets": [0,0]
+                    },
+                    "down_colored": {
+                         "prefix": "blue0",
+                         "offsets": [0,0]
+                    },
+                    "up_colored": {
+                         "prefix": "green0",
+                         "offsets": [0,0]
+                    },
+                    "right_colored": {
+                         "prefix": "red0",
+                         "offsets": [0,0]
+                    }
+               },
+               "strums": {
+                    "left": {
+                         "prefix": "arrowLEFT",
+                         "offsets": [0,0]
+                    },
+                    "down": {
+                         "prefix": "arrowDOWN",
+                         "offsets": [0,0]
+                    },
+                    "up": {
+                         "prefix": "arrowUP",
+                         "offsets": [0,0]
+                    },
+                    "right": {
+                         "prefix": "arrowRIGHT",
+                         "offsets": [0,0]
+                    }
+               }
+          },
+          "size": [0.65, 0.65],
+          "initial": ["left", "down", "up", "right"],
+          "frames": 24,
+          "loop": false
+     },
+     "mm_luigi": {
+          "animations": {
+               "confirm": {
+                    "left_confirm": {
+                         "prefix": "left confirm",
+                         "offsets": [0,0]
+                    },
+                    "down_confirm": {
+                         "prefix": "down confirm",
+                         "offsets": [0,0]
+                    },
+                    "up_confirm": {
+                         "prefix": "up_confirm",
+                         "offsets": [0,0]
+                    },
+                    "right_confirm": {
+                         "prefix": "right_confirm",
+                         "offsets": [0,0]
+                    }
+               },
+               "pressed": {
+                    "left_pressed": {
+                         "prefix": "left press",
+                         "offsets": [0,0]
+                    },
+                    "down_pressed": {
+                         "prefix": "down press",
+                         "offsets": [0,0]
+                    },
+                    "up_pressed": {
+                         "prefix": "up press",
+                         "offsets": [0,0]
+                    },
+                    "right_pressed": {
+                         "prefix": "right press",
+                         "offsets": [0,0]
+                    }
+               },
+               "colored": {
+                    "left_colored": {
+                         "prefix": "purple0",
+                         "offsets": [0,0]
+                    },
+                    "down_colored": {
+                         "prefix": "blue0",
+                         "offsets": [0,0]
+                    },
+                    "up_colored": {
+                         "prefix": "green0",
+                         "offsets": [0,0]
+                    },
+                    "right_colored": {
+                         "prefix": "red0",
+                         "offsets": [0,0]
+                    }
+               },
+               "strums": {
+                    "left": {
+                         "prefix": "arrowLEFT",
+                         "offsets": [0,0]
+                    },
+                    "down": {
+                         "prefix": "arrowDOWN",
+                         "offsets": [0,0]
+                    },
+                    "up": {
+                         "prefix": "arrowUP",
+                         "offsets": [0,0]
+                    },
+                    "right": {
+                         "prefix": "arrowRIGHT",
+                         "offsets": [0,0]
+                    }
+               }
+          },
+          "size": [0.65, 0.65],
+          "initial": ["left", "down", "up", "right"],
+          "frames": 24,
+          "loop": false
+     },
+     "ourple": {
+          "animations": {
+               "confirm": {
+                    "left_confirm": {
+                         "prefix": "left confirm",
+                         "offsets": [0,0]
+                    },
+                    "down_confirm": {
+                         "prefix": "down confirm",
+                         "offsets": [0,0]
+                    },
+                    "up_confirm": {
+                         "prefix": "up_confirm",
+                         "offsets": [0,0]
+                    },
+                    "right_confirm": {
+                         "prefix": "right_confirm",
+                         "offsets": [0,0]
+                    }
+               },
+               "pressed": {
+                    "left_pressed": {
+                         "prefix": "left press",
+                         "offsets": [0,0]
+                    },
+                    "down_pressed": {
+                         "prefix": "down press",
+                         "offsets": [0,0]
+                    },
+                    "up_pressed": {
+                         "prefix": "up press",
+                         "offsets": [0,0]
+                    },
+                    "right_pressed": {
+                         "prefix": "right press",
+                         "offsets": [0,0]
+                    }
+               },
+               "colored": {
+                    "left_colored": {
+                         "prefix": "purple0",
+                         "offsets": [0,0]
+                    },
+                    "down_colored": {
+                         "prefix": "blue0",
+                         "offsets": [0,0]
+                    },
+                    "up_colored": {
+                         "prefix": "green0",
+                         "offsets": [0,0]
+                    },
+                    "right_colored": {
+                         "prefix": "red0",
+                         "offsets": [0,0]
+                    }
+               },
+               "strums": {
+                    "left": {
+                         "prefix": "arrowLEFT",
+                         "offsets": [0,0]
+                    },
+                    "down": {
+                         "prefix": "arrowDOWN",
+                         "offsets": [0,0]
+                    },
+                    "up": {
+                         "prefix": "arrowUP",
+                         "offsets": [0,0]
+                    },
+                    "right": {
+                         "prefix": "arrowRIGHT",
+                         "offsets": [0,0]
+                    }
+               }
+          },
+          "size": [0.65, 0.65],
+          "initial": ["left", "down", "up", "right"],
+          "frames": 24,
+          "loop": false
+     },
+     "ron": {
+          "animations": {
+               "confirm": {
+                    "left_confirm": {
+                         "prefix": "left confirm",
+                         "offsets": [0,0]
+                    },
+                    "down_confirm": {
+                         "prefix": "down confirm",
+                         "offsets": [0,0]
+                    },
+                    "up_confirm": {
+                         "prefix": "up_confirm",
+                         "offsets": [0,0]
+                    },
+                    "right_confirm": {
+                         "prefix": "right_confirm",
+                         "offsets": [0,0]
+                    }
+               },
+               "pressed": {
+                    "left_pressed": {
+                         "prefix": "left press",
+                         "offsets": [0,0]
+                    },
+                    "down_pressed": {
+                         "prefix": "down press",
+                         "offsets": [0,0]
+                    },
+                    "up_pressed": {
+                         "prefix": "up press",
+                         "offsets": [0,0]
+                    },
+                    "right_pressed": {
+                         "prefix": "right press",
+                         "offsets": [0,0]
+                    }
+               },
+               "colored": {
+                    "left_colored": {
+                         "prefix": "purple0",
+                         "offsets": [0,0]
+                    },
+                    "down_colored": {
+                         "prefix": "blue0",
+                         "offsets": [0,0]
+                    },
+                    "up_colored": {
+                         "prefix": "green0",
+                         "offsets": [0,0]
+                    },
+                    "right_colored": {
+                         "prefix": "red0",
+                         "offsets": [0,0]
+                    }
+               },
+               "strums": {
+                    "left": {
+                         "prefix": "arrowLEFT",
+                         "offsets": [0,0]
+                    },
+                    "down": {
+                         "prefix": "arrowDOWN",
+                         "offsets": [0,0]
+                    },
+                    "up": {
+                         "prefix": "arrowUP",
+                         "offsets": [0,0]
+                    },
+                    "right": {
+                         "prefix": "arrowRIGHT",
+                         "offsets": [0,0]
+                    }
+               }
+          },
+          "size": [0.65, 0.65],
+          "initial": ["left", "down", "up", "right"],
+          "frames": 24,
+          "loop": false
+     },
+     "rush": {
+          "animations": {
+               "confirm": {
+                    "left_confirm": {
+                         "prefix": "left confirm",
+                         "offsets": [0,0]
+                    },
+                    "down_confirm": {
+                         "prefix": "down confirm",
+                         "offsets": [0,0]
+                    },
+                    "up_confirm": {
+                         "prefix": "up_confirm",
+                         "offsets": [0,0]
+                    },
+                    "right_confirm": {
+                         "prefix": "right_confirm",
+                         "offsets": [0,0]
+                    }
+               },
+               "pressed": {
+                    "left_pressed": {
+                         "prefix": "left press",
+                         "offsets": [0,0]
+                    },
+                    "down_pressed": {
+                         "prefix": "down press",
+                         "offsets": [0,0]
+                    },
+                    "up_pressed": {
+                         "prefix": "up press",
+                         "offsets": [0,0]
+                    },
+                    "right_pressed": {
+                         "prefix": "right press",
+                         "offsets": [0,0]
+                    }
+               },
+               "colored": {
+                    "left_colored": {
+                         "prefix": "purple0",
+                         "offsets": [0,0]
+                    },
+                    "down_colored": {
+                         "prefix": "blue0",
+                         "offsets": [0,0]
+                    },
+                    "up_colored": {
+                         "prefix": "green0",
+                         "offsets": [0,0]
+                    },
+                    "right_colored": {
+                         "prefix": "red0",
+                         "offsets": [0,0]
+                    }
+               },
+               "strums": {
+                    "left": {
+                         "prefix": "arrowLEFT",
+                         "offsets": [0,0]
+                    },
+                    "down": {
+                         "prefix": "arrowDOWN",
+                         "offsets": [0,0]
+                    },
+                    "up": {
+                         "prefix": "arrowUP",
+                         "offsets": [0,0]
+                    },
+                    "right": {
+                         "prefix": "arrowRIGHT",
+                         "offsets": [0,0]
+                    }
+               }
+          },
+          "size": [0.65, 0.65],
+          "initial": ["left", "down", "up", "right"],
+          "frames": 24,
+          "loop": false
+     },
+     "tabi_dark": {
+          "animations": {
+               "confirm": {
+                    "left_confirm": {
+                         "prefix": "left confirm",
+                         "offsets": [0,0]
+                    },
+                    "down_confirm": {
+                         "prefix": "down confirm",
+                         "offsets": [0,0]
+                    },
+                    "up_confirm": {
+                         "prefix": "up_confirm",
+                         "offsets": [0,0]
+                    },
+                    "right_confirm": {
+                         "prefix": "right_confirm",
+                         "offsets": [0,0]
+                    }
+               },
+               "pressed": {
+                    "left_pressed": {
+                         "prefix": "left press",
+                         "offsets": [0,0]
+                    },
+                    "down_pressed": {
+                         "prefix": "down press",
+                         "offsets": [0,0]
+                    },
+                    "up_pressed": {
+                         "prefix": "up press",
+                         "offsets": [0,0]
+                    },
+                    "right_pressed": {
+                         "prefix": "right press",
+                         "offsets": [0,0]
+                    }
+               },
+               "colored": {
+                    "left_colored": {
+                         "prefix": "purple0",
+                         "offsets": [0,0]
+                    },
+                    "down_colored": {
+                         "prefix": "blue0",
+                         "offsets": [0,0]
+                    },
+                    "up_colored": {
+                         "prefix": "green0",
+                         "offsets": [0,0]
+                    },
+                    "right_colored": {
+                         "prefix": "red0",
+                         "offsets": [0,0]
+                    }
+               },
+               "strums": {
+                    "left": {
+                         "prefix": "arrowLEFT",
+                         "offsets": [0,0]
+                    },
+                    "down": {
+                         "prefix": "arrowDOWN",
+                         "offsets": [0,0]
+                    },
+                    "up": {
+                         "prefix": "arrowUP",
+                         "offsets": [0,0]
+                    },
+                    "right": {
+                         "prefix": "arrowRIGHT",
+                         "offsets": [0,0]
+                    }
+               }
+          },
+          "size": [0.65, 0.65],
+          "initial": ["left", "down", "up", "right"],
+          "frames": 24,
+          "loop": false
+     },
+     "tabi": {
+          "animations": {
+               "confirm": {
+                    "left_confirm": {
+                         "prefix": "left confirm",
+                         "offsets": [0,0]
+                    },
+                    "down_confirm": {
+                         "prefix": "down confirm",
+                         "offsets": [0,0]
+                    },
+                    "up_confirm": {
+                         "prefix": "up_confirm",
+                         "offsets": [0,0]
+                    },
+                    "right_confirm": {
+                         "prefix": "right_confirm",
+                         "offsets": [0,0]
+                    }
+               },
+               "pressed": {
+                    "left_pressed": {
+                         "prefix": "left press",
+                         "offsets": [0,0]
+                    },
+                    "down_pressed": {
+                         "prefix": "down press",
+                         "offsets": [0,0]
+                    },
+                    "up_pressed": {
+                         "prefix": "up press",
+                         "offsets": [0,0]
+                    },
+                    "right_pressed": {
+                         "prefix": "right press",
+                         "offsets": [0,0]
+                    }
+               },
+               "colored": {
+                    "left_colored": {
+                         "prefix": "purple0",
+                         "offsets": [0,0]
+                    },
+                    "down_colored": {
+                         "prefix": "blue0",
+                         "offsets": [0,0]
+                    },
+                    "up_colored": {
+                         "prefix": "green0",
+                         "offsets": [0,0]
+                    },
+                    "right_colored": {
+                         "prefix": "red0",
+                         "offsets": [0,0]
+                    }
+               },
+               "strums": {
+                    "left": {
+                         "prefix": "arrowLEFT",
+                         "offsets": [0,0]
+                    },
+                    "down": {
+                         "prefix": "arrowDOWN",
+                         "offsets": [0,0]
+                    },
+                    "up": {
+                         "prefix": "arrowUP",
+                         "offsets": [0,0]
+                    },
+                    "right": {
+                         "prefix": "arrowRIGHT",
+                         "offsets": [0,0]
+                    }
+               }
+          },
+          "size": [0.65, 0.65],
+          "initial": ["left", "down", "up", "right"],
+          "frames": 24,
+          "loop": false
+     },
+     "tgt": {
+          "animations": {
+               "confirm": {
+                    "left_confirm": {
+                         "prefix": "left confirm",
+                         "offsets": [0,0]
+                    },
+                    "down_confirm": {
+                         "prefix": "down confirm",
+                         "offsets": [0,0]
+                    },
+                    "up_confirm": {
+                         "prefix": "up_confirm",
+                         "offsets": [0,0]
+                    },
+                    "right_confirm": {
+                         "prefix": "right_confirm",
+                         "offsets": [0,0]
+                    }
+               },
+               "pressed": {
+                    "left_pressed": {
+                         "prefix": "left press",
+                         "offsets": [0,0]
+                    },
+                    "down_pressed": {
+                         "prefix": "down press",
+                         "offsets": [0,0]
+                    },
+                    "up_pressed": {
+                         "prefix": "up press",
+                         "offsets": [0,0]
+                    },
+                    "right_pressed": {
+                         "prefix": "right press",
+                         "offsets": [0,0]
+                    }
+               },
+               "colored": {
+                    "left_colored": {
+                         "prefix": "purple0",
+                         "offsets": [0,0]
+                    },
+                    "down_colored": {
+                         "prefix": "blue0",
+                         "offsets": [0,0]
+                    },
+                    "up_colored": {
+                         "prefix": "green0",
+                         "offsets": [0,0]
+                    },
+                    "right_colored": {
+                         "prefix": "red0",
+                         "offsets": [0,0]
+                    }
+               },
+               "strums": {
+                    "left": {
+                         "prefix": "arrowLEFT",
+                         "offsets": [0,0]
+                    },
+                    "down": {
+                         "prefix": "arrowDOWN",
+                         "offsets": [0,0]
+                    },
+                    "up": {
+                         "prefix": "arrowUP",
+                         "offsets": [0,0]
+                    },
+                    "right": {
+                         "prefix": "arrowRIGHT",
+                         "offsets": [0,0]
+                    }
+               }
+          },
+          "size": [0.65, 0.65],
+          "initial": ["left", "down", "up", "right"],
+          "frames": 24,
+          "loop": false
+     }
+}

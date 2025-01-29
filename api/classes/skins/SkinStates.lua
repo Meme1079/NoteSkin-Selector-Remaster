@@ -36,13 +36,14 @@ function SkinStates:new(stateStart, stateTypes, statePaths)
      self.stateStart = stateStart
      self.stateTypes = stateTypes
      self.statePaths = statePaths
-     self.currentState = stateTypes[table.find(stateTypes, stateStart)]
 
+     self.currentState = stateTypes[table.find(stateTypes, stateStart)]
+     self.currentPaths = statePaths[table.find(stateTypes, stateStart)]
      return self
 end
 
+local metadata_display = {}
 local metadata_preview = {}
-local metadata_skins   = {}
 
 local totalSkinLimit              = {}
 local totalSkinObjects            = {}
@@ -53,6 +54,7 @@ local totalSkinObjectHovered      = {}
 local totalSkinObjectClicked      = {}
 local totalSkinObjectSelected     = {}
 
+local pageCurrentIndex            = {}
 local sliderTrackIntervals        = {}
 local sliderTrackSemiIntervals    = {}
 
@@ -79,8 +81,8 @@ function SkinStates:load()
           return #self == 1 and setmetatable(supvalue, metaCurrentState) or setmetatable({supvalue}, metaCurrentState)[1]
      end
 
-     metadata_preview = json.parse(getTextFromFile('json/'..self.currentState..'/preview_metadata.json'))
-     metadata_skins   = json.parse(getTextFromFile('json/'..self.currentState..'/preview_metadata.json'))
+     metadata_display = json.parse(getTextFromFile('json/'..self.currentState..'/metadata_display.json'))
+     metadata_preview = json.parse(getTextFromFile('json/'..self.currentState..'/metadata_preview.json'))
     
      totalSkinLimit              = setToCurrentState(states.getTotalSkinLimit(self.currentState))
      totalSkinObjects            = setToCurrentState(states.getTotalSkinObjects(self.currentState))
@@ -91,13 +93,14 @@ function SkinStates:load()
      totalSkinObjectClicked      = setToCurrentState(states.getTotalSkinObjects(self.currentState, 'bools'))
      totalSkinObjectSelected     = setToCurrentState(states.getTotalSkinObjects(self.currentState, 'bools'))
 
+     pageCurrentIndex            = setToCurrentState(1)
      sliderTrackIntervals        = setToCurrentState(states.getPageSkinSliderPositions(self.currentState).intervals)
      sliderTrackSemiIntervals    = setToCurrentState(states.getPageSkinSliderPositions(self.currentState).semiIntervals)
 
-     selectSkinPagePositionIndex = setToCurrentState(0)
-     selectSkinInitSelectedIndex = setToCurrentState(0)
-     selectSkinPreSelectedIndex  = setToCurrentState(0)
-     selectSkinCurSelectedIndex  = setToCurrentState(0)
+     selectSkinPagePositionIndex = setToCurrentState(1)
+     selectSkinInitSelectedIndex = setToCurrentState(3)
+     selectSkinPreSelectedIndex  = setToCurrentState(3)
+     selectSkinCurSelectedIndex  = setToCurrentState(3)
      selectSkinHasBeenClicked    = setToCurrentState(false)
 end
 
@@ -105,8 +108,6 @@ end
 ---@param index? integer The chunk position index to display.
 ---@return nil
 function SkinStates:create(index)
-     local index = index == nil and 1 or index
-
      for pages = 1, totalSkinLimit do
           for displays = 1, #totalSkinObjects[pages] do
                if pages == index then
@@ -142,10 +143,42 @@ function SkinStates:create(index)
           return displaySkinPositions
      end
 
-     local call_displaySkinPositions = displaySkinPositions()
+     local displayDisplayExists = true
+     local function displaySkinMetadata(page, skin)
+          local skinObjectNames = totalSkinObjectNames[page][skin]:gsub('%s+', '_')
+          if metadata_display == nil                  then displayDisplayExists = false end
+          if metadata_display[skinObjectNames] == nil then displayDisplayExists = false end
+
+          local skinObjectMetdata = metadata_display[skinObjectNames]
+          if skinObjectMetdata.prefixes == nil then displayDisplayExists = false end
+          if skinObjectMetdata.frames   == nil then displayDisplayExists = false end
+          if skinObjectMetdata.size     == nil then displayDisplayExists = false end
+          if skinObjectMetdata.offsets  == nil then displayDisplayExists = false end
+
+          if displayDisplayExists == false then
+               switch (self.currentState) {
+                    notes = function()
+                         skinObjectMetdata.prefixes = 'arrowUP'
+                         skinObjectMetdata.frames   = 24
+                         skinObjectMetdata.size     = {0.55, 0.55}
+                         skinObjectMetdata.offsets  = {0,0}
+                    end,
+                    splashes = function()
+                         skinObjectMetdata.prefixes = 'note splash green 1'
+                         skinObjectMetdata.frames   = 16
+                         skinObjectMetdata.size     = {0.45, 0.45}
+                         skinObjectMetdata.offsets  = {0,0}
+                    end
+               }
+          end
+          return skinObjectMetdata
+     end
+
+     local getDisplaySkinPositions = displaySkinPositions()
      for displays = 1, #totalSkinObjects[index] do
-          local displaySkinPositionX = call_displaySkinPositions[displays][1]
-          local displaySkinPositionY = call_displaySkinPositions[displays][2]
+          local getSkinMetadata = displaySkinMetadata(index, displays)
+          local displaySkinPositionX = getDisplaySkinPositions[displays][1]
+          local displaySkinPositionY = getDisplaySkinPositions[displays][2]
 
           local displaySkinIconTemplates = {state = (self.currentState):upperAtStart(), ID = totalSkinObjectID[index][displays]}
           local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
@@ -161,80 +194,20 @@ function SkinStates:create(index)
           setProperty(displaySkinIconButton..'.antialiasing', false)
           addLuaSprite(displaySkinIconButton)
 
-          local skinObjectMetadata
-          local skinObjectMetadata_prefix
-          local skinObjectMetadata_sizeX,   skinObjectMetadata_sizeY
-          local skinObjectMetadata_offsetX, skinObjectMetadata_offsetY
+          local skinIconImagePath = self.currentPaths..'/'..totalSkinObjects[index][displays]
+          local skinIconPositionX = displaySkinPositionX + 16.5
+          local skinIconPositionY = displaySkinPositionY + 12
+          makeAnimatedLuaSprite(displaySkinIconSkin, skinIconImagePath, skinIconPositionX, skinIconPositionY)
+          scaleObject(displaySkinIconSkin, getSkinMetadata.size[1], getSkinMetadata.size[2])
+          addAnimationByPrefix(displaySkinIconSkin, 'static', getSkinMetadata.prefixes, getSkinMetadata.frames, true)
 
-          local metadataExists = true
-          local skinObjectMetadata_load = function()
-               local skinObjectNames = totalSkinObjectNames[index][displays]:gsub('%s+', '_')
-               if metadata_preview == nil                             then metadataExists = false; return end
-               if metadata_preview[skinObjectNames] == nil            then metadataExists = false; return end
-               if metadata_preview[skinObjectNames]['display'] == nil then metadataExists = false; return end
-
-               if metadataExists == false then return end
-               skinObjectMetadata = metadata_preview[skinObjectNames]['display']
-
-               skinObjectMetadata_prefix = skinObjectMetadata.prefixes
-               skinObjectMetadata_sizeX  = skinObjectMetadata.size[1]
-               skinObjectMetadata_sizeY  = skinObjectMetadata.size[2]
-
-               skinObjectMetadata_offsetX = skinObjectMetadata.offsets[1]
-               skinObjectMetadata_offsetY = skinObjectMetadata.offsets[2]
-          end
-          switch (self.currentState) {
-               notes = function() 
-                    skinObjectMetadata_prefix = 'arrowUP'
-                    skinObjectMetadata_sizeX  = 0.55
-                    skinObjectMetadata_sizeY  = 0.55
-               end,
-               splashes = function() 
-                    skinObjectMetadata_prefix = 'note splash green 1'
-                    skinObjectMetadata_sizeX  = 0.45
-                    skinObjectMetadata_sizeY  = 0.45
-               end
-          }
-          skinObjectMetadata_offsetX = 0
-          skinObjectMetadata_offsetY = 0
-
-          switch (self.currentState) {
-               notes = function()
-                    skinObjectMetadata_load()
-
-                    local skinIconImagePath = 'noteSkins/'..totalSkinObjects[index][displays]
-                    local skinIconPositionX = displaySkinPositionX + 16.5
-                    local skinIconPositionY = displaySkinPositionY + 12
-                    makeAnimatedLuaSprite(displaySkinIconSkin, skinIconImagePath, skinIconPositionX, skinIconPositionY)
-                    scaleObject(displaySkinIconSkin, skinObjectMetadata_sizeX, skinObjectMetadata_sizeY)
-                    addAnimationByPrefix(displaySkinIconSkin, 'static', skinObjectMetadata_prefix, 24, true)
-
-                    local curOffsetX = getProperty(displaySkinIconSkin..'.offset.x')
-                    local curOffsetY = getProperty(displaySkinIconSkin..'.offset.y')
-                    addOffset(displaySkinIconSkin, 'static', curOffsetX + skinObjectMetadata_offsetX, curOffsetY + skinObjectMetadata_offsetY)
-                    playAnim(displaySkinIconSkin, 'static')
-                    setObjectCamera(displaySkinIconSkin, 'camHUD')
-                    addLuaSprite(displaySkinIconSkin)
-               end,
-               splashes = function()
-                    skinObjectMetadata_load()
-
-                    local skinIconImagePath = 'noteSplashes/'..totalSkinObjects[index][displays]
-                    local skinIconPositionX = displaySkinPositionX + 16.5
-                    local skinIconPositionY = displaySkinPositionY + 12
-                    makeAnimatedLuaSprite(displaySkinIconSkin, skinIconImagePath, skinIconPositionX, skinIconPositionY)
-                    scaleObject(displaySkinIconSkin, skinObjectMetadata_sizeX, skinObjectMetadata_sizeY)
-                    addAnimationByPrefix(displaySkinIconSkin, 'static', skinObjectMetadata_prefix, 15, true)
-
-                    local curOffsetX = getProperty(displaySkinIconSkin..'.offset.x')
-                    local curOffsetY = getProperty(displaySkinIconSkin..'.offset.y')
-                    addOffset(displaySkinIconSkin, 'static', curOffsetX + skinObjectMetadata_offsetX, curOffsetY + skinObjectMetadata_offsetY)
-                    playAnim(displaySkinIconSkin, 'static')
-                    setObjectCamera(displaySkinIconSkin, 'camHUD')
-                    addLuaSprite(displaySkinIconSkin)
-               end
-          }
-     end
+          local curOffsetX = getProperty(displaySkinIconSkin..'.offset.x')
+          local curOffsetY = getProperty(displaySkinIconSkin..'.offset.y')
+          addOffset(displaySkinIconSkin, 'static', curOffsetX - getSkinMetadata.offsets[1], curOffsetY + getSkinMetadata.offsets[2])
+          playAnim(displaySkinIconSkin, 'static')
+          setObjectCamera(displaySkinIconSkin, 'camHUD')
+          addLuaSprite(displaySkinIconSkin)
+     end  
 end
 
 --- Creates and loads chunks from the current skin state, improves optimization significantly
@@ -246,7 +219,6 @@ function SkinStates:create_preload()
      end
 end
 
-local pageCurrentIndex = 1
 local sliderTrackThumbPressed = false
 local sliderTrackToggle       = false
 local sliderTrackCurrentPage  = 0
@@ -329,6 +301,12 @@ function SkinStates:page_slider(snapToPage)
           end
      end
 
+     if pageCurrentIndex == totalSkinLimit then
+          setTextColor('genInfoStatePage', 'ff0000')
+     else
+          setTextColor('genInfoStatePage', 'ffffff')
+     end
+
      sliderTrackSwitchPages()
      sliderTrackSnapToPage()
 end
@@ -361,12 +339,6 @@ function SkinStates:page_moved()
           self:selection_sync()
           playSound('ding', 0.5)
           setProperty('displaySliderIcon.y', sliderTrackIntervals[pageCurrentIndex])
-     end
-
-     if pageCurrentIndex == totalSkinLimit then
-          setTextColor('genInfoStatePage', 'ff0000')
-     else
-          setTextColor('genInfoStatePage', 'ffffff')
      end
 end
 
@@ -495,6 +467,7 @@ function SkinStates:selection()
 
           if pageSkins == selectSkinInitSelectedIndex then
                skinObjectsPerSelected[curPage] = false
+               playAnim(displaySkinIconButton, 'static', true)
           end
      end
 end
@@ -524,7 +497,7 @@ function SkinStates:selection_sync(bySearch)
                     local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
                     playAnim(displaySkinIconButton, 'selected', true)
 
-                    skinObjectsPerSelected[curPage] = true
+                    skinObjectsPerSelected[curPage] = false
                     skinObjectsPerClicked[curPage]  = false
                end
           end
@@ -534,52 +507,88 @@ function SkinStates:selection_sync(bySearch)
           local displaySkinIconTemplate = {state = (self.currentState):upperAtStart(), ID = selectSkinPreSelectedIndex}
           local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
           playAnim(displaySkinIconButton, 'selected', true)
-     end 
+     end
 end
 
 function SkinStates:preview()
-     local p = {'left', 'down', 'up', 'right'}
-     local w = ''
-     for funky = 1, 4 do
-          local tag = 'fart'..funky
+     local curPage = selectSkinCurSelectedIndex - (16 * (pageCurrentIndex - 1))
+     local getCurrentPreviewSkinNames = function()
+          local skinNames   = totalSkinObjectNames[pageCurrentIndex]
+          return curPage ~= 0 and skinNames[curPage]:gsub('%s+', '_'):lower() or totalSkinObjectNames[1][1]
+     end
+     local getCurrentPreviewSkinObjects = function()
+          local skinObjects = totalSkinObjects[pageCurrentIndex]
+          return curPage ~= 0 and skinObjects[curPage] or totalSkinObjects[1][1]
+     end
 
-          if selectSkinCurSelectedIndex ~= 0 then
-               local curPage = selectSkinCurSelectedIndex - (16 * (pageCurrentIndex - 1))
-               w = 'noteSkins/'..totalSkinObjects[selectSkinPagePositionIndex][curPage]
-          else
-               w = 'noteSkins/NOTE_assets'
+     local previewAnimationsExists = true
+     local function previewSkinAnimationsMetadata(name, metdata)
+          local skinObjectNames = totalSkinObjectNames[pageCurrentIndex][curPage]:gsub('%s+', '_')
+          if metadata_preview == nil                                then previewAnimationsExists = false end
+          if metadata_preview[skinObjectNames] == nil               then previewAnimationsExists = false end
+          if metadata_preview[skinObjectNames]['animations'] == nil then previewAnimationsExists = false end
+
+          local skinObjectMetdata = metadata_preview[skinObjectNames]['animations']
+          if skinObjectMetdata[name]            == nil then displayDisplayExists = false end
+          if skinObjectMetdata[name]['prefix']  == nil then displayDisplayExists = false end
+          if skinObjectMetdata[name]['offsets'] == nil then displayDisplayExists = false end
+          if previewAnimationsExists == false then
+               switch (self.currentState) {
+                    notes = function()
+                         skinObjectMetdata['strums'] = {}
+                         skinObjectMetdata['strums']['prefix']  = 'arrowUP'
+                         skinObjectMetdata['strums']['offsets'] = {0,0}
+                    end,
+                    splashes = function()
+                         skinObjectMetdata['note_splash1'] = {}
+                         skinObjectMetdata['note_splash1']['prefix']  = 'note splash green 1'
+                         skinObjectMetdata['note_splash1']['offsets'] = {0,0}
+                    end
+               }
           end
-          
-          makeAnimatedLuaSprite(tag, w, 790+(105*(funky-1)), 135)
+          return skinObjectMetdata
+     end
 
-          addAnimationByPrefix(tag, 'left_confirm', 'left confirm', 24, false)
-          addAnimationByPrefix(tag, 'down_confirm', 'down confirm', 24, false)
-          addAnimationByPrefix(tag, 'up_confirm', 'up confirm', 24, false)
-          addAnimationByPrefix(tag, 'right_confirm', 'right confirm', 24, false)
+     local curSkinName = getCurrentPreviewSkinNames()
+     for strums = 1, 4 do
+          local previewSkinTemplate = {state = (self.currentState):upperAtStart(), groupID = strums}
+          local previewSkinGroup    = ('previewSkinGroup${state}-${groupID}'):interpol(previewSkinTemplate)
 
-          addAnimationByPrefix(tag, 'left_pressed', 'left press', 24, false)
-          addAnimationByPrefix(tag, 'down_pressed', 'down press', 24, false)
-          addAnimationByPrefix(tag, 'up_pressed', 'up press', 24, false)
-          addAnimationByPrefix(tag, 'right_pressed', 'right press', 24, false)
+          local previewSkinImagePath = self.currentPaths..'/'..getCurrentPreviewSkinObjects()
+          local previewSkinPositionX = 790 + (105*(strums-1))
+          local previewSkinPositionY = 135
+          makeAnimatedLuaSprite(previewSkinGroup, previewSkinImagePath, previewSkinPositionX, previewSkinPositionY)
+          scaleObject(previewSkinGroup, 0.65, 0.65)
 
-          addAnimationByPrefix(tag, 'left_colored', 'purple0', 24, false)
-          addAnimationByPrefix(tag, 'down_colored', 'blue0', 24, false)
-          addAnimationByPrefix(tag, 'up_colored', 'green0', 24, false)
-          addAnimationByPrefix(tag, 'right_colored', 'red0', 24, false)
-
-          addAnimationByPrefix(tag, 'left', 'arrowLEFT', 24, false)
-          addAnimationByPrefix(tag, 'down', 'arrowDOWN', 24, false)
-          addAnimationByPrefix(tag, 'up', 'arrowUP', 24, false)
-          addAnimationByPrefix(tag, 'right', 'arrowRIGHT', 24, false)
-
-          playAnim(tag, p[funky])
-          scaleObject(tag, 0.65, 0.65)
-          setObjectCamera(tag, 'camHUD')
-          addLuaSprite(tag, true)
+          for _, groups in pairs(metadata_preview[curSkinName]['animations']) do
+               for name, metadata in pairs(groups) do
+                    addAnimationByPrefix(previewSkinGroup, name, metadata.prefix, 24, false)
+               end
+          end
+          playAnim(previewSkinGroup, metadata_preview[curSkinName]['initial'][strums])
+          setObjectCamera(previewSkinGroup, 'camHUD')
+          addLuaSprite(previewSkinGroup, true)
      end
 end
 
 function SkinStates:switch()
+
+     local displayDisplayExists = true
+     local function previewSkinOffsets()
+          local skinObjectNames = totalSkinObjectNames[page][selected]:gsub('%s+', '_')
+          if metadata_preview == nil                              then displayDisplayExists = false; return end
+          if metadata_preview[skinObjectNames] == nil             then displayDisplayExists = false; return end
+          if metadata_preview[skinObjectNames]['template'] == nil then displayDisplayExists = false; return end
+
+          local skinObjectByTemplate = metadata_preview[skinObjectNames]['template']
+     end
+
+     local metadataPrefixExists = true
+     local function previewPrefixOffsets()
+     end
+
+     for skins = 1,4 do
+     end
 end
 
 

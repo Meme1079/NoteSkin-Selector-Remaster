@@ -26,6 +26,17 @@ function table.move(tab, startPos, endPos, dest, ind)
      return dest
 end
 
+--- Gets the keys from the given table.
+---@param tab table The table to get its keys from
+---@return table
+function table.keys(tab)
+     local result = {}
+     for k,_ in pairs(tab) do
+          result[#result + 1] = k
+     end
+     return result
+end
+
 --- Copies the elements from a table
 ---@param tab table The table to copy its value
 ---@return table

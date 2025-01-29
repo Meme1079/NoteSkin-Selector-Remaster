@@ -49,6 +49,15 @@ setProperty('genInfoStatePage.camera', instanceArg('camHUD'), false, true)
 setProperty('genInfoStatePage.antialiasing', false)
 addLuaText('genInfoStatePage')
 
+makeLuaText('genInfoSkinName', 'Funkin', 500, 748, 70)
+setTextFont('genInfoSkinName', 'sonic.ttf')
+setTextSize('genInfoSkinName', 50)
+setTextBorder('genInfoSkinName', 4, '000000')
+setTextAlignment('genInfoSkinName', 'center')
+setProperty('genInfoSkinName.camera', instanceArg('camHUD'), false, true)
+setProperty('genInfoSkinName.antialiasing', false)
+addLuaText('genInfoSkinName')
+
 makeLuaText('genInfoVersion', 'Ver 2.0.0', 0, 1195, 5)
 setTextFont('genInfoVersion', 'sonic.ttf')
 setTextSize('genInfoVersion', 20)
@@ -124,6 +133,7 @@ function onUpdatePost(elapsed)
      Skins:page_slider()
      Skins:page_moved()
      Skins:found()
+     Skins:switch()
 end
 
 local sliderTrackPosition = states.getPageSkinSliderPositions('notes').intervals
