@@ -1,6 +1,6 @@
 luaDebugMode = true
 
-local SkinStates = require 'mods.NoteSkin Selector Remastered.api.classes.skins.SkinStates'
+local SkinNotes = require 'mods.NoteSkin Selector Remastered.api.classes.skins.SkinNotes'
 
 local string    = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.string'
 local json      = require 'mods.NoteSkin Selector Remastered.api.libraries.json.main'
@@ -102,25 +102,24 @@ addLuaSprite('mouseHitBox', true)
 
 -- Skins --
 
-local Skins = SkinStates:new('notes', {'notes', 'splashes'}, {'noteSkins', 'noteSplashes'})
-Skins:precache()
-Skins:load()
-Skins:create_preload()
-Skins:preview()
-Skins:page_setup()
+local Notes = SkinNotes:new('notes', 'noteSkins', true)
+Notes:load()
+Notes:precache()
+Notes:create_preload()
+Notes:create(1, true)
+Notes:save_load()
 
 function onCreatePost()
      local camUI = {'iconP1', 'iconP2', 'healthBar', 'scoreTxt', 'botplayTxt'}
      for i = 1, #camUI do
           callMethod('uiGroup.remove', {instanceArg(camUI[i])})
      end
-     --setProperty('camHUD.zoom', 0.5)
-     playMusic(getModSetting('song_select', modFolder):lower(), 0.15, true)
+     playMusic(getModSetting('song_select', modFolder):lower(), 0.5, true)
 end
 
 function onUpdate(elapsed)
-     if keyboardJustConditionPressed('ONE',    not searchBarInput_onFocus()) then restartSong(true) end
-     if keyboardJustConditionPressed('ESCAPE', not searchBarInput_onFocus()) then exitSong()        end
+     if keyboardJustConditionPressed('ONE',    not getVar('searchBarFocus')) then restartSong(true) end
+     if keyboardJustConditionPressed('ESCAPE', not getVar('searchBarFocus')) then exitSong()        end
      if mouseClicked('left')  then playSound('clicks/clickDown', 0.5) end
      if mouseReleased('left') then playSound('clicks/clickUp', 0.5)   end
 
@@ -129,11 +128,10 @@ function onUpdate(elapsed)
 end
 
 function onUpdatePost(elapsed)
-     Skins:selection()
-     Skins:page_slider()
-     Skins:page_moved()
-     Skins:found()
-     Skins:switch()
+     Notes:page_slider()
+     Notes:page_moved()
+     Notes:found()
+     Notes:selection()
 end
 
 local sliderTrackPosition = states.getPageSkinSliderPositions('notes').intervals

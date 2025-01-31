@@ -32,35 +32,32 @@ function onCreate() {
                searchBarInput.textObj.color = FlxColor.WHITE;
           }
      }
-     searchBarInput.onPressEnter     = function() { 
-          setVar('searchBarInputContent', searchBarInput.text); 
+     searchBarInput.onPressEnter = function() { 
+          searchBarInput.textObj.color = 0xFFF0B72F;
+          setVar('searchBarInputContent', searchBarInput.text);
+          
+          new FlxTimer().start(0.1, () -> { PsychUIInputText.focusOn = null; });
      }
      add(searchBarInput);
-
      game.getLuaObject('searchBarInputCaret').x = searchBarInput.caret.x + 1;
      game.getLuaObject('searchBarInputCaret').y = searchBarInput.caret.y;
      setVar('searchBarInput', searchBarInput);
 }
 
 var searchBarInputFocusToggle = false;
-function searchBarInput_onFocus() {
-     return PsychUIInputText.focusOn != null && PsychUIInputText.focusOn == getVar('searchBarInput');
-}
-function onCreatePost() {
-     createGlobalCallback('searchBarInput_onFocus', searchBarInput_onFocus);
-}
-
 function onUpdate(elapsed:Float) {
-     game.getLuaObject('searchBarInputCaret').x       = getVar('searchBarInput').caret.x + 1;
-     game.getLuaObject('searchBarInputCaret').visible = getVar('searchBarInput').caret.visible;
+     setVar('searchBarFocus', PsychUIInputText.focusOn != null && PsychUIInputText.focusOn == getVar('searchBarInput'));
 
-     if (searchBarInput_onFocus() == true && searchBarInputFocusToggle == false) {
+     var visibility = PsychUIInputText.focusOn == null ? false : getVar('searchBarInput').caret.visible;
+     game.getLuaObject('searchBarInputCaret').visible = visibility;
+     game.getLuaObject('searchBarInputCaret').x       = getVar('searchBarInput').caret.x + 1;
+     if (getVar('searchBarFocus') == true && searchBarInputFocusToggle == false) {
           ClientPrefs.toggleVolumeKeys(false);
           game.allowDebugKeys = false;
 
           searchBarInputFocusToggle = true;
      }
-     if (searchBarInput_onFocus() == false && searchBarInputFocusToggle == false){
+     if (getVar('searchBarFocus') == false && searchBarInputFocusToggle == true){
           ClientPrefs.toggleVolumeKeys(true);
           game.allowDebugKeys = true;
 
