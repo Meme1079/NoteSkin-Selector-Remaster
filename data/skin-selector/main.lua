@@ -107,6 +107,7 @@ Notes:load()
 Notes:precache()
 Notes:create_preload()
 Notes:create(1)
+Notes:preview()
 Notes:save_load()
 
 function onCreatePost()
@@ -132,6 +133,8 @@ function onUpdatePost(elapsed)
      Notes:page_moved()
      Notes:found()
      Notes:selection()
+
+     Notes:yeat()
 end
 
 local sliderTrackPosition = states.getPageSkinSliderPositions('notes').intervals
