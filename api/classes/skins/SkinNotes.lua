@@ -71,9 +71,8 @@ end
 
 --- Creates a chunk to display the selected skins
 ---@param index? integer The specified page index for the given chunk to display.
----@param saveLoad boolean Whether to load by save or not.
 ---@return nil
-function SkinNotes:create(index, saveLoad)
+function SkinNotes:create(index)
      local index = index == nil and 1 or index
 
      for pages = 1, self.totalSkinLimit do
@@ -296,8 +295,9 @@ function SkinNotes:found()
      end
 
      for skins = 1, self.totalSkinLimit do
-          local searchBarInputContent = getVar('searchBarInputContent'):gsub('%-(.-)', '%1'):lower()
-          if table.find(self.totalSkinObjectNames[skins], searchBarInputContent) ~= nil then
+          local searchBarInputContent       = getVar('searchBarInputContent')
+          local searchBarInputContentFilter = searchBarInputContent ~= nil and searchBarInputContent:lower() or ''
+          if table.find(self.totalSkinObjectNames[skins], searchBarInputContentFilter) ~= nil then
                self.sliderPageIndex = skins
                self:create(self.sliderPageIndex)
 
@@ -416,11 +416,11 @@ function SkinNotes:selection_sync()
      local skinObjectsPerName     = self.totalSkinObjectNames[self.sliderPageIndex]
 
      local searchBarInputContent       = getVar('searchBarInputContent')
-     local searchBarInputContentFilter = searchBarInputContent ~= nil and searchBarInputContent:gsub('%-(.-)', '%1'):lower() or ''
+     local searchBarInputContentFilter = searchBarInputContent ~= nil and searchBarInputContent:lower() or ''
      for pageSkins = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
           local curPage = pageSkins - (16 * (self.sliderPageIndex - 1))
 
-          if skinObjectsPerName[curPage] == searchBarInputContent and pageSkins ~= self.selectSkinCurSelectedIndex then
+          if skinObjectsPerName[curPage] == searchBarInputContentFilter and pageSkins ~= self.selectSkinCurSelectedIndex then
                self.selectSkinInitSelectedIndex = self.selectSkinCurSelectedIndex
                self.selectSkinPreSelectedIndex  = pageSkins
                self.selectSkinCurSelectedIndex  = pageSkins

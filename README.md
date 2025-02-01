@@ -36,18 +36,16 @@ NoteSkin Selector Remastered © 2022 by Meme0179 is licensed under CC BY-NC-ND 4
 - Overhual the main GUI with a new redesign, cuz it looks cool. _(inspired by OreUI from Minecraft)_
 - Overhual the main source-code of the mod for organization and an ability to soft-code new skin states.
      - Loads separated chunks of object sprites for skins when switching pages.
+     - Classes to create custom states for different skins by using inheritance and polymorphism stuff.
 - Additions/Changes on the NoteSkin Selector State.
      - Added a functional slider for switching skin pages.
           - It automatically snaps to its nearest page index.
           - It also automatically disables itself if there's only currently `1` page index.
-     - Added a functional search bar for fining & selecting skins.
+     - Added a functional search bar for finding & selecting skins.
           - Automatically selects the searched skin.
      - Increase the skin grid selections from `3x4` to `4x4`, cuz it's better.
 - Organized file locations.
      - Added an `api` folder to group: `classes`, `libraries`, and `modules` for convenient sake.
-     
-> [!NOTE]
-> The Noteskin Debug State is temporarily removed becuase. I wanna rush it out becuase it has been 8 months without an update, so cut me some slack. This will be re-added back in the version 3.0.0.
 
 ***
 
@@ -70,3 +68,7 @@ NoteSkin Selector Remastered © 2022 by Meme0179 is licensed under CC BY-NC-ND 4
 - Palmtree Panic (P mix) - Sonic CD
 - Artistic Expression - [Friday Night Funkin' (Kawaisprite)](https://www.youtube.com/watch?v=yFHbQFH09Io)
 - Monkey - Original: [Mario Paint (Hirokazu Tanaka)](https://www.youtube.com/watch?v=gMRFXrbfKEo); Remix: [Mario's Madness (FriedFrick)](https://www.youtube.com/watch?v=x0AMU2nelAw)
+
+## Lua Libraries
+- [MathParser](https://github.com/bytexenon/MathParser.lua) - bytexenon
+- [Lua Pretty JSON](https://github.com/xiedacon/lua-pretty-json) - xiedaco

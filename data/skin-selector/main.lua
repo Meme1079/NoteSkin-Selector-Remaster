@@ -106,7 +106,7 @@ local Notes = SkinNotes:new('notes', 'noteSkins', true)
 Notes:load()
 Notes:precache()
 Notes:create_preload()
-Notes:create(1, true)
+Notes:create(1)
 Notes:save_load()
 
 function onCreatePost()

@@ -37,6 +37,7 @@ function onCreate() {
           setVar('searchBarInputContent', searchBarInput.text);
           
           new FlxTimer().start(0.1, () -> { PsychUIInputText.focusOn = null; });
+          new FlxTimer().start(0.3, () -> { setVar('searchBarInputContent', ''); }); // forcefully resets, due to a bug
      }
      add(searchBarInput);
      game.getLuaObject('searchBarInputCaret').x = searchBarInput.caret.x + 1;
