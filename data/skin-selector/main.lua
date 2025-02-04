@@ -87,9 +87,9 @@ addLuaText('searchBarInputPlaceHolder')
 makeLuaSprite('searchBarInputCaret', nil, 0, 0)
 makeGraphic('searchBarInputCaret', 3, 25, 'ffffff')
 setObjectCamera('searchBarInputCaret', 'camHUD')
-addLuaSprite('searchBarInputCaret', true)
 
 addHScript('hscripts/skin-selector/searchBar_functionality')
+addLuaSprite('searchBarInputCaret', true)
 
 -- Mouse Hitbox --
 

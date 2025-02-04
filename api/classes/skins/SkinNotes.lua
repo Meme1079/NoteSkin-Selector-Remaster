@@ -322,6 +322,7 @@ function SkinNotes:found()
           if table.find(self.totalSkinObjectNames[skins], searchBarInputContentFilter) ~= nil then
                self.sliderPageIndex = skins
                self:create(self.sliderPageIndex)
+               self:preview()
 
                setProperty('displaySliderIcon.y', self.sliderTrackIntervals[skins])
                playSound('ding', 0.5)
@@ -329,7 +330,7 @@ function SkinNotes:found()
           end
 
           if skins == self.totalSkinLimit then
-               setProperty(getVar('searchBarInput')..'.caretIndex', 0)
+               setProperty(getVar('searchBarInput')..'.caretIndex', 1)
                callMethod(getVar('searchBarInput')..'.set_text', {''})
 
                setProperty('searchBarInputPlaceHolder.text', 'Invalid Skin!')
@@ -399,7 +400,8 @@ function SkinNotes:selection()
                     self.selectSkinCurSelectedIndex = 0
                     self.selectSkinPreSelectedIndex = 0
                     self.selectSkinHasBeenClicked   = false
-     
+
+                    self:preview()
                     skinObjectsPerSelected[curPage] = false
                     skinObjectsPerClicked[curPage]  = false
                     skinObjectsPerHovered[curPage]  = false
@@ -475,11 +477,11 @@ function SkinNotes:preview()
      local curPage = self.selectSkinCurSelectedIndex - (16 * (self.sliderPageIndex - 1))
      local getCurrentPreviewSkinNames = function()
           local skinNames   = self.totalSkinObjectNames[self.sliderPageIndex]
-          return curPage ~= 0 and skinNames[curPage]:gsub('%s+', '_'):lower() or self.totalSkinObjectNames[1][1]
+          return curPage > 0 and skinNames[curPage]:gsub('%s+', '_'):lower() or self.totalSkinObjectNames[1][1]
      end
      local getCurrentPreviewSkinObjects = function()
           local skinObjects = self.totalSkinObjects[self.sliderPageIndex]
-          return curPage ~= 0 and skinObjects[curPage] or self.totalSkinObjects[1][1]
+          return curPage > 0 and skinObjects[curPage] or self.totalSkinObjects[1][1]
      end
 
      local curSkinName = getCurrentPreviewSkinNames()

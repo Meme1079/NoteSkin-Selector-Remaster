@@ -32,7 +32,7 @@ function onCreate() {
                searchBarInput.textObj.color = FlxColor.WHITE;
           }
      }
-     searchBarInput.onPressEnter = function() { 
+     searchBarInput.onPressEnter = function() {
           searchBarInput.textObj.color = 0xFFF0B72F;
           setVar('searchBarInputContent', searchBarInput.text);
           
@@ -63,5 +63,10 @@ function onUpdate(elapsed:Float) {
           game.allowDebugKeys = true;
 
           searchBarInputFocusToggle = false;
+     }
+
+     if (FlxG.keys.pressed.ENTER) {
+          PsychUIInputText.focusOn = getVar('searchBarInput');
+          searchBarInput.caretIndex =  searchBarInput.text.length;
      }
 }
