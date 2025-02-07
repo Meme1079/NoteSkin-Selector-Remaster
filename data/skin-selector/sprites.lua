@@ -1,29 +1,14 @@
-
-
-
-
-function setObjectCamera(object, camera)
-     setProperty(object..'.camera', instanceArg(camera), false, true)
-end
-
 makeLuaSprite('selectorBackground', 'menuDesat', 0, 0)
 setObjectCamera('selectorBackground', 'camHUD')
 setObjectOrder('selectorBackground', 0)
 setProperty('selectorBackground.color', 0x5220bd)
 addLuaSprite('selectorBackground')
 
-createInstance('selectorSideCover', 'flixel.addons.display.FlxBackdrop', {nil, 0x10, 0})
-loadGraphic('selectorSideCover', 'ui/sidecover')
-setObjectCamera('selectorSideCover', 'camHUD')
-setProperty('selectorSideCover.x', 80)
-setProperty('selectorSideCover.alpha', 0.5)
-setProperty('selectorSideCover.color', 0x000000)
-setProperty('selectorSideCover.velocity.y', 1000 / 20)
-addInstance('selectorSideCover', false)
+-- HScript Stuff --
 
-function onCreatePost()
-     addHScript('hscripts/skin-selector/background.hx')
-end
+addHScript('hscripts/skin-selector/selectorGridBG')
+
+-- Color Changer --
 
 local hueChangeSwitch = true
 local hueChangeCPM    = 0.09

@@ -12,6 +12,7 @@ local global    = require 'mods.NoteSkin Selector Remastered.api.modules.global'
 
 local switch         = global.switch
 local createTimer    = funkinlua.createTimer
+local hoverObject    = funkinlua.hoverObject
 local clickObject    = funkinlua.clickObject
 local pressedObject  = funkinlua.pressedObject
 local releasedObject = funkinlua.releasedObject
@@ -20,8 +21,9 @@ local keyboardJustConditionPress    = funkinlua.keyboardJustConditionPress
 local keyboardJustConditionReleased = funkinlua.keyboardJustConditionReleased
 
 local SkinNoteSave = SkinSaves:new('noteskin_selector', 'NoteSkin Selector')
-local SkinCursor   = Cursor:new()
-SkinCursor:load('default')
+--[[ local SkinCursor   = Cursor:new()
+SkinCursor:load('default') ]]
+
 
 ---@class SkinNotes
 local SkinNotes = {}
@@ -183,7 +185,7 @@ function SkinNotes:page_slider(snapToPage)
                self.sliderTrackThumbPressed = false 
           end
      end
-     if clickObject('displaySliderIcon') then
+     if clickObject('displaySliderIcon', 'camHUD') then
           self.sliderTrackThumbPressed = true
      end
      if self.sliderTrackThumbPressed == true then
@@ -260,8 +262,8 @@ end
 ---@return nil
 function SkinNotes:page_moved()
      if self.sliderTrackThumbPressed == true then return end
-     local conditionPressedDown = keyboardJustConditionPressed('E', getVar('searchBarFocus') == false)
-     local conditionPressedUp   = keyboardJustConditionPressed('Q', getVar('searchBarFocus') == false)
+     local conditionPressedDown = keyboardJustConditionPressed('E', getVar('skinSearchInputFocus') == false)
+     local conditionPressedUp   = keyboardJustConditionPressed('Q', getVar('skinSearchInputFocus') == false)
 
      local skinObjectsPerClicked = self.totalSkinObjectClicked[self.sliderPageIndex]
      local curPage = self.selectSkinPreSelectedIndex - (16 * (self.sliderPageIndex - 1))
@@ -312,14 +314,14 @@ end
 --- Searches and finds the given skin.
 ---@return nil
 function SkinNotes:found()
-     if not (getVar('searchBarFocus') and keyboardJustPressed('ENTER')) then
+     if not (getVar('skinSearchInputFocus') and keyboardJustPressed('ENTER')) then
           return nil
      end
 
      for skins = 1, self.totalSkinLimit do
-          local searchBarInputContent       = getVar('searchBarInputContent')
-          local searchBarInputContentFilter = searchBarInputContent ~= nil and searchBarInputContent:lower() or ''
-          if table.find(self.totalSkinObjectNames[skins], searchBarInputContentFilter) ~= nil then
+          local skinSearchInput_textContent       = getVar('skinSearchInput_textContent')
+          local skinSearchInput_textContentFilter = skinSearchInput_textContent ~= nil and skinSearchInput_textContent:lower() or ''
+          if table.find(self.totalSkinObjectNames[skins], skinSearchInput_textContentFilter) ~= nil then
                self.sliderPageIndex = skins
                self:create(self.sliderPageIndex)
                self:preview()
@@ -330,19 +332,14 @@ function SkinNotes:found()
           end
 
           if skins == self.totalSkinLimit then
-               setProperty(getVar('searchBarInput')..'.caretIndex', 1)
-               callMethod(getVar('searchBarInput')..'.set_text', {''})
-
-               setProperty('searchBarInputPlaceHolder.text', 'Invalid Skin!')
-               setProperty('searchBarInputPlaceHolder.color', 0xB50000)
-               playSound('cancel')
+               callOnScripts('skinSearchInput_callInvalidSearch', {''})
           end
      end
 end
 
---- Selects the certain skin by a click or a search
+--- Selects the selected skin, focuses on the click functionality.
 ---@return nil
-function SkinNotes:selection()
+function SkinNotes:selection_byclick()
      local skinObjectsPerIDs      = self.totalSkinObjectID[self.sliderPageIndex]
      local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.sliderPageIndex]
      local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.sliderPageIndex]
@@ -352,9 +349,10 @@ function SkinNotes:selection()
 
           local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = pageSkins}
           local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
-          if skinObjectsPerSelected[curPage] == false then
-               if clickObject(displaySkinIconButton) == true and skinObjectsPerClicked[curPage] == false then
-                    SkinCursor:reload('grabbing')
+          local function displaySkinSelect()
+               local byClick   = clickObject(displaySkinIconButton, 'camHUD')
+               local byRelease = mouseReleased('left') and self.selectSkinPreSelectedIndex == pageSkins
+               if byClick == true and skinObjectsPerClicked[curPage] == false then
                     playAnim(displaySkinIconButton, 'pressed', true)
 
                     self.selectSkinPrePagePositionIndex = self.sliderPageIndex
@@ -364,9 +362,7 @@ function SkinNotes:selection()
                     skinObjectsPerClicked[curPage] = true
                end
 
-               local released = (mouseReleased('left') and self.selectSkinPreSelectedIndex == pageSkins)
-               if released == true and skinObjectsPerClicked[curPage] == true then
-                    SkinCursor:reload('default')
+               if byRelease == true and skinObjectsPerClicked[curPage] == true then
                     playAnim(displaySkinIconButton, 'selected', true)
      
                     self.selectSkinInitSelectedIndex = self.selectSkinCurSelectedIndex
@@ -379,9 +375,10 @@ function SkinNotes:selection()
                     skinObjectsPerClicked[curPage]  = false
                end
           end
-          if skinObjectsPerSelected[curPage] == true then
-               if clickObject(displaySkinIconButton) == true and skinObjectsPerClicked[curPage] == false then
-                    SkinCursor:reload('grabbing')
+          local function displaySkinDeselect()
+               local byClick   = clickObject(displaySkinIconButton, 'camHUD')
+               local byRelease = mouseReleased('left') and self.selectSkinPreSelectedIndex == pageSkins
+               if byClick == true and skinObjectsPerClicked[curPage] == false then
                     playAnim(displaySkinIconButton, 'pressed', true)
 
                     self.selectSkinPrePagePositionIndex = self.sliderPageIndex
@@ -391,9 +388,7 @@ function SkinNotes:selection()
                     skinObjectsPerClicked[curPage] = true
                end
 
-               local released = (mouseReleased('left') and self.selectSkinPreSelectedIndex == pageSkins)
-               if released == true and skinObjectsPerClicked[curPage] == true then
-                    SkinCursor:reload('default')
+               if byRelease == true and skinObjectsPerClicked[curPage] == true then
                     playAnim(displaySkinIconButton, 'static', true)
      
                     self.selectSkinPrePagePositionIndex = 0
@@ -407,22 +402,12 @@ function SkinNotes:selection()
                     skinObjectsPerHovered[curPage]  = false
                end
           end
-          
-          if self.selectSkinPreSelectedIndex ~= pageSkins then
-               if objectsOverlap(displaySkinIconButton, 'mouseHitBox') == true and skinObjectsPerHovered[curPage] == false then
-                    if self.selectSkinHasBeenClicked == false then 
-                         SkinCursor:reload('pointer')
-                    end
-                    playAnim(displaySkinIconButton, 'hover', true)
-                    skinObjectsPerHovered[curPage] = true
-               end
-               if objectsOverlap(displaySkinIconButton, 'mouseHitBox') == false and skinObjectsPerHovered[curPage] == true then
-                    if self.selectSkinHasBeenClicked == false then 
-                         SkinCursor:reload('default')
-                    end
-                    playAnim(displaySkinIconButton, 'static', true)
-                    skinObjectsPerHovered[curPage] = false
-               end
+
+          if skinObjectsPerSelected[curPage] == false then
+               displaySkinSelect()
+          end
+          if skinObjectsPerSelected[curPage] == true then
+               displaySkinDeselect()
           end
 
           if pageSkins == self.selectSkinInitSelectedIndex then
@@ -434,20 +419,64 @@ function SkinNotes:selection()
      end
 end
 
+--- Selects the selected skin, focuses on the hovering functionality.
+---@return nil
+function SkinNotes:selection_byhover()
+     local skinObjectsPerIDs      = self.totalSkinObjectID[self.sliderPageIndex]
+     local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.sliderPageIndex]
+     local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.sliderPageIndex]
+     for pageSkins = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
+          local curPage = pageSkins - (16 * (self.sliderPageIndex - 1))
+
+          local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = pageSkins}
+          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+          if hoverObject(displaySkinIconButton, 'camHUD') == true then
+               skinObjectsPerHovered[curPage] = true
+          end
+          if hoverObject(displaySkinIconButton, 'camHUD') == false then
+               skinObjectsPerHovered[curPage] = false
+          end
+
+          local nonCurrentPreSelectedSkin = self.selectSkinPreSelectedIndex ~= pageSkins
+          local nonCurrentCurSelectedSkin = self.selectSkinCurSelectedIndex ~= pageSkins
+          if skinObjectsPerHovered[curPage] == true and nonCurrentPreSelectedSkin and nonCurrentCurSelectedSkin then
+               playAnim(displaySkinIconButton, 'hover', true)
+          end
+          if skinObjectsPerHovered[curPage] == false and nonCurrentPreSelectedSkin and nonCurrentCurSelectedSkin then
+               playAnim(displaySkinIconButton, 'static', true)
+          end
+     end
+
+     for i = 1, math.max(#skinObjectsPerClicked, #skinObjectsPerHovered) do
+          if skinObjectsPerClicked[i] == true then
+               playAnim('mouseTexture', 'grabbed', true)
+               break
+          end
+          if skinObjectsPerHovered[i] == true then
+               playAnim('mouseTexture', 'pointer', true)
+               break
+          end
+          playAnim('mouseTexture', 'default', true)
+     end
+end
+
 --- Syncs the saved selection of the certain skin
 ---@return nil
 function SkinNotes:selection_sync()
      local skinObjectsPerIDs      = self.totalSkinObjectID[self.sliderPageIndex]
+     local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.sliderPageIndex]
      local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.sliderPageIndex]
      local skinObjectsPerSelected = self.totalSkinObjectSelected[self.sliderPageIndex]
      local skinObjectsPerName     = self.totalSkinObjectNames[self.sliderPageIndex]
 
-     local searchBarInputContent       = getVar('searchBarInputContent')
-     local searchBarInputContentFilter = searchBarInputContent ~= nil and searchBarInputContent:lower() or ''
+     local skinSearchInput_textContent       = getVar('skinSearchInput_textContent')
+     local skinSearchInput_textContentFilter = skinSearchInput_textContent ~= nil and skinSearchInput_textContent:lower() or ''
      for pageSkins = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
           local curPage = pageSkins - (16 * (self.sliderPageIndex - 1))
 
-          if skinObjectsPerName[curPage] == searchBarInputContentFilter and pageSkins ~= self.selectSkinCurSelectedIndex then
+          local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = pageSkins}
+          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+          if skinObjectsPerName[curPage] == skinSearchInput_textContentFilter and pageSkins ~= self.selectSkinCurSelectedIndex then
                self.selectSkinInitSelectedIndex = self.selectSkinCurSelectedIndex
                self.selectSkinPreSelectedIndex  = pageSkins
                self.selectSkinCurSelectedIndex  = pageSkins

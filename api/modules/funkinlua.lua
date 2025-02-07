@@ -83,16 +83,23 @@ function funkinlua.removeCallbackEvents(callback, index)
      callbackEvents[callback][index] = nil;
 end
 
-function funkinlua.clickObject(object)
-     return objectsOverlap(object, 'mouseHitBox') and mouseClicked('left')
+function funkinlua.hoverObject(object, camera)
+     return callMethodFromClass('flixel.FlxG', 'mouse.overlaps', {instanceArg(object), instanceArg(camera)})
 end
 
-function funkinlua.pressedObject(object)
-     return objectsOverlap(object, 'mouseHitBox') and mousePressed('left')
+function funkinlua.clickObject(object, camera)
+     local overlaps = callMethodFromClass('flixel.FlxG', 'mouse.overlaps', {instanceArg(object), instanceArg(camera)})
+     return overlaps and mouseClicked('left')
 end
 
-function funkinlua.releasedObject(object)
-     return objectsOverlap(object, 'mouseHitBox') and mouseReleased('left')
+function funkinlua.pressedObject(object, camera)
+     local overlaps = callMethodFromClass('flixel.FlxG', 'mouse.overlaps', {instanceArg(object), instanceArg(camera)})
+     return overlaps and mousePressed('left')
+end
+
+function funkinlua.releasedObject(object, camera)
+     local overlaps = callMethodFromClass('flixel.FlxG', 'mouse.overlaps', {instanceArg(object), instanceArg(camera)})
+     return overlaps and mouseReleased('left')
 end
 
 local timers = {}

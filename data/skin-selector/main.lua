@@ -19,7 +19,7 @@ addAnimationByPrefix('displaySliderIcon', 'pressed', 'slider_button-pressed')
 addAnimationByPrefix('displaySliderIcon', 'unscrollable', 'slider_button-unscrollable')
 playAnim('displaySliderIcon', 'static')
 scaleObject('displaySliderIcon', 0.6, 0.6)
-setProperty('displaySliderIcon.camera', instanceArg('camHUD'), false, true)
+setObjectCamera('displaySliderIcon', 'camHUD')
 setProperty('displaySliderIcon.antialiasing', false)
 precacheImage('ui/buttons/slider_button')
 addLuaSprite('displaySliderIcon')
@@ -27,7 +27,7 @@ addLuaSprite('displaySliderIcon')
 makeLuaSprite('displaySliderTrack', nil, 600 + getProperty('displaySliderIcon.width') / 2.7, 127 + 3)
 makeGraphic('displaySliderTrack', 12, 570, '1d1e1f')
 setObjectOrder('displaySliderTrack', getObjectOrder('displaySliderIcon'))
-setProperty('displaySliderTrack.camera', instanceArg('camHUD'), false, true)
+setObjectCamera('displaySliderTrack', 'camHUD')
 setProperty('displaySliderTrack.antialiasing', false)
 addLuaSprite('displaySliderTrack', true)
 
@@ -37,7 +37,7 @@ makeLuaText('genInfoStateName', ' Notes', 0, 7, 13)
 setTextFont('genInfoStateName', 'sonic.ttf')
 setTextSize('genInfoStateName', 35)
 setTextBorder('genInfoStateName', 3, '000000')
-setProperty('genInfoStateName.camera', instanceArg('camHUD'), false, true)
+setObjectCamera('genInfoStateName', 'camHUD')
 setProperty('genInfoStateName.antialiasing', false)
 addLuaText('genInfoStateName')
 
@@ -46,6 +46,7 @@ setTextFont('genInfoStatePage', 'sonic.ttf')
 setTextSize('genInfoStatePage', 30)
 setTextBorder('genInfoStatePage', 3, '000000')
 setProperty('genInfoStatePage.camera', instanceArg('camHUD'), false, true)
+setObjectCamera('genInfoStatePage', 'camHUD')
 setProperty('genInfoStatePage.antialiasing', false)
 addLuaText('genInfoStatePage')
 
@@ -54,7 +55,7 @@ setTextFont('genInfoSkinName', 'sonic.ttf')
 setTextSize('genInfoSkinName', 50)
 setTextBorder('genInfoSkinName', 4, '000000')
 setTextAlignment('genInfoSkinName', 'center')
-setProperty('genInfoSkinName.camera', instanceArg('camHUD'), false, true)
+setObjectCamera('genInfoSkinName', 'camHUD')
 setProperty('genInfoSkinName.antialiasing', false)
 addLuaText('genInfoSkinName')
 
@@ -66,39 +67,37 @@ setObjectCamera('genInfoVersion', 'camHUD')
 setProperty('genInfoVersion.antialiasing', false)
 addLuaText('genInfoVersion')
 
--- Search Bar --
+-- Search Input --
 
-makeLuaSprite('searchBarBackground', 'ui/buttons/search_inputs', 20, 55)
-scaleObject('searchBarBackground', 0.8, 0.8)
-setProperty('searchBarBackground.camera', instanceArg('camHUD'), false, true)
-setProperty('searchBarBackground.antialiasing', false)
-precacheImage('ui/buttons/search_inputs')
-addLuaSprite('searchBarBackground', true)
+--[[ makeAnimatedLuaSprite('skinSearchInput_background', 'ui/buttons/search_input', 20, 55)
+addAnimationByPrefix('skinSearchInput_background', 'default', 'default')
+addAnimationByPrefix('skinSearchInput_background', 'hover', 'hovered')
+addAnimationByPrefix('skinSearchInput_background', 'selectAll', 'selectAll')
+playAnim('skinSearchInput_background', 'default')
+scaleObject('skinSearchInput_background', 0.8, 0.8)
+setObjectCamera('skinSearchInput_background', 'camHUD')
+setProperty('skinSearchInput_background.antialiasing', false)
+addLuaSprite('skinSearchInput_background') ]]
 
-makeLuaText('searchBarInputPlaceHolder', 'Search Skins...', 0, 35, 55 + 12)
-setTextFont('searchBarInputPlaceHolder', 'sonic.ttf')
-setTextSize('searchBarInputPlaceHolder', 31)
-setTextColor('searchBarInputPlaceHolder', 'b3b3b5')
-setTextBorder('searchBarInputPlaceHolder', -1)
-setProperty('searchBarInputPlaceHolder.camera', instanceArg('camHUD'), false, true)
-setProperty('searchBarInputPlaceHolder.antialiasing', false)
-addLuaText('searchBarInputPlaceHolder')
-
-makeLuaSprite('searchBarInputCaret', nil, 0, 0)
-makeGraphic('searchBarInputCaret', 3, 25, 'ffffff')
-setObjectCamera('searchBarInputCaret', 'camHUD')
-
-addHScript('hscripts/skin-selector/searchBar_functionality')
-addLuaSprite('searchBarInputCaret', true)
+addHScript('hscripts/skin-selector/ui/skinSearchInput')
 
 -- Mouse Hitbox --
 
 makeLuaSprite('mouseHitBox', nil, getMouseX('camHUD') - 3, getMouseY('camHUD'))
 makeGraphic('mouseHitBox', 10, 10, 'ff0000')
-setProperty('mouseHitBox.camera', instanceArg('camHUD'), false, true)
+setObjectCamera('mouseHitBox', 'camHUD')
 setObjectOrder('mouseHitBox', 90E34) -- fuck you
 setProperty('mouseHitBox.visible', false)
 addLuaSprite('mouseHitBox', true)
+
+makeAnimatedLuaSprite('mouseTexture', 'ui/cursor', getMouseX('camOther'), getMouseY('camOther'))
+addAnimationByPrefix('mouseTexture', 'default', 'default')
+addAnimationByPrefix('mouseTexture', 'grabbed', 'grabbed')
+addAnimationByPrefix('mouseTexture', 'pointer', 'pointer')
+playAnim('mouseTexture', 'default')
+setObjectCamera('mouseTexture', 'camHUD')
+addLuaSprite('mouseTexture', true)
+setPropertyFromClass('flixel.FlxG', 'mouse.visible', false)
 
 -- Skins --
 
@@ -119,20 +118,25 @@ function onCreatePost()
 end
 
 function onUpdate(elapsed)
-     if keyboardJustConditionPressed('ONE',    not getVar('searchBarFocus')) then restartSong(true) end
-     if keyboardJustConditionPressed('ESCAPE', not getVar('searchBarFocus')) then exitSong()        end
+     if keyboardJustConditionPressed('ONE',    not getVar('skinSearchInputFocus')) then restartSong(true) end
+     if keyboardJustConditionPressed('ESCAPE', not getVar('skinSearchInputFocus')) then exitSong()        end
      if mouseClicked('left')  then playSound('clicks/clickDown', 0.5) end
      if mouseReleased('left') then playSound('clicks/clickUp', 0.5)   end
 
      setProperty('mouseHitBox.x', getMouseX('camHUD') - 3)
      setProperty('mouseHitBox.y', getMouseY('camHUD'))
+
+     setProperty('mouseTexture.x', getMouseX('camHUD'))
+     setProperty('mouseTexture.y', getMouseY('camHUD'))
 end
 
 function onUpdatePost(elapsed)
      Notes:page_slider()
      Notes:page_moved()
+     Notes:selection_byclick()
+     Notes:selection_byhover()
      Notes:found()
-     Notes:selection()
+     
 
      Notes:yeat()
 end

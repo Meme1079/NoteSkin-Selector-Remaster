@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="search_input.png">
+	<!-- Created using the Spritesheet and XML generator -->
+	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
+	<SubTexture name="default0000" x="0" y="0" width="520" height="70" frameX="2" frameY="2" frameWidth="516" frameHeight="66"/>
+	<SubTexture name="hovered0000" x="0" y="70" width="520" height="70" frameX="2" frameY="2" frameWidth="516" frameHeight="66"/>
+	<SubTexture name="selectAll0000" x="0" y="140" width="520" height="70" frameX="2" frameY="2" frameWidth="516" frameHeight="66"/>
+</TextureAtlas>
