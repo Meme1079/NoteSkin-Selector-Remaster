@@ -2,7 +2,6 @@ luaDebugMode = true
 
 local SkinSaves = require 'mods.NoteSkin Selector Remastered.api.classes.skins.static.SkinSaves'
 local SkinNotes = require 'mods.NoteSkin Selector Remastered.api.classes.skins.SkinNotes'
-local Cursor    = require 'mods.NoteSkin Selector Remastered.api.classes.Cursor'
 
 local string    = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.string'
 local table     = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.table'
@@ -21,8 +20,6 @@ local keyboardJustConditionPress    = funkinlua.keyboardJustConditionPress
 local keyboardJustConditionReleased = funkinlua.keyboardJustConditionReleased
 
 local SkinSplashSave = SkinSaves:new('noteskin_selector', 'NoteSkin Selector')
-local SkinCursor     = Cursor:new()
-SkinCursor:load('default')
 
 ---@class SkinSplashes
 local SkinSplashes = SkinNotes:new()

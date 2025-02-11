@@ -31,6 +31,44 @@ setObjectCamera('displaySliderTrack', 'camHUD')
 setProperty('displaySliderTrack.antialiasing', false)
 addLuaSprite('displaySliderTrack', true)
 
+-- Selection Buttons --
+
+--[[ makeAnimatedLuaSprite('selectionSkinButton_player', 'ui/buttons/checkbox_buttons', 775 + 12, 315)
+addAnimationByPrefix('selectionSkinButton_player', 'default', 'default')
+addAnimationByPrefix('selectionSkinButton_player', 'hover', 'hover0')
+addAnimationByPrefix('selectionSkinButton_player', 'selected', 'selected')
+addAnimationByPrefix('selectionSkinButton_player', 'hover-alt', 'hover-alt')
+playAnim('selectionSkinButton_player', 'default')
+scaleObject('selectionSkinButton_player', 0.5, 0.5)
+setObjectCamera('selectionSkinButton_player', 'camHUD')
+setProperty('selectionSkinButton_player.antialiasing', false)
+addLuaSprite('selectionSkinButton_player')
+
+makeAnimatedLuaSprite('selectionSkinButton_opponent', 'ui/buttons/checkbox_buttons', 775 + 220 + 12, 315)
+scaleObject('selectionSkinButton_opponent', 0.5, 0.5)
+addAnimationByPrefix('selectionSkinButton_opponent', 'checking', 'checking', 24, false)
+addAnimationByPrefix('selectionSkinButton_opponent', 'unchecking', 'unchecking', 24, false)
+playAnim('selectionSkinButton_opponent', 'checking')
+setObjectCamera('selectionSkinButton_opponent', 'camHUD')
+setProperty('selectionSkinButton_opponent.antialiasing', false)
+addLuaSprite('selectionSkinButton_opponent') ]]
+
+--[[ makeLuaText('selectionSkinText_player', 'Player', 0, 775 + 80, 315 + 11)
+setTextFont('selectionSkinText_player', 'sonic.ttf')
+setTextSize('selectionSkinText_player', 30)
+setTextColor('selectionSkinText_player', '31b0d1')
+setObjectCamera('selectionSkinText_player', 'camHUD')
+setProperty('selectionSkinText_player.antialiasing', false)
+addLuaText('selectionSkinText_player')
+
+makeLuaText('selectionSkinText_opponent', 'Opponent', 0, 775 + 220 + ((80 * 2) / 2), 315 + 11)
+setTextFont('selectionSkinText_opponent', 'sonic.ttf')
+setTextSize('selectionSkinText_opponent', 30)
+setTextColor('selectionSkinText_opponent', 'af66ce')
+setObjectCamera('selectionSkinText_opponent', 'camHUD')
+setProperty('selectionSkinText_opponent.antialiasing', false)
+addLuaText('selectionSkinText_opponent') ]]
+
 -- General Infos --
 
 makeLuaText('genInfoStateName', ' Notes', 0, 7, 13)
@@ -67,35 +105,31 @@ setObjectCamera('genInfoVersion', 'camHUD')
 setProperty('genInfoVersion.antialiasing', false)
 addLuaText('genInfoVersion')
 
--- Search Input --
+for keyID = 1, 4 do
+     local previewSkinPositionX = 830 + (105*(keyID-1)) - 8
+     local previewSkinPositionY = 250
 
---[[ makeAnimatedLuaSprite('skinSearchInput_background', 'ui/buttons/search_input', 20, 55)
-addAnimationByPrefix('skinSearchInput_background', 'default', 'default')
-addAnimationByPrefix('skinSearchInput_background', 'hover', 'hovered')
-addAnimationByPrefix('skinSearchInput_background', 'selectAll', 'selectAll')
-playAnim('skinSearchInput_background', 'default')
-scaleObject('skinSearchInput_background', 0.8, 0.8)
-setObjectCamera('skinSearchInput_background', 'camHUD')
-setProperty('skinSearchInput_background.antialiasing', false)
-addLuaSprite('skinSearchInput_background') ]]
+     local genInfoKeybinds = 'genInfoKeybinds-'..keyID
+     makeLuaText(genInfoKeybinds, tostring(getKeyBinds(keyID)), nil, previewSkinPositionX, previewSkinPositionY)
+     setTextFont(genInfoKeybinds, 'vipnagorgialla.otf')
+     setTextSize(genInfoKeybinds, 40)
+     setTextBorder(genInfoKeybinds, 3, '000000')
+     setObjectCamera(genInfoKeybinds, 'camHUD')
+     addLuaText(genInfoKeybinds)
+end
+
+-- Search Input --
 
 addHScript('hscripts/skin-selector/ui/skinSearchInput')
 
--- Mouse Hitbox --
-
-makeLuaSprite('mouseHitBox', nil, getMouseX('camHUD') - 3, getMouseY('camHUD'))
-makeGraphic('mouseHitBox', 10, 10, 'ff0000')
-setObjectCamera('mouseHitBox', 'camHUD')
-setObjectOrder('mouseHitBox', 90E34) -- fuck you
-setProperty('mouseHitBox.visible', false)
-addLuaSprite('mouseHitBox', true)
+-- Mouse Texture --
 
 makeAnimatedLuaSprite('mouseTexture', 'ui/cursor', getMouseX('camOther'), getMouseY('camOther'))
 addAnimationByPrefix('mouseTexture', 'default', 'default')
 addAnimationByPrefix('mouseTexture', 'grabbed', 'grabbed')
 addAnimationByPrefix('mouseTexture', 'pointer', 'pointer')
 playAnim('mouseTexture', 'default')
-setObjectCamera('mouseTexture', 'camHUD')
+setObjectCamera('mouseTexture', 'camOther')
 addLuaSprite('mouseTexture', true)
 setPropertyFromClass('flixel.FlxG', 'mouse.visible', false)
 
@@ -136,9 +170,6 @@ function onUpdatePost(elapsed)
      Notes:selection_byclick()
      Notes:selection_byhover()
      Notes:found()
-     
-
-     Notes:yeat()
 end
 
 local sliderTrackPosition = states.getPageSkinSliderPositions('notes').intervals

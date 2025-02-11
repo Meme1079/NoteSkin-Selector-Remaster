@@ -1,7 +1,6 @@
 luaDebugMode = true
 
 local SkinSaves = require 'mods.NoteSkin Selector Remastered.api.classes.skins.static.SkinSaves'
-local Cursor    = require 'mods.NoteSkin Selector Remastered.api.classes.Cursor'
 
 local string    = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.string'
 local table     = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.table'
@@ -21,9 +20,6 @@ local keyboardJustConditionPress    = funkinlua.keyboardJustConditionPress
 local keyboardJustConditionReleased = funkinlua.keyboardJustConditionReleased
 
 local SkinNoteSave = SkinSaves:new('noteskin_selector', 'NoteSkin Selector')
---[[ local SkinCursor   = Cursor:new()
-SkinCursor:load('default') ]]
-
 
 ---@class SkinNotes
 local SkinNotes = {}
@@ -64,7 +60,6 @@ function SkinNotes:load()
      self.sliderTrackIntervals     = states.getPageSkinSliderPositions(self.stateClass).intervals
      self.sliderTrackSemiIntervals = states.getPageSkinSliderPositions(self.stateClass).semiIntervals
      
-     self.selectSkinPrePagePositionIndex = 1
      self.selectSkinPagePositionIndex = 1     -- lordx
      self.selectSkinInitSelectedIndex = 0     -- d2011x
      self.selectSkinPreSelectedIndex  = 0     -- xeno
@@ -355,7 +350,6 @@ function SkinNotes:selection_byclick()
                if byClick == true and skinObjectsPerClicked[curPage] == false then
                     playAnim(displaySkinIconButton, 'pressed', true)
 
-                    self.selectSkinPrePagePositionIndex = self.sliderPageIndex
                     self.selectSkinPreSelectedIndex = pageSkins
                     self.selectSkinHasBeenClicked   = true
 
@@ -381,7 +375,6 @@ function SkinNotes:selection_byclick()
                if byClick == true and skinObjectsPerClicked[curPage] == false then
                     playAnim(displaySkinIconButton, 'pressed', true)
 
-                    self.selectSkinPrePagePositionIndex = self.sliderPageIndex
                     self.selectSkinPreSelectedIndex = pageSkins
                     self.selectSkinHasBeenClicked   = true
 
@@ -390,8 +383,7 @@ function SkinNotes:selection_byclick()
 
                if byRelease == true and skinObjectsPerClicked[curPage] == true then
                     playAnim(displaySkinIconButton, 'static', true)
-     
-                    self.selectSkinPrePagePositionIndex = 0
+
                     self.selectSkinCurSelectedIndex = 0
                     self.selectSkinPreSelectedIndex = 0
                     self.selectSkinHasBeenClicked   = false
@@ -535,18 +527,6 @@ end
 
 function SkinNotes:switch()
 
-end
-
-function SkinNotes:yeat()
-     --[[ debugPrint({
-
-          totalSkinObjectClicked = self.totalSkinObjectClicked[self.sliderPageIndex],
-          selectSkinCurSelectedIndex = self.selectSkinCurSelectedIndex
-     }) ]]
-
-     --[[ debugPrint({
-          totalSkinObjectHovered = self.totalSkinObjectClicked[self.sliderPageIndex]
-     }) ]]
 end
 
 --- Loads the save data from the current class state.
