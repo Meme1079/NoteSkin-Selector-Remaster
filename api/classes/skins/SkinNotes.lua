@@ -43,7 +43,10 @@ end
 function SkinNotes:load()
      self.metadata_display = json.parse(getTextFromFile('json/'..self.stateClass..'/metadata_display.json'))
      self.metadata_preview = json.parse(getTextFromFile('json/'..self.stateClass..'/metadata_preview.json'))
-    
+
+     self.totalSkins     = states.getTotalSkins(self.stateClass, self.statePaths)
+     self.totalSkinNames = nil
+
      self.totalSkinLimit       = states.getTotalSkinLimit(self.stateClass)
      self.totalSkinObjects     = states.getTotalSkinObjects(self.stateClass)
      self.totalSkinObjectID    = states.getTotalSkinObjects(self.stateClass, 'ids')
@@ -329,7 +332,7 @@ function SkinNotes:found()
           return search_result
      end
 
-     local p = filter_search(states.getTotalSkins(self.stateClass, self.statePaths), getVar('skinSearchInput_textContent') or '')
+     local p = filter_search(self.totalSkins, getVar('skinSearchInput_textContent') or '')
 
      local function displaySkinPositions()
           local displaySkinIndexes   = {x = 0, y = 0}
