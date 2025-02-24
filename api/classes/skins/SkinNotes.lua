@@ -309,10 +309,13 @@ end
 --- Searches and finds the given skin.
 ---@return nil
 function SkinNotes:found()
+     local endTime = os.clock()
+
      local justPressed = callMethodFromClass('flixel.FlxG', 'keys.firstJustPressed', {''})
-     if not (justPressed ~= -1 and justPressed ~= nil) then
+     if not (justPressed ~= -1 and justPressed ~= nil and getVar('skinSearchInputFocus') == true)  then
           return
      end
+     
 
      local function filter_search(list, input)
           local search_result = {}
@@ -327,7 +330,87 @@ function SkinNotes:found()
      end
 
      local p = filter_search(states.getTotalSkins(self.stateClass, self.statePaths), getVar('skinSearchInput_textContent') or '')
-     debugPrint(p)
+
+     local function displaySkinPositions()
+          local displaySkinIndexes   = {x = 0, y = 0}
+          local displaySkinPositions = {}
+          for displays = 1, 16 do
+               if (displays-1) % 4 == 0 then
+                    displaySkinIndexes.x = 0
+                    displaySkinIndexes.y = displaySkinIndexes.y + 1
+               else
+                    displaySkinIndexes.x = displaySkinIndexes.x + 1
+               end
+
+               local displaySkinPositionX = 20  + (170 * displaySkinIndexes.x) - (25 * displaySkinIndexes.x)
+               local displaySkinPositionY = -20 + (180 * displaySkinIndexes.y) - (30 * displaySkinIndexes.y)
+               displaySkinPositions[#displaySkinPositions + 1] = {displaySkinPositionX, displaySkinPositionY}
+          end
+          return displaySkinPositions
+     end
+
+     for displays = 1, 16 do
+
+
+          local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = displays}
+          local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
+          local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplates)
+
+          local displaySkinPositionX = displaySkinPositions()[displays][1]
+          local displaySkinPositionY = displaySkinPositions()[displays][2]
+          makeAnimatedLuaSprite(displaySkinIconButton, 'ui/buttons/display_button', displaySkinPositionX, displaySkinPositionY)
+          addAnimationByPrefix(displaySkinIconButton, 'static', 'static')
+          addAnimationByPrefix(displaySkinIconButton, 'selected', 'selected')
+          addAnimationByPrefix(displaySkinIconButton, 'hover', 'hovered-static')
+          addAnimationByPrefix(displaySkinIconButton, 'pressed', 'hovered-pressed')
+          playAnim(displaySkinIconButton, 'static', true)
+          scaleObject(displaySkinIconButton, 0.8, 0.8)
+          setObjectCamera(displaySkinIconButton, 'camHUD')
+          setProperty(displaySkinIconButton..'.antialiasing', false)
+          addLuaSprite(displaySkinIconButton)
+
+          local displaySkinImageTemplate = {path = self.statePaths, skin = p[displays]}
+          local displaySkinImage = ('${path}/${skin}'):interpol(displaySkinImageTemplate)
+
+          local displaySkinImagePositionX = displaySkinPositionX + 16.5
+          local displaySkinImagePositionY = displaySkinPositionY + 12
+          makeAnimatedLuaSprite(displaySkinIconSkin, displaySkinImage, displaySkinImagePositionX, displaySkinImagePositionY)
+          scaleObject(displaySkinIconSkin, 0.55, 0.55)
+          addAnimationByPrefix(displaySkinIconSkin, 'static', 'arrowUP', 24, true)
+
+          local curOffsetX = getProperty(displaySkinIconSkin..'.offset.x')
+          local curOffsetY = getProperty(displaySkinIconSkin..'.offset.y')
+          --addOffset(displaySkinIconSkin, 'static', curOffsetX - getSkinMetadata.offsets[1], curOffsetY + getSkinMetadata.offsets[2])
+          playAnim(displaySkinIconSkin, 'static')
+          setObjectCamera(displaySkinIconSkin, 'camHUD')
+          addLuaSprite(displaySkinIconSkin)
+
+          
+
+          
+          if displays > #p then
+               if luaSpriteExists(displaySkinIconButton) == true and luaSpriteExists(displaySkinIconSkin) == true then
+                    removeLuaSprite(displaySkinIconButton, true)
+                    removeLuaSprite(displaySkinIconSkin, true)
+               end
+          end
+          if #p == 0 then
+               if luaSpriteExists(displaySkinIconButton) ~= true and luaSpriteExists(displaySkinIconSkin) ~= true then
+
+                    for displays = 1, 16 do
+                         local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = displays}
+                         local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
+                         local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplates)
+                         removeLuaSprite(displaySkinIconButton, true)
+                         removeLuaSprite(displaySkinIconSkin, true)
+                    end
+
+                    return
+               end
+          end
+     end
+
+     debugPrint( 'Speed: '..(os.clock() - endTime) )
 end
 
 --- Selects the selected skin, focuses on the click functionality.
@@ -430,9 +513,11 @@ function SkinNotes:selection_byhover()
           local nonCurrentPreSelectedSkin = self.selectSkinPreSelectedIndex ~= pageSkins
           local nonCurrentCurSelectedSkin = self.selectSkinCurSelectedIndex ~= pageSkins
           if skinObjectsPerHovered[curPage] == true and nonCurrentPreSelectedSkin and nonCurrentCurSelectedSkin then
+               if luaSpriteExists(displaySkinIconButton) == false then return end
                playAnim(displaySkinIconButton, 'hover', true)
           end
           if skinObjectsPerHovered[curPage] == false and nonCurrentPreSelectedSkin and nonCurrentCurSelectedSkin then
+               if luaSpriteExists(displaySkinIconButton) == false then return end
                playAnim(displaySkinIconButton, 'static', true)
           end
      end

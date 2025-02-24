@@ -84,20 +84,24 @@ function funkinlua.removeCallbackEvents(callback, index)
 end
 
 function funkinlua.hoverObject(object, camera)
+     if luaSpriteExists(object) == false then return end
      return callMethodFromClass('flixel.FlxG', 'mouse.overlaps', {instanceArg(object), instanceArg(camera)})
 end
 
 function funkinlua.clickObject(object, camera)
+     if luaSpriteExists(object) == false then return end
      local overlaps = callMethodFromClass('flixel.FlxG', 'mouse.overlaps', {instanceArg(object), instanceArg(camera)})
      return overlaps and mouseClicked('left')
 end
 
 function funkinlua.pressedObject(object, camera)
+     if luaSpriteExists(object) == false then return end
      local overlaps = callMethodFromClass('flixel.FlxG', 'mouse.overlaps', {instanceArg(object), instanceArg(camera)})
      return overlaps and mousePressed('left')
 end
 
 function funkinlua.releasedObject(object, camera)
+     if luaSpriteExists(object) == false then return end
      local overlaps = callMethodFromClass('flixel.FlxG', 'mouse.overlaps', {instanceArg(object), instanceArg(camera)})
      return overlaps and mouseReleased('left')
 end
