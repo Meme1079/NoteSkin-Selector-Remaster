@@ -43,6 +43,7 @@ function onCreate() {
 
      skinSearchInput.onChange     = function(preText:String, curText:String) {
           Paths.soundRandom('keyclicks/keyClick', 1, 8, true);
+          setVar('skinSearchInput_textContent', curText);
 
           if (curText.length > 0) {
                skinSearchInput_placeholder.text  = '';
@@ -56,14 +57,14 @@ function onCreate() {
                skinSearchInput.textObj.color = FlxColor.RED;
           } else {
                skinSearchInput.textObj.color = FlxColor.WHITE;
-          }
+          }          
      };
      skinSearchInput.onPressEnter = function() {
-          skinSearchInput.textObj.color = 0xFFF0B72F;
-          setVar('skinSearchInput_textContent', skinSearchInput.text);
+          //skinSearchInput.textObj.color = 0xFFF0B72F;
+          //setVar('skinSearchInput_textContent', skinSearchInput.text);
 
-          new FlxTimer().start(0.1, () -> { PsychUIInputText.focusOn = null; });
-          new FlxTimer().start(0.3, () -> { setVar('skinSearchInput_textContent', ''); }); // forcefully resets, due to a bug
+          //new FlxTimer().start(0.1, () -> { PsychUIInputText.focusOn = null; });
+          //new FlxTimer().start(0.3, () -> { setVar('skinSearchInput_textContent', ''); }); // forcefully resets, due to a bug
      };
 
      add(skinSearchInput_background);

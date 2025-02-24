@@ -149,7 +149,7 @@ end
 
 --- Preloads multiple existing chunks by creating and deleting, improves optimization significantly.
 ---@return nil
-function SkinNotes:create_preload()
+function SkinNotes:preload()
      for pages = self.totalSkinLimit, 1, -1 do
           self:create(pages)
      end
@@ -309,27 +309,25 @@ end
 --- Searches and finds the given skin.
 ---@return nil
 function SkinNotes:found()
-     if not (getVar('skinSearchInputFocus') and keyboardJustPressed('ENTER')) then
-          return nil
+     local justPressed = callMethodFromClass('flixel.FlxG', 'keys.firstJustPressed', {''})
+     if not (justPressed ~= -1 and justPressed ~= nil) then
+          return
      end
 
-     for skins = 1, self.totalSkinLimit do
-          local skinSearchInput_textContent       = getVar('skinSearchInput_textContent')
-          local skinSearchInput_textContentFilter = skinSearchInput_textContent ~= nil and skinSearchInput_textContent:lower() or ''
-          if table.find(self.totalSkinObjectNames[skins], skinSearchInput_textContentFilter) ~= nil then
-               self.sliderPageIndex = skins
-               self:create(self.sliderPageIndex)
-               self:preview()
-
-               setProperty('displaySliderIcon.y', self.sliderTrackIntervals[skins])
-               playSound('ding', 0.5)
-               break
+     local function filter_search(list, input)
+          local search_result = {}
+          for i = 1, #list, 1 do
+               local startPos = list[i]:upper():find(input:upper())
+               local wordPos  = startPos == nil and -1 or startPos
+               if wordPos > -1 and #search_result < 16 then
+                    search_result[#search_result + 1] = list[i]
+               end
           end
-
-          if skins == self.totalSkinLimit then
-               callOnScripts('skinSearchInput_callInvalidSearch', {''})
-          end
+          return search_result
      end
+
+     local p = filter_search(states.getTotalSkins(self.stateClass, self.statePaths), getVar('skinSearchInput_textContent') or '')
+     debugPrint(p)
 end
 
 --- Selects the selected skin, focuses on the click functionality.

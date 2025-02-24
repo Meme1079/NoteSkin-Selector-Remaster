@@ -138,17 +138,17 @@ setPropertyFromClass('flixel.FlxG', 'mouse.visible', false)
 local Notes = SkinNotes:new('notes', 'noteSkins', true)
 Notes:load()
 Notes:precache()
-Notes:create_preload()
-Notes:create(1)
+Notes:preload()
 Notes:preview()
 Notes:save_load()
 
 function onCreatePost()
-     local camUI = {'iconP1', 'iconP2', 'healthBar', 'scoreTxt', 'botplayTxt'}
-     for i = 1, #camUI do
-          callMethod('uiGroup.remove', {instanceArg(camUI[i])})
-     end
      playMusic(getModSetting('song_select', modFolder):lower(), 0.5, true)
+
+     
+     --[[ local width,height = 800, 450
+     callMethodFromClass('flixel.FlxG', 'resizeWindow', {width,height})
+     callMethodFromClass('flixel.FlxG', 'resizeGame', {width,height}) ]]
 end
 
 function onUpdate(elapsed)
@@ -195,6 +195,11 @@ end
 
 local allowCountdown = false;
 function onStartCountdown()
+     local camUI = {'iconP1', 'iconP2', 'healthBar', 'scoreTxt', 'botplayTxt'}
+     for i = 1, #camUI do
+          callMethod('uiGroup.remove', {instanceArg(camUI[i])})
+     end
+
      if not allowCountdown then -- Block the first countdown
           for k,v in pairs(getRunningScripts()) do
                if v:match(modFolder..'/scripts/skins') or not v:match(modFolder) then
