@@ -309,16 +309,13 @@ function SkinNotes:page_text()
      setTextString('genInfoStatePage', (' Page ${cur} / ${max}'):interpol({cur = currentPage, max = maximumPage}))
 end
 
---- Searches and finds the given skin.
----@return nil
 function SkinNotes:found()
      local endTime = os.clock()
 
      local justPressed = callMethodFromClass('flixel.FlxG', 'keys.firstJustPressed', {''})
-     if not (justPressed ~= -1 and justPressed ~= nil and getVar('skinSearchInputFocus') == true)  then
+     if not (justPressed ~= -1 and justPressed ~= nil and getVar('skinSearchInputFocus') == true) then
           return
      end
-     
 
      local function filter_search(list, input)
           local search_result = {}
@@ -331,8 +328,33 @@ function SkinNotes:found()
           end
           return search_result
      end
+     local function filter_searchByNil(list, input, element)
+          local search_result = {}
+          for i = 1, #list, 1 do
+               local startPos = list[i]:upper():find(input:upper())
+               local wordPos  = startPos == nil and -1 or startPos
+               if wordPos > -1 and #search_result < 16 then
+                    search_result[i] = list[i]
+               end
+          end
+
+          local search_resultFilter = {}
+          for ids, skins in pairs(search_result) do
+               if skins ~= nil and #search_resultFilter < 16 then
+                    if element == 'ids' then
+                         search_resultFilter[#search_resultFilter + 1] = ids
+                    elseif element == 'skins' then
+                         search_resultFilter[#search_resultFilter + 1] = skins
+                    end
+               end
+          end 
+          return search_resultFilter
+     end
 
      local p = filter_search(self.totalSkins, getVar('skinSearchInput_textContent') or '')
+     local g1 = filter_searchByNil(self.totalSkins, getVar('skinSearchInput_textContent') or '', 'ids')
+     local g2 = filter_searchByNil(self.totalSkins, getVar('skinSearchInput_textContent') or '', 'skins')
+     --local c = filter_searchByNil(self.totalSkins, getVar('skinSearchInput_textPreContent') or '')
 
      local function displaySkinPositions()
           local displaySkinIndexes   = {x = 0, y = 0}
@@ -353,9 +375,9 @@ function SkinNotes:found()
      end
 
      for displays = 1, 16 do
+          local so = displays
 
-
-          local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = displays}
+          local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = so}
           local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
           local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplates)
 
@@ -372,7 +394,7 @@ function SkinNotes:found()
           setProperty(displaySkinIconButton..'.antialiasing', false)
           addLuaSprite(displaySkinIconButton)
 
-          local displaySkinImageTemplate = {path = self.statePaths, skin = p[displays]}
+          local displaySkinImageTemplate = {path = self.statePaths, skin = g2[displays]}
           local displaySkinImage = ('${path}/${skin}'):interpol(displaySkinImageTemplate)
 
           local displaySkinImagePositionX = displaySkinPositionX + 16.5
@@ -388,9 +410,6 @@ function SkinNotes:found()
           setObjectCamera(displaySkinIconSkin, 'camHUD')
           addLuaSprite(displaySkinIconSkin)
 
-          
-
-          
           if displays > #p then
                if luaSpriteExists(displaySkinIconButton) == true and luaSpriteExists(displaySkinIconSkin) == true then
                     removeLuaSprite(displaySkinIconButton, true)
@@ -398,17 +417,16 @@ function SkinNotes:found()
                end
           end
           if #p == 0 then
-               if luaSpriteExists(displaySkinIconButton) ~= true and luaSpriteExists(displaySkinIconSkin) ~= true then
-
+               if luaSpriteExists(displaySkinIconButton) == false and luaSpriteExists(displaySkinIconSkin) == false then
                     for displays = 1, 16 do
-                         local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = displays}
+                         local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = so}
                          local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
                          local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplates)
                          removeLuaSprite(displaySkinIconButton, true)
                          removeLuaSprite(displaySkinIconSkin, true)
                     end
 
-                    return
+                    if displays == 16 then return end
                end
           end
      end
@@ -487,7 +505,9 @@ function SkinNotes:selection_byclick()
           end
 
           if pageSkins == self.selectSkinInitSelectedIndex then
-               playAnim(displaySkinIconButton, 'static', true)
+               if luaSpriteExists(displaySkinIconButton) == true and luaSpriteExists(displaySkinIconSkin) == true then
+                    playAnim(displaySkinIconButton, 'static', true)
+               end
 
                self.selectSkinInitSelectedIndex = 0
                skinObjectsPerSelected[curPage]  = false
