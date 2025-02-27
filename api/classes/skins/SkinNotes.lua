@@ -310,25 +310,12 @@ function SkinNotes:page_text()
 end
 
 function SkinNotes:found()
-     local endTime = os.clock()
-
-     local justPressed = callMethodFromClass('flixel.FlxG', 'keys.firstJustPressed', {''})
-     if not (justPressed ~= -1 and justPressed ~= nil and getVar('skinSearchInputFocus') == true) then
+     local justReleased = callMethodFromClass('flixel.FlxG', 'keys.firstJustReleased', {''})
+     if not (justReleased ~= -1 and justReleased ~= nil and getVar('skinSearchInputFocus') == true) then
           return
      end
 
-     local function filter_search(list, input)
-          local search_result = {}
-          for i = 1, #list, 1 do
-               local startPos = list[i]:upper():find(input:upper())
-               local wordPos  = startPos == nil and -1 or startPos
-               if wordPos > -1 and #search_result < 16 then
-                    search_result[#search_result + 1] = list[i]
-               end
-          end
-          return search_result
-     end
-     local function filter_searchByNil(list, input, element)
+     local function filter_search(list, input, element)
           local search_result = {}
           for i = 1, #list, 1 do
                local startPos = list[i]:upper():find(input:upper())
@@ -350,11 +337,6 @@ function SkinNotes:found()
           end 
           return search_resultFilter
      end
-
-     local p = filter_search(self.totalSkins, getVar('skinSearchInput_textContent') or '')
-     local g1 = filter_searchByNil(self.totalSkins, getVar('skinSearchInput_textContent') or '', 'ids')
-     local g2 = filter_searchByNil(self.totalSkins, getVar('skinSearchInput_textContent') or '', 'skins')
-     --local c = filter_searchByNil(self.totalSkins, getVar('skinSearchInput_textPreContent') or '')
 
      for pages = 1, self.totalSkinLimit do
           for displays = 1, #self.totalSkinObjects[pages] do
@@ -391,19 +373,22 @@ function SkinNotes:found()
           return displaySkinPositions
      end
 
-     
+     local skinSearchInput_textContent = getVar('skinSearchInput_textContent')
+     local filterSearchByID   = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'ids')
+     local filterSearchBySkin = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'skins')
 
-     local ert = #g1 ~= 0 and table.singularity(table.merge(g1, table.tally(1, 16))) or table.tally(1, 16)
+     local searchFilterSkinsDefault = table.tally(1, 16)
+     local searchFilterSkinsTyped   = table.singularity(table.merge(filterSearchByID, table.tally(1, 16)))
+     local searchFilterSkins        = #filterSearchByID == 0 and table.sub(searchFilterSkinsDefault, 1, 16) or table.sub(searchFilterSkinsTyped, 1, 16)
+     for ids, displays in pairs(searchFilterSkins) do
+          if #filterSearchByID == 0 then return end -- !DO NO DELETE
 
-     for iehwf,displays in pairs(table.sub(ert, 1, 16)) do
-          local so = displays
-
-          local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = so}
+          local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = displays}
           local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
           local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplates)
 
-          local displaySkinPositionX = displaySkinPositions()[iehwf][1]
-          local displaySkinPositionY = displaySkinPositions()[iehwf][2]
+          local displaySkinPositionX = displaySkinPositions()[ids][1]
+          local displaySkinPositionY = displaySkinPositions()[ids][2]
           makeAnimatedLuaSprite(displaySkinIconButton, 'ui/buttons/display_button', displaySkinPositionX, displaySkinPositionY)
           addAnimationByPrefix(displaySkinIconButton, 'static', 'static')
           addAnimationByPrefix(displaySkinIconButton, 'selected', 'selected')
@@ -415,7 +400,7 @@ function SkinNotes:found()
           setProperty(displaySkinIconButton..'.antialiasing', false)
           addLuaSprite(displaySkinIconButton)
 
-          local displaySkinImageTemplate = {path = self.statePaths, skin = g2[iehwf]}
+          local displaySkinImageTemplate = {path = self.statePaths, skin = filterSearchBySkin[ids]}
           local displaySkinImage = ('${path}/${skin}'):interpol(displaySkinImageTemplate)
 
           local displaySkinImagePositionX = displaySkinPositionX + 16.5
@@ -431,29 +416,27 @@ function SkinNotes:found()
           setObjectCamera(displaySkinIconSkin, 'camHUD')
           addLuaSprite(displaySkinIconSkin)
 
-          if iehwf > #p then
+          if ids > #filterSearchByID then
                if luaSpriteExists(displaySkinIconButton) == true and luaSpriteExists(displaySkinIconSkin) == true then
                     removeLuaSprite(displaySkinIconButton, true)
                     removeLuaSprite(displaySkinIconSkin, true)
                end
           end
-          if #p == 0 then
+
+          if #filterSearchByID == 0 then
                if luaSpriteExists(displaySkinIconButton) == false and luaSpriteExists(displaySkinIconSkin) == false then
-                    for iehwf,displays in pairs(ert) do
-                         local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = so}
+                    for _ in pairs(searchFilterSkins) do -- lmao
+                         local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = displays}
                          local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
                          local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplates)
-
+     
                          removeLuaSprite(displaySkinIconButton, true)
                          removeLuaSprite(displaySkinIconSkin, true)
                     end
-
-                    if iehwf == 16 then return end
+                    if ids == 16 then return end
                end
           end
      end
-
-     debugPrint( 'Speed: '..(os.clock() - endTime) )
 end
 
 --- Selects the selected skin, focuses on the click functionality.
