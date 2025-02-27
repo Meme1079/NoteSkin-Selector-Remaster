@@ -186,10 +186,10 @@ local function displaySliderMarks(uniqueTag, color, widthBy, sliderTracks, slide
      setProperty(hitboxMarkSliderTrackTag..'.antialiasing', false)
      addLuaSprite(hitboxMarkSliderTrackTag)
 end
-for positionIndex = 1, #sliderTrackPosition do
+for positionIndex = 1, #sliderTrackPosition-2 do
      displaySliderMarks('positions', '3b8527', {12 * 2, 12 / 2}, sliderTrackPosition, positionIndex)
 end
-for dividerIndex = 2, #sliderTrackDivider do
+for dividerIndex = 2, #sliderTrackDivider-2 do
      displaySliderMarks('divider', '847500', {12 * 1.5, 12 / 4}, sliderTrackDivider, dividerIndex)
 end
 

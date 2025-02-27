@@ -43,6 +43,7 @@ function onCreate() {
 
      skinSearchInput.onChange     = function(preText:String, curText:String) {
           Paths.soundRandom('keyclicks/keyClick', 1, 8, true);
+          setVar('skinSearchInput_textPreContent', preText);
           setVar('skinSearchInput_textContent', curText);
 
           if (curText.length > 0) {

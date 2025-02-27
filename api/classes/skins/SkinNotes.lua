@@ -356,6 +356,23 @@ function SkinNotes:found()
      local g2 = filter_searchByNil(self.totalSkins, getVar('skinSearchInput_textContent') or '', 'skins')
      --local c = filter_searchByNil(self.totalSkins, getVar('skinSearchInput_textPreContent') or '')
 
+     for pages = 1, self.totalSkinLimit do
+          for displays = 1, #self.totalSkinObjects[pages] do
+               if pages == index then
+                    goto continue_removeNonCurrentPages
+               end
+
+               local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = self.totalSkinObjectID[pages][displays]}
+               local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
+               local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplates)
+               if luaSpriteExists(displaySkinIconButton) == true and luaSpriteExists(displaySkinIconSkin) == true then
+                    removeLuaSprite(displaySkinIconButton, true)
+                    removeLuaSprite(displaySkinIconSkin, true)
+               end
+               ::continue_removeNonCurrentPages::
+          end
+     end
+
      local function displaySkinPositions()
           local displaySkinIndexes   = {x = 0, y = 0}
           local displaySkinPositions = {}
@@ -374,15 +391,19 @@ function SkinNotes:found()
           return displaySkinPositions
      end
 
-     for displays = 1, 16 do
+     
+
+     local ert = #g1 ~= 0 and table.singularity(table.merge(g1, table.tally(1, 16))) or table.tally(1, 16)
+
+     for iehwf,displays in pairs(table.sub(ert, 1, 16)) do
           local so = displays
 
           local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = so}
           local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
           local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplates)
 
-          local displaySkinPositionX = displaySkinPositions()[displays][1]
-          local displaySkinPositionY = displaySkinPositions()[displays][2]
+          local displaySkinPositionX = displaySkinPositions()[iehwf][1]
+          local displaySkinPositionY = displaySkinPositions()[iehwf][2]
           makeAnimatedLuaSprite(displaySkinIconButton, 'ui/buttons/display_button', displaySkinPositionX, displaySkinPositionY)
           addAnimationByPrefix(displaySkinIconButton, 'static', 'static')
           addAnimationByPrefix(displaySkinIconButton, 'selected', 'selected')
@@ -394,7 +415,7 @@ function SkinNotes:found()
           setProperty(displaySkinIconButton..'.antialiasing', false)
           addLuaSprite(displaySkinIconButton)
 
-          local displaySkinImageTemplate = {path = self.statePaths, skin = g2[displays]}
+          local displaySkinImageTemplate = {path = self.statePaths, skin = g2[iehwf]}
           local displaySkinImage = ('${path}/${skin}'):interpol(displaySkinImageTemplate)
 
           local displaySkinImagePositionX = displaySkinPositionX + 16.5
@@ -410,7 +431,7 @@ function SkinNotes:found()
           setObjectCamera(displaySkinIconSkin, 'camHUD')
           addLuaSprite(displaySkinIconSkin)
 
-          if displays > #p then
+          if iehwf > #p then
                if luaSpriteExists(displaySkinIconButton) == true and luaSpriteExists(displaySkinIconSkin) == true then
                     removeLuaSprite(displaySkinIconButton, true)
                     removeLuaSprite(displaySkinIconSkin, true)
@@ -418,15 +439,16 @@ function SkinNotes:found()
           end
           if #p == 0 then
                if luaSpriteExists(displaySkinIconButton) == false and luaSpriteExists(displaySkinIconSkin) == false then
-                    for displays = 1, 16 do
+                    for iehwf,displays in pairs(ert) do
                          local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = so}
                          local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
                          local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplates)
+
                          removeLuaSprite(displaySkinIconButton, true)
                          removeLuaSprite(displaySkinIconSkin, true)
                     end
 
-                    if displays == 16 then return end
+                    if iehwf == 16 then return end
                end
           end
      end
