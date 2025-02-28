@@ -574,14 +574,18 @@ function SkinNotes:selection_byhover()
 
      for i = 1, math.max(#skinObjectsPerClicked, #skinObjectsPerHovered) do
           if skinObjectsPerClicked[i] == true then
-               playAnim('mouseTexture', 'grabbed', true)
+               playAnim('mouseTexture', 'handClick', true)
                break
           end
           if skinObjectsPerHovered[i] == true then
-               playAnim('mouseTexture', 'pointer', true)
+               playAnim('mouseTexture', 'hand', true)
                break
           end
-          playAnim('mouseTexture', 'default', true)
+          if mouseClicked('left') or mousePressed('left') then 
+               playAnim('mouseTexture', 'idleClick', true)
+          else
+               playAnim('mouseTexture', 'idle', true)
+          end
      end
 end
 
