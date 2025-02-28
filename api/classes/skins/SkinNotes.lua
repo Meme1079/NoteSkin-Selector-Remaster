@@ -309,10 +309,29 @@ function SkinNotes:page_text()
      setTextString('genInfoStatePage', (' Page ${cur} / ${max}'):interpol({cur = currentPage, max = maximumPage}))
 end
 
-function SkinNotes:found()
+--- Searches the closest skin name it can find
+---@return nil
+function SkinNotes:search()
      local justReleased = callMethodFromClass('flixel.FlxG', 'keys.firstJustReleased', {''})
      if not (justReleased ~= -1 and justReleased ~= nil and getVar('skinSearchInputFocus') == true) then
           return
+     end
+
+     for pages = 1, self.totalSkinLimit do
+          for displays = 1, #self.totalSkinObjects[pages] do
+               if pages == index then
+                    goto continue_removeNonCurrentPages
+               end
+
+               local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = self.totalSkinObjectID[pages][displays]}
+               local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
+               local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplates)
+               if luaSpriteExists(displaySkinIconButton) == true and luaSpriteExists(displaySkinIconSkin) == true then
+                    removeLuaSprite(displaySkinIconButton, true)
+                    removeLuaSprite(displaySkinIconSkin, true)
+               end
+               ::continue_removeNonCurrentPages::
+          end
      end
 
      local function filter_search(list, input, element)
@@ -338,23 +357,6 @@ function SkinNotes:found()
           return search_resultFilter
      end
 
-     for pages = 1, self.totalSkinLimit do
-          for displays = 1, #self.totalSkinObjects[pages] do
-               if pages == index then
-                    goto continue_removeNonCurrentPages
-               end
-
-               local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = self.totalSkinObjectID[pages][displays]}
-               local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
-               local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplates)
-               if luaSpriteExists(displaySkinIconButton) == true and luaSpriteExists(displaySkinIconSkin) == true then
-                    removeLuaSprite(displaySkinIconButton, true)
-                    removeLuaSprite(displaySkinIconSkin, true)
-               end
-               ::continue_removeNonCurrentPages::
-          end
-     end
-
      local function displaySkinPositions()
           local displaySkinIndexes   = {x = 0, y = 0}
           local displaySkinPositions = {}
@@ -377,8 +379,11 @@ function SkinNotes:found()
      local filterSearchByID   = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'ids')
      local filterSearchBySkin = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'skins')
 
-     local searchFilterSkinsDefault = table.tally(1, 16)
-     local searchFilterSkinsTyped   = table.singularity(table.merge(filterSearchByID, table.tally(1, 16)))
+     local currenMinPageIndex = (self.sliderPageIndex - 1) * 16 == 0 and 1 or (self.sliderPageIndex - 1) * 16
+     local currenMaxPageIndex =  self.sliderPageIndex      * 16
+
+     local searchFilterSkinsDefault = table.tally(currenMinPageIndex, currenMaxPageIndex)
+     local searchFilterSkinsTyped   = table.singularity(table.merge(filterSearchByID, searchFilterSkinsDefault))
      local searchFilterSkins        = #filterSearchByID == 0 and table.sub(searchFilterSkinsDefault, 1, 16) or table.sub(searchFilterSkinsTyped, 1, 16)
      for ids, displays in pairs(searchFilterSkins) do
           if #filterSearchByID == 0 then return end -- !DO NO DELETE
