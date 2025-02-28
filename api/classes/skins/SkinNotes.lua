@@ -45,7 +45,7 @@ function SkinNotes:load()
      self.metadata_preview = json.parse(getTextFromFile('json/'..self.stateClass..'/metadata_preview.json'))
 
      self.totalSkins     = states.getTotalSkins(self.stateClass, self.statePaths)
-     self.totalSkinNames = nil
+     self.totalSkinNames = states.getTotalSkinNames(self.stateClass)
 
      self.totalSkinLimit       = states.getTotalSkinLimit(self.stateClass)
      self.totalSkinObjects     = states.getTotalSkinObjects(self.stateClass)
@@ -231,6 +231,7 @@ function SkinNotes:page_slider(snapToPage)
                          setTextColor('genInfoStatePage', 'ffffff')
                     end
                     playSound('ding', 0.5)
+                    callOnScripts('skinSearchInput_callResetSearch')
                end
                
                self.sliderTrackPageIndex = sliderTrackCurrentPageIndex
@@ -284,6 +285,7 @@ function SkinNotes:page_moved()
 
           playSound('ding', 0.5)
           setProperty('displaySliderIcon.y', self.sliderTrackIntervals[self.sliderPageIndex])
+          callOnScripts('skinSearchInput_callResetSearch')
      end
      if conditionPressedDown and self.sliderPageIndex < self.totalSkinLimit then
           self.sliderPageIndex = self.sliderPageIndex + 1
@@ -292,6 +294,7 @@ function SkinNotes:page_moved()
 
           playSound('ding', 0.5)
           setProperty('displaySliderIcon.y', self.sliderTrackIntervals[self.sliderPageIndex])
+          callOnScripts('skinSearchInput_callResetSearch')
      end
 
      if self.sliderPageIndex == self.totalSkinLimit then
@@ -334,23 +337,23 @@ function SkinNotes:search()
           end
      end
 
-     local function filter_search(list, input, element)
+     local function filter_search(list, input, element, filter)
           local search_result = {}
           for i = 1, #list, 1 do
-               local startPos = list[i]:upper():find(input:upper())
+               local startPos = list[i]:gsub(filter or '', ''):upper():find(input:upper())
                local wordPos  = startPos == nil and -1 or startPos
                if wordPos > -1 and #search_result < 16 then
-                    search_result[i] = list[i]
+                    search_result[i] = list[i]:gsub(filter or '', '')
                end
           end
 
           local search_resultFilter = {}
           for ids, skins in pairs(search_result) do
                if skins ~= nil and #search_resultFilter < 16 then
-                    if element == 'ids' then
-                         search_resultFilter[#search_resultFilter + 1] = ids
-                    elseif element == 'skins' then
+                    if element == 'skins' then
                          search_resultFilter[#search_resultFilter + 1] = skins
+                    elseif element == 'ids' then
+                         search_resultFilter[#search_resultFilter + 1] = ids
                     end
                end
           end 
@@ -376,8 +379,8 @@ function SkinNotes:search()
      end
 
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent')
-     local filterSearchByID   = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'ids')
-     local filterSearchBySkin = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'skins')
+     local filterSearchByID     = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'ids', '')
+     local filterSearchBySkin   = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'skins', 'NOTE_assets')
 
      local currenMinPageIndex = (self.sliderPageIndex - 1) * 16 == 0 and 1 or (self.sliderPageIndex - 1) * 16
      local currenMaxPageIndex =  self.sliderPageIndex      * 16
@@ -386,7 +389,8 @@ function SkinNotes:search()
      local searchFilterSkinsTyped   = table.singularity(table.merge(filterSearchByID, searchFilterSkinsDefault))
      local searchFilterSkins        = #filterSearchByID == 0 and table.sub(searchFilterSkinsDefault, 1, 16) or table.sub(searchFilterSkinsTyped, 1, 16)
      for ids, displays in pairs(searchFilterSkins) do
-          if #filterSearchByID == 0 then return end -- !DO NO DELETE
+          if #filterSearchByID    == 0 then return end -- !DO NOT DELETE
+          if #filterSearchBySkin < ids then return end -- !DO NOT DELETE
 
           local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = displays}
           local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
@@ -405,7 +409,7 @@ function SkinNotes:search()
           setProperty(displaySkinIconButton..'.antialiasing', false)
           addLuaSprite(displaySkinIconButton)
 
-          local displaySkinImageTemplate = {path = self.statePaths, skin = filterSearchBySkin[ids]}
+          local displaySkinImageTemplate = {path = self.statePaths, skin = 'NOTE_assets'..filterSearchBySkin[ids]}
           local displaySkinImage = ('${path}/${skin}'):interpol(displaySkinImageTemplate)
 
           local displaySkinImagePositionX = displaySkinPositionX + 16.5
@@ -421,14 +425,14 @@ function SkinNotes:search()
           setObjectCamera(displaySkinIconSkin, 'camHUD')
           addLuaSprite(displaySkinIconSkin)
 
-          if ids > #filterSearchByID then
+          if ids > #filterSearchBySkin then
                if luaSpriteExists(displaySkinIconButton) == true and luaSpriteExists(displaySkinIconSkin) == true then
                     removeLuaSprite(displaySkinIconButton, true)
                     removeLuaSprite(displaySkinIconSkin, true)
                end
           end
 
-          if #filterSearchByID == 0 then
+          if #filterSearchBySkin == 0 then
                if luaSpriteExists(displaySkinIconButton) == false and luaSpriteExists(displaySkinIconSkin) == false then
                     for _ in pairs(searchFilterSkins) do -- lmao
                          local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = displays}
@@ -451,6 +455,13 @@ function SkinNotes:selection_byclick()
      local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.sliderPageIndex]
      local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.sliderPageIndex]
      local skinObjectsPerSelected = self.totalSkinObjectSelected[self.sliderPageIndex]
+
+     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
+     if #skinSearchInput_textContent > 0 then
+          return
+     end
+     
+
      for pageSkins = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
           local curPage = pageSkins - (16 * (self.sliderPageIndex - 1))
 
@@ -531,6 +542,12 @@ function SkinNotes:selection_byhover()
      local skinObjectsPerIDs      = self.totalSkinObjectID[self.sliderPageIndex]
      local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.sliderPageIndex]
      local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.sliderPageIndex]
+
+     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
+     if #skinSearchInput_textContent > 0 then
+          return
+     end
+
      for pageSkins = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
           local curPage = pageSkins - (16 * (self.sliderPageIndex - 1))
 

@@ -83,6 +83,14 @@ function skinSearchInput_callInvalidSearch() {
      FlxG.sound.play(Paths.sound('cancel'), 0.5);
 }
 
+function skinSearchInput_callResetSearch() {
+     skinSearchInput.caretIndex = 1;
+     skinSearchInput.set_text('');
+
+     setVar('skinSearchInput_textContent', '');
+     skinSearchInput_placeholder.text = 'Search Skins...';
+}
+
 var skinSearchInputFocusToggle = false;
 var skinSearchInputFocus       = false;
 function skinSearchInput_onFocus() {
