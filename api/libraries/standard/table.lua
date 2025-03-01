@@ -122,19 +122,22 @@ end
 
 --- Removes any same element within a table
 ---@param tab table The table to remove any same elements within
+---@param reverse boolean Only gets the same elements within
 ---@return table
-function table.singularity(tab)
-     local dummy = table.new(#tab, 0)
+function table.singularity(tab, reverse)
+     local diff = table.new(#tab, 0)
+     local same = table.new(#tab, 0)
      for index = 1, #tab do
-          for subindex = 1, #dummy do 
-               if tab[index] == dummy[subindex] then
+          for subindex = 1, #same do 
+               if tab[index] == same[subindex] then
+                    diff[#diff + 1] = same[subindex]
                     goto skip_duplicate
                end
           end
-          dummy[index] = tab[index]
+          same[index] = tab[index]
           ::skip_duplicate::
      end
-     return dummy
+     return reverse == true and diff or same
 end
 
 return table

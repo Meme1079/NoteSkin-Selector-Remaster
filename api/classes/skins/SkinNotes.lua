@@ -379,14 +379,14 @@ function SkinNotes:search()
      end
 
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent')
-     local filterSearchByID     = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'ids', '')
+     local filterSearchByID     = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'ids', 'NOTE_assets')
      local filterSearchBySkin   = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'skins', 'NOTE_assets')
 
      local currenMinPageIndex = (self.sliderPageIndex - 1) * 16 == 0 and 1 or (self.sliderPageIndex - 1) * 16
      local currenMaxPageIndex =  self.sliderPageIndex      * 16
 
      local searchFilterSkinsDefault = table.tally(currenMinPageIndex, currenMaxPageIndex)
-     local searchFilterSkinsTyped   = table.singularity(table.merge(filterSearchByID, searchFilterSkinsDefault))
+     local searchFilterSkinsTyped   = table.singularity(table.merge(filterSearchByID, searchFilterSkinsDefault), false)
      local searchFilterSkins        = #filterSearchByID == 0 and table.sub(searchFilterSkinsDefault, 1, 16) or table.sub(searchFilterSkinsTyped, 1, 16)
      for ids, displays in pairs(searchFilterSkins) do
           if #filterSearchByID    == 0 then return end -- !DO NOT DELETE
@@ -449,6 +449,70 @@ function SkinNotes:search()
 end
 
 --- Selects the selected skin, focuses on the click functionality.
+--- Only applies when searching for skins
+---@return nil
+function SkinNotes:search_byclick()
+     local skinObjectsPerIDs      = self.totalSkinObjectID[self.sliderPageIndex]
+     local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.sliderPageIndex]
+     local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.sliderPageIndex]
+     local skinObjectsPerSelected = self.totalSkinObjectSelected[self.sliderPageIndex]
+
+     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
+     if #skinSearchInput_textContent < 0 then
+          return
+     end
+
+     local justReleased = callMethodFromClass('flixel.FlxG', 'keys.firstJustReleased', {''})
+     if not (justReleased ~= -1 and justReleased ~= nil and getVar('skinSearchInputFocus') == true) then
+          return
+     end
+
+     local function filter_search(list, input, element, filter)
+          local search_result = {}
+          for i = 1, #list, 1 do
+               local startPos = list[i]:gsub(filter or '', ''):upper():find(input:upper())
+               local wordPos  = startPos == nil and -1 or startPos
+               if wordPos > -1 and #search_result < 16 then
+                    search_result[i] = list[i]:gsub(filter or '', '')
+               end
+          end
+
+          local search_resultFilter = {}
+          for ids, skins in pairs(search_result) do
+               if skins ~= nil and #search_resultFilter < 16 then
+                    if element == 'skins' then
+                         search_resultFilter[#search_resultFilter + 1] = skins
+                    elseif element == 'ids' then
+                         search_resultFilter[#search_resultFilter + 1] = ids
+                    end
+               end
+          end 
+          return search_resultFilter
+     end
+
+     local skinSearchInput_textContent = getVar('skinSearchInput_textContent')
+     local filterSearchByID     = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'ids', 'NOTE_assets')
+     local filterSearchBySkin   = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'skins', 'NOTE_assets')
+     for i1 = 1, #self.totalSkinObjectID do
+          local a = table.singularity(table.merge(self.totalSkinObjectID[i1], filterSearchByID), true)
+          if table.maxn(a) == 0 then
+               return
+          end
+
+
+          for pageSkins = 1, #a do
+               local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = a[pageSkins]}
+               local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+
+               debugPrint(displaySkinIconButton)
+          end
+     end
+end
+
+function SkinNotes:search_byhover()
+end
+
+--- Selects the selected skin, focuses on the click functionality.
 ---@return nil
 function SkinNotes:selection_byclick()
      local skinObjectsPerIDs      = self.totalSkinObjectID[self.sliderPageIndex]
@@ -460,7 +524,6 @@ function SkinNotes:selection_byclick()
      if #skinSearchInput_textContent > 0 then
           return
      end
-     
 
      for pageSkins = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
           local curPage = pageSkins - (16 * (self.sliderPageIndex - 1))
@@ -571,6 +634,12 @@ function SkinNotes:selection_byhover()
                playAnim(displaySkinIconButton, 'static', true)
           end
      end
+end
+
+---@return nil
+function SkinNotes:selection_cursor()
+     local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.sliderPageIndex]
+     local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.sliderPageIndex]
 
      for i = 1, math.max(#skinObjectsPerClicked, #skinObjectsPerHovered) do
           if skinObjectsPerClicked[i] == true then

@@ -8,8 +8,8 @@
      - Added a functional slider for switching skin pages.
           - It automatically snaps to its nearest page index.
           - It also automatically disables itself if there's only currently `1` page index.
-     - Added a functional search bar for finding & selecting skins.
-          - Automatically selects the searched skin.
+     - Added a functional search bar for finding certain skins.
+          - Automatically filters to the closest skin it can find.
      - Increase the skin grid selections from `3x4` to `4x4`, cuz it's better.
 - Organized file locations.
      - Added an `api` folder to group: `classes`, `libraries`, and `modules` for convenient sake.

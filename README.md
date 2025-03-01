@@ -31,7 +31,7 @@ NoteSkin Selector Remastered © 2022 by Meme0179 is licensed under CC BY-NC-ND 4
 
 ***
 
-# Current Update: 2.0.0 Version
+## Version 2.0.0
 ### Additions/Changes
 - Overhual the main GUI with a new redesign, cuz it looks cool. _(inspired by OreUI from Minecraft)_
 - Overhual the main source-code of the mod for organization and an ability to soft-code new skin states.
@@ -41,11 +41,14 @@ NoteSkin Selector Remastered © 2022 by Meme0179 is licensed under CC BY-NC-ND 4
      - Added a functional slider for switching skin pages.
           - It automatically snaps to its nearest page index.
           - It also automatically disables itself if there's only currently `1` page index.
-     - Added a functional search bar for finding & selecting skins.
-          - Automatically selects the searched skin.
+     - Added a functional search bar for finding certain skins.
+          - Automatically filters to the closest skin it can find.
      - Increase the skin grid selections from `3x4` to `4x4`, cuz it's better.
 - Organized file locations.
      - Added an `api` folder to group: `classes`, `libraries`, and `modules` for convenient sake.
+     
+> [!NOTE]
+> The Noteskin Debug State is temporarily removed for reasons. Because I wanna rush it out becuase it has been almost a year without an update. And making an editor is the most hardest part, so cut me some slack here. This will be re-added back in the version 3.0.0.
 
 ***
 
@@ -74,4 +77,4 @@ NoteSkin Selector Remastered © 2022 by Meme0179 is licensed under CC BY-NC-ND 4
 - [Lua Pretty JSON](https://github.com/xiedacon/lua-pretty-json) - xiedaco
 
 ## Other
-- Cursor - [Sonic Legacy]((https://gamebanana.com/mods/496733))
+- Cursor - [Sonic Legacy](https://gamebanana.com/mods/496733)
