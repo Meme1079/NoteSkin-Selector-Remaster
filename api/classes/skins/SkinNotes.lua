@@ -9,6 +9,8 @@ local funkinlua = require 'mods.NoteSkin Selector Remastered.api.modules.funkinl
 local states    = require 'mods.NoteSkin Selector Remastered.api.modules.states'
 local global    = require 'mods.NoteSkin Selector Remastered.api.modules.global'
 
+require 'table.clear'
+
 local switch         = global.switch
 local createTimer    = funkinlua.createTimer
 local hoverObject    = funkinlua.hoverObject
@@ -448,6 +450,8 @@ function SkinNotes:search()
      end
 end
 
+local eijov = {}
+
 --- Selects the selected skin, focuses on the click functionality.
 --- Only applies when searching for skins
 ---@return nil
@@ -458,14 +462,14 @@ function SkinNotes:search_byclick()
      local skinObjectsPerSelected = self.totalSkinObjectSelected[self.sliderPageIndex]
 
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
-     if #skinSearchInput_textContent < 0 then
+     if #skinSearchInput_textContent <= 0 then
           return
      end
 
-     local justReleased = callMethodFromClass('flixel.FlxG', 'keys.firstJustReleased', {''})
+     --[[ local justReleased = callMethodFromClass('flixel.FlxG', 'keys.firstJustReleased', {''})
      if not (justReleased ~= -1 and justReleased ~= nil and getVar('skinSearchInputFocus') == true) then
           return
-     end
+     end ]]
 
      local function filter_search(list, input, element, filter)
           local search_result = {}
@@ -493,20 +497,52 @@ function SkinNotes:search_byclick()
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent')
      local filterSearchByID     = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'ids', 'NOTE_assets')
      local filterSearchBySkin   = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'skins', 'NOTE_assets')
+
+     table.clear(eijov)
      for i1 = 1, #self.totalSkinObjectID do
           local a = table.singularity(table.merge(self.totalSkinObjectID[i1], filterSearchByID), true)
-          if table.maxn(a) == 0 then
-               return
-          end
-
 
           for pageSkins = 1, #a do
-               local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = a[pageSkins]}
-               local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+               local efe = table.find(self.totalSkinObjectID[i1], tonumber(a[pageSkins]))
 
-               debugPrint(displaySkinIconButton)
+               eijov[#eijov + 1] = {index = a[pageSkins], page = i1}
           end
      end
+
+     for k,v in pairs(eijov) do
+          local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = v.index}
+          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+
+          local gh = table.find(self.totalSkinObjectID[v.page], tonumber(v.index))
+
+          --debugPrint({curPage = self.totalSkinObjectClicked[v.page][gh], pageSkins = v.index})
+
+          local byClick   = clickObject(displaySkinIconButton, 'camHUD')
+          local byRelease = mouseReleased('left') and self.selectSkinPreSelectedIndex == v.index
+
+          if byClick == true and self.totalSkinObjectClicked[v.page][gh] == false then
+               playAnim(displaySkinIconButton, 'pressed', true)
+
+               self.selectSkinPreSelectedIndex = v.index
+               self.selectSkinHasBeenClicked   = true
+
+               self.totalSkinObjectClicked[v.page][gh] = true
+          end
+          if byRelease == true and self.totalSkinObjectClicked[v.page][gh] == true then
+               playAnim(displaySkinIconButton, 'selected', true)
+
+               self.selectSkinInitSelectedIndex = self.selectSkinCurSelectedIndex
+               self.selectSkinCurSelectedIndex  = v.index
+               self.selectSkinPagePositionIndex = self.sliderPageIndex
+               self.selectSkinHasBeenClicked    = false
+               
+               self:preview()
+               self.totalSkinObjectSelected[v.page][gh] = true
+               self.totalSkinObjectClicked[v.page][gh]  = false
+          end
+     end
+
+
 end
 
 function SkinNotes:search_byhover()
@@ -533,6 +569,7 @@ function SkinNotes:selection_byclick()
           local function displaySkinSelect()
                local byClick   = clickObject(displaySkinIconButton, 'camHUD')
                local byRelease = mouseReleased('left') and self.selectSkinPreSelectedIndex == pageSkins
+
                if byClick == true and skinObjectsPerClicked[curPage] == false then
                     playAnim(displaySkinIconButton, 'pressed', true)
 
