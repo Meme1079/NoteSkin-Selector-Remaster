@@ -704,6 +704,37 @@ function SkinNotes:selection_byhover()
 
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
      if #skinSearchInput_textContent > 0 then
+          for searchIndex = 1, math.max(#self.searchSkinObjectIndex, #self.searchSkinObjectPage) do
+               local searchSkinIndex = tonumber( self.searchSkinObjectIndex[searchIndex] )
+               local searchSkinPage  = tonumber( self.searchSkinObjectPage[searchIndex]  )
+
+               local curPage = table.find(self.totalSkinObjectID[searchSkinPage], searchSkinIndex)
+
+               local skinObjectsPerIDs      = self.totalSkinObjectID[searchSkinPage]
+               local skinObjectsPerHovered  = self.totalSkinObjectHovered[searchSkinPage]
+               local skinObjectsPerClicked  = self.totalSkinObjectClicked[searchSkinPage]
+               local skinObjectsPerSelected = self.totalSkinObjectSelected[searchSkinPage]
+
+               local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = searchSkinIndex}
+               local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+               if hoverObject(displaySkinIconButton, 'camHUD') == true then
+                    skinObjectsPerHovered[curPage] = true
+               end
+               if hoverObject(displaySkinIconButton, 'camHUD') == false then
+                    skinObjectsPerHovered[curPage] = false
+               end
+     
+               local nonCurrentPreSelectedSkin = self.selectSkinPreSelectedIndex ~= searchSkinIndex
+               local nonCurrentCurSelectedSkin = self.selectSkinCurSelectedIndex ~= searchSkinIndex
+               if skinObjectsPerHovered[curPage] == true and nonCurrentPreSelectedSkin and nonCurrentCurSelectedSkin then
+                    if luaSpriteExists(displaySkinIconButton) == false then return end
+                    playAnim(displaySkinIconButton, 'hover', true)
+               end
+               if skinObjectsPerHovered[curPage] == false and nonCurrentPreSelectedSkin and nonCurrentCurSelectedSkin then
+                    if luaSpriteExists(displaySkinIconButton) == false then return end
+                    playAnim(displaySkinIconButton, 'static', true)
+               end
+          end
           return
      end
 
