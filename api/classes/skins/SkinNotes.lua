@@ -768,12 +768,40 @@ function SkinNotes:selection_cursor()
      local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.sliderPageIndex]
      local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.sliderPageIndex]
 
-     for i = 1, math.max(#skinObjectsPerClicked, #skinObjectsPerHovered) do
-          if skinObjectsPerClicked[i] == true then
+     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
+     if #skinSearchInput_textContent > 0 then
+          for searchIndex = 1, math.max(#self.searchSkinObjectIndex, #self.searchSkinObjectPage) do
+               local searchSkinIndex = tonumber( self.searchSkinObjectIndex[searchIndex] )
+               local searchSkinPage  = tonumber( self.searchSkinObjectPage[searchIndex]  )
+
+               local curPage = table.find(self.totalSkinObjectID[searchSkinPage], searchSkinIndex)
+
+               local skinObjectsPerHovered  = self.totalSkinObjectHovered[searchSkinPage]
+               local skinObjectsPerClicked  = self.totalSkinObjectClicked[searchSkinPage]
+
+               if skinObjectsPerClicked[curPage] == true then
+                    playAnim('mouseTexture', 'handClick', true)
+                    break
+               end
+               if skinObjectsPerHovered[curPage] == true then
+                    playAnim('mouseTexture', 'hand', true)
+                    break
+               end
+               if mouseClicked('left') or mousePressed('left') then 
+                    playAnim('mouseTexture', 'idleClick', true)
+               else
+                    playAnim('mouseTexture', 'idle', true)
+               end
+          end
+          return
+     end
+
+     for pageSkins = 1, math.max(#skinObjectsPerClicked, #skinObjectsPerHovered) do
+          if skinObjectsPerClicked[pageSkins] == true then
                playAnim('mouseTexture', 'handClick', true)
                break
           end
-          if skinObjectsPerHovered[i] == true then
+          if skinObjectsPerHovered[pageSkins] == true then
                playAnim('mouseTexture', 'hand', true)
                break
           end
