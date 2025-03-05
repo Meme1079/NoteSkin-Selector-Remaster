@@ -539,6 +539,8 @@ function SkinNotes:selection_byclick()
                local searchSkinIndex = tonumber( self.searchSkinObjectIndex[searchIndex] )
                local searchSkinPage  = tonumber( self.searchSkinObjectPage[searchIndex]  )
 
+               local curPage = table.find(self.totalSkinObjectID[searchSkinPage], searchSkinIndex)
+
                local skinObjectsPerIDs      = self.totalSkinObjectID[searchSkinPage]
                local skinObjectsPerHovered  = self.totalSkinObjectHovered[searchSkinPage]
                local skinObjectsPerClicked  = self.totalSkinObjectClicked[searchSkinPage]
@@ -546,74 +548,75 @@ function SkinNotes:selection_byclick()
 
                local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = searchSkinIndex}
                local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+               local displaySkinIconSkin     = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplate)
                local function displaySkinSelect()
                     local byClick   = clickObject(displaySkinIconButton, 'camHUD')
                     local byRelease = mouseReleased('left') and self.selectSkinPreSelectedIndex == searchSkinIndex
-
-                    if byClick == true and skinObjectsPerClicked[searchSkinIndex] == false then
+     
+                    if byClick == true and skinObjectsPerClicked[curPage] == false then
                          playAnim(displaySkinIconButton, 'pressed', true)
      
-                         self.selectSkinPreSelectedIndex = searchSkinIndex
+                         self.selectSkinPreSelectedIndex = skinObjectsPerIDs[curPage]
                          self.selectSkinHasBeenClicked   = true
      
-                         skinObjectsPerClicked[searchSkinIndex] = true
+                         skinObjectsPerClicked[curPage] = true
                     end
-                    if byRelease == true and skinObjectsPerClicked[searchSkinIndex] == true then
+     
+                    if byRelease == true and skinObjectsPerClicked[curPage] == true then
                          playAnim(displaySkinIconButton, 'selected', true)
           
                          self.selectSkinInitSelectedIndex = self.selectSkinCurSelectedIndex
-                         self.selectSkinCurSelectedIndex  = searchSkinIndex
+                         self.selectSkinCurSelectedIndex  = skinObjectsPerIDs[curPage]
                          self.selectSkinPagePositionIndex = self.sliderPageIndex
                          self.selectSkinHasBeenClicked    = false
                          
-                         --self:preview()
-                         skinObjectsPerSelected[searchSkinIndex] = true
-                         skinObjectsPerClicked[searchSkinIndex]  = false
+                         self:preview()
+                         skinObjectsPerSelected[curPage] = true
+                         skinObjectsPerClicked[curPage]  = false
                     end
                end
                local function displaySkinDeselect()
                     local byClick   = clickObject(displaySkinIconButton, 'camHUD')
                     local byRelease = mouseReleased('left') and self.selectSkinPreSelectedIndex == searchSkinIndex
-                    if byClick == true and skinObjectsPerClicked[searchSkinIndex] == false then
+                    if byClick == true and skinObjectsPerClicked[curPage] == false then
                          playAnim(displaySkinIconButton, 'pressed', true)
      
-                         self.selectSkinPreSelectedIndex = searchSkinIndex
+                         self.selectSkinPreSelectedIndex = skinObjectsPerIDs[curPage]
                          self.selectSkinHasBeenClicked   = true
      
-                         skinObjectsPerClicked[searchSkinIndex] = true
+                         skinObjectsPerClicked[curPage] = true
                     end
      
-                    if byRelease == true and skinObjectsPerClicked[searchSkinIndex] == true then
+                    if byRelease == true and skinObjectsPerClicked[curPage] == true then
                          playAnim(displaySkinIconButton, 'static', true)
      
                          self.selectSkinCurSelectedIndex = 0
                          self.selectSkinPreSelectedIndex = 0
                          self.selectSkinHasBeenClicked   = false
      
-                         --self:preview()
-                         skinObjectsPerSelected[searchSkinIndex] = false
-                         skinObjectsPerClicked[searchSkinIndex]  = false
-                         skinObjectsPerHovered[searchSkinIndex]  = false
+                         self:preview()
+                         skinObjectsPerSelected[curPage] = false
+                         skinObjectsPerClicked[curPage]  = false
+                         skinObjectsPerHovered[curPage]  = false
                     end
                end
-
-               if skinObjectsPerSelected[searchSkinIndex] == false then
+     
+               if skinObjectsPerSelected[curPage] == false then
                     displaySkinSelect()
                end
-               if skinObjectsPerSelected[searchSkinIndex] == true then
+               if skinObjectsPerSelected[curPage] == true then
                     displaySkinDeselect()
                end
-     
+
                if searchSkinIndex == self.selectSkinInitSelectedIndex then
                     if luaSpriteExists(displaySkinIconButton) == true and luaSpriteExists(displaySkinIconSkin) == true then
                          playAnim(displaySkinIconButton, 'static', true)
                     end
      
                     self.selectSkinInitSelectedIndex = 0
-                    skinObjectsPerSelected[searchSkinIndex]  = false
+                    skinObjectsPerSelected[curPage]  = false
                end
           end
-          --debugPrint('\n')
           return
      end
 
@@ -754,12 +757,6 @@ end
 --- Syncs the saved selection of the certain skin
 ---@return nil
 function SkinNotes:selection_sync()
-     local skinObjectsPerIDs      = self.totalSkinObjectID[self.sliderPageIndex]
-     local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.sliderPageIndex]
-     local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.sliderPageIndex]
-     local skinObjectsPerSelected = self.totalSkinObjectSelected[self.sliderPageIndex]
-     local skinObjectsPerName     = self.totalSkinObjectNames[self.sliderPageIndex]
-
      if self.selectSkinPreSelectedIndex ~= 0 and self.selectSkinPagePositionIndex == self.sliderPageIndex then
           local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = self.selectSkinPreSelectedIndex}
           local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
