@@ -454,6 +454,11 @@ function SkinNotes:selection_cursor()
      local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.sliderPageIndex]
      local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.sliderPageIndex]
 
+     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
+     if #skinSearchInput_textContent > 0 then
+          return
+     end
+
      for pageSkins = 1, math.max(#skinObjectsPerClicked, #skinObjectsPerHovered) do
           if skinObjectsPerClicked[pageSkins] == true then
                playAnim('mouseTexture', 'handClick', true)
@@ -726,7 +731,7 @@ function SkinNotes:search_byclick()
                     self.selectSkinPagePositionIndex = self.sliderPageIndex
                     self.selectSkinHasBeenClicked    = false
                     
-                    self:preview()
+                    self:search_preview()
                     skinObjectsPerSelected[curPage] = true
                     skinObjectsPerClicked[curPage]  = false
                end
@@ -750,7 +755,7 @@ function SkinNotes:search_byclick()
                     self.selectSkinPreSelectedIndex = 0
                     self.selectSkinHasBeenClicked   = false
 
-                    self:preview()
+                    self:search_preview()
                     skinObjectsPerSelected[curPage] = false
                     skinObjectsPerClicked[curPage]  = false
                     skinObjectsPerHovered[curPage]  = false
@@ -851,7 +856,58 @@ function SkinNotes:search_cursor()
      end
 end
 
+function SkinNotes:search_preview()
+     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
+     if #skinSearchInput_textContent == 0 then
+          return
+     end
+
+     for searchIndex = 1, math.max(#self.searchSkinObjectIndex, #self.searchSkinObjectPage) do
+          local searchSkinIndex = tonumber( self.searchSkinObjectIndex[searchIndex] )
+          local searchSkinPage  = tonumber( self.searchSkinObjectPage[searchIndex]  )
+
+          local curPage = self.selectSkinCurSelectedIndex
+          local e = table.find(self.totalSkinObjectID[searchSkinPage], searchSkinIndex)
+          local getCurrentPreviewSkinNames = function()
+               local skinNames   = self.totalSkinObjectNames[searchSkinPage]
+               return curPage > 0 and skinNames[e]:gsub('%s+', '_'):lower() or self.totalSkinObjectNames[1][1]
+          end
+          local getCurrentPreviewSkinObjects = function()
+               local skinObjects = self.totalSkinObjects[searchSkinPage]
+               return curPage > 0 and skinObjects[e] or self.totalSkinObjects[1][1]
+          end
+
+          local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = searchSkinIndex}
+          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+          if releasedObject(displaySkinIconButton, 'camHUD') then
+               local curSkinName = getCurrentPreviewSkinNames()
+               for strums = 1, 4 do
+                    local previewSkinTemplate = {state = (self.stateClass):upperAtStart(), groupID = strums}
+                    local previewSkinGroup    = ('previewSkinGroup${state}-${groupID}'):interpol(previewSkinTemplate)
+          
+                    local previewSkinImagePath = self.statePaths..'/'..getCurrentPreviewSkinObjects()
+                    local previewSkinPositionX = 790 + (105*(strums-1))
+                    local previewSkinPositionY = 135
+                    makeAnimatedLuaSprite(previewSkinGroup, previewSkinImagePath, previewSkinPositionX, previewSkinPositionY)
+                    scaleObject(previewSkinGroup, 0.65, 0.65)
+                    addAnimationByPrefix(previewSkinGroup, 'left', 'arrowLEFT', 24, false)
+                    addAnimationByPrefix(previewSkinGroup, 'down', 'arrowDOWN', 24, false)
+                    addAnimationByPrefix(previewSkinGroup, 'up', 'arrowUP', 24, false)
+                    addAnimationByPrefix(previewSkinGroup, 'right', 'arrowRIGHT', 24, false)
+                    playAnim(previewSkinGroup, ({'left', 'down', 'up', 'right'})[strums])
+                    setObjectCamera(previewSkinGroup, 'camHUD')
+                    addLuaSprite(previewSkinGroup, true)
+               end
+          end
+     end
+end
+
 function SkinNotes:preview()
+     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
+     if #skinSearchInput_textContent > 0 then
+          return
+     end
+
      local curPage = self.selectSkinCurSelectedIndex - (16 * (self.sliderPageIndex - 1))
      local getCurrentPreviewSkinNames = function()
           local skinNames   = self.totalSkinObjectNames[self.sliderPageIndex]
@@ -887,7 +943,7 @@ function SkinNotes:switch()
 end
 
 function SkinNotes:Hi()
-     --debugPrint(self.selectSkinCurSelectedIndex)
+     debugPrint(self.selectSkinCurSelectedIndex)
 
      
 end
