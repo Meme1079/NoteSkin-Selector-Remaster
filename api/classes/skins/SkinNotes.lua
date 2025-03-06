@@ -479,7 +479,7 @@ end
 --- Syncs the saved selection of the certain skin.
 ---@return nil
 function SkinNotes:selection_sync()
-     if self.selectSkinPreSelectedIndex ~= 0 and self.selectSkinPagePositionIndex == self.sliderPageIndex then
+     if self.selectSkinPreSelectedIndex ~= 0 then
           local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = self.selectSkinPreSelectedIndex}
           local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
 
@@ -622,6 +622,8 @@ function SkinNotes:search()
                     if ids == 16 then return end
                end
           end
+
+          self:selection_sync()
      end
 end
 
@@ -942,11 +944,6 @@ function SkinNotes:switch()
 
 end
 
-function SkinNotes:Hi()
-     debugPrint(self.selectSkinCurSelectedIndex)
-
-     
-end
 
 --- Loads the save data from the current class state.
 ---@return nil
