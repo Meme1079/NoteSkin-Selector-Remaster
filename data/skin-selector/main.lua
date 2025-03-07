@@ -1,4 +1,4 @@
---[=[ luaDebugMode = true
+luaDebugMode = true
 
 local SkinNotes = require 'mods.NoteSkin Selector Remastered.api.classes.skins.SkinNotes'
 
@@ -195,7 +195,7 @@ end
 for dividerIndex = 2, #sliderTrackDivider-2 do
      displaySliderMarks('divider', '847500', {12 * 1.5, 12 / 4}, sliderTrackDivider, dividerIndex)
 end
-]=]
+
 local allowCountdown = false;
 function onStartCountdown()
      local camUI = {'iconP1', 'iconP2', 'healthBar', 'scoreTxt', 'botplayTxt'}

@@ -2,9 +2,9 @@
 NoteSkin Selector Remastered; new layout, new code, and more customizability.
 
 ## About
-This is a completely remastered one of my old mods "NoteSkin Selector", created in 2022. This mod heavily improves and enhances everything from the old mod. It includes a new friendlier GUI layout for selecting skins more easily, a better optimized and organized code. And basically, a more improved version of the current built-in noteskin system in the engine, because that one sucks ass ngl.
+This is a completely remastered one of my old mods "NoteSkin Selector", created in 2022. This mod heavily improves and enhances everything from the old mod. It includes a new friendlier GUI layout for selecting skins more easily, a better optimized and organized code. Basically, a more improved version of the current built-in noteskin system in the engine, because that one sucks ass ngl.
 
-NoteSkin Selector Remastered © 2022 by Meme0179 is licensed under CC BY-NC-ND 4.0
+NoteSkin Selector Remastered © 2024 by Meme0179 is licensed under CC BY-NC-ND 4.0
 
 ## Installation Requirements
 1. Computer
@@ -13,9 +13,7 @@ NoteSkin Selector Remastered © 2022 by Meme0179 is licensed under CC BY-NC-ND 4
           - Never ask a FUCKING port of this, especially Android I ain't doin' that shit.
 2. Psych Engine & P-Slice
      - Some version of Psych Engine are only supported when playing this mod:
-          - 1.0.0 (Pre-Release)
-          - 1.0.0
-          - 1.0.1
+          - 1.0.3
           - 0.7.3
 
 ## Features
