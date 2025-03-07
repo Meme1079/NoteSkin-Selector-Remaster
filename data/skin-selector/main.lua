@@ -1,4 +1,4 @@
-luaDebugMode = true
+--[=[ luaDebugMode = true
 
 local SkinNotes = require 'mods.NoteSkin Selector Remastered.api.classes.skins.SkinNotes'
 
@@ -106,14 +106,14 @@ setProperty('genInfoVersion.antialiasing', false)
 addLuaText('genInfoVersion')
 
 for keyID = 1, 4 do
-     local previewSkinPositionX = 830 + (105*(keyID-1)) - 8
+     local previewSkinPositionX = 830 + (105*(keyID-1))
      local previewSkinPositionY = 250
 
      local genInfoKeybinds = 'genInfoKeybinds-'..keyID
      makeLuaText(genInfoKeybinds, tostring(getKeyBinds(keyID)), nil, previewSkinPositionX, previewSkinPositionY)
-     setTextFont(genInfoKeybinds, 'vipnagorgialla.otf')
-     setTextSize(genInfoKeybinds, 40)
-     setTextBorder(genInfoKeybinds, 3, '000000')
+     setTextFont(genInfoKeybinds, 'FridayNight.ttf')
+     setTextSize(genInfoKeybinds, 35)
+     setTextBorder(genInfoKeybinds, 4, '000000')
      setObjectCamera(genInfoKeybinds, 'camHUD')
      addLuaText(genInfoKeybinds)
 end
@@ -151,6 +151,8 @@ function onCreatePost()
      --[[ local width,height = 800, 450
      callMethodFromClass('flixel.FlxG', 'resizeWindow', {width,height})
      callMethodFromClass('flixel.FlxG', 'resizeGame', {width,height}) ]]
+
+     Notes:preload()
 end
 
 function onUpdate(elapsed)
@@ -169,15 +171,8 @@ end
 function onUpdatePost(elapsed)
      Notes:page_slider()
      Notes:page_moved()
-     Notes:selection_byclick()
-     Notes:selection_byhover()
-     Notes:selection_cursor()
+     Notes:selection()
      Notes:search()
-     Notes:search_skins()
-     Notes:search_byclick()
-     Notes:search_byhover()
-     Notes:search_cursor()
-     Notes:search_preview()
 end
 
 local sliderTrackPosition = states.getPageSkinSliderPositions('notes').intervals
@@ -200,7 +195,7 @@ end
 for dividerIndex = 2, #sliderTrackDivider-2 do
      displaySliderMarks('divider', '847500', {12 * 1.5, 12 / 4}, sliderTrackDivider, dividerIndex)
 end
-
+]=]
 local allowCountdown = false;
 function onStartCountdown()
      local camUI = {'iconP1', 'iconP2', 'healthBar', 'scoreTxt', 'botplayTxt'}

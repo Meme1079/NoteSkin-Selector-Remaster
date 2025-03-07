@@ -13,7 +13,7 @@ LuaUtils.getTargetInstance().remove(selectorGridBG);
 LuaUtils.getTargetInstance().insert(1, selectorGridBG);
 add(selectorGridBG, false);
 
-var selectorSideCover:FlxBackdrop = new FlxBackdrop(null, 0x10, 0);
+/* var selectorSideCover:FlxBackdrop = new FlxBackdrop(null, 0x10, 0);
 selectorSideCover.loadGraphic(Paths.image('ui/sidecover'));
 selectorSideCover.x       = 80;
 selectorSideCover.alpha   = 0.5;
@@ -23,4 +23,4 @@ selectorSideCover.velocity.y = 1000 / 20;
 
 LuaUtils.getTargetInstance().remove(selectorSideCover);
 LuaUtils.getTargetInstance().insert(2, selectorSideCover);
-add(selectorSideCover, false);
+add(selectorSideCover, false); */

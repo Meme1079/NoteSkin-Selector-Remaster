@@ -323,6 +323,14 @@ function SkinNotes:page_text()
      setTextString('genInfoStatePage', (' Page ${cur} / ${max}'):interpol({cur = currentPage, max = maximumPage}))
 end
 
+--- Selection functionality; group similair functions of 'selection'.
+---@return nil
+function SkinNotes:selection()
+     self:selection_byclick()
+     self:selection_byhover()
+     self:selection_cursor()
+end
+
 --- Selects the selected skin, focuses on the click functionality.
 ---@return nil
 function SkinNotes:selection_byclick()
@@ -489,9 +497,20 @@ function SkinNotes:selection_sync()
      end
 end
 
---- Searches the closest skin name it can find.
+--- Search functionality; group similair functions of 'search'.
 ---@return nil
 function SkinNotes:search()
+     self:search_create()
+     self:search_skins()
+     self:search_byclick()
+     self:search_byhover()
+     self:search_cursor()
+     self:search_preview()
+end
+
+--- Creates a chunk to display the selected skins when searching.
+---@return nil
+function SkinNotes:search_create()
      local justReleased = callMethodFromClass('flixel.FlxG', 'keys.firstJustReleased', {''})
      if not (justReleased ~= -1 and justReleased ~= nil and getVar('skinSearchInputFocus') == true) then
           return
@@ -842,14 +861,17 @@ function SkinNotes:search_cursor()
           local skinObjectsPerHovered  = self.totalSkinObjectHovered[searchSkinPage]
           local skinObjectsPerClicked  = self.totalSkinObjectClicked[searchSkinPage]
 
-          if skinObjectsPerClicked[curPage] == true then
+          local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = searchSkinIndex}
+          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+          if skinObjectsPerClicked[curPage] == true and luaSpriteExists(displaySkinIconButton) == true then
                playAnim('mouseTexture', 'handClick', true)
                break
           end
-          if skinObjectsPerHovered[curPage] == true then
+          if skinObjectsPerHovered[curPage] == true and luaSpriteExists(displaySkinIconButton) == true then
                playAnim('mouseTexture', 'hand', true)
                break
           end
+          
           if mouseClicked('left') or mousePressed('left') then 
                playAnim('mouseTexture', 'idleClick', true)
           else
@@ -872,7 +894,7 @@ function SkinNotes:search_preview()
           local e = table.find(self.totalSkinObjectID[searchSkinPage], searchSkinIndex)
           local getCurrentPreviewSkinNames = function()
                local skinNames   = self.totalSkinObjectNames[searchSkinPage]
-               return curPage > 0 and skinNames[e]:gsub('%s+', '_'):lower() or self.totalSkinObjectNames[1][1]
+               return curPage > 0 and skinNames[e]:gsub('_', ' ') or self.totalSkinObjectNames[1][1]
           end
           local getCurrentPreviewSkinObjects = function()
                local skinObjects = self.totalSkinObjects[searchSkinPage]
@@ -882,7 +904,6 @@ function SkinNotes:search_preview()
           local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = searchSkinIndex}
           local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
           if releasedObject(displaySkinIconButton, 'camHUD') then
-               local curSkinName = getCurrentPreviewSkinNames()
                for strums = 1, 4 do
                     local previewSkinTemplate = {state = (self.stateClass):upperAtStart(), groupID = strums}
                     local previewSkinGroup    = ('previewSkinGroup${state}-${groupID}'):interpol(previewSkinTemplate)
@@ -900,6 +921,8 @@ function SkinNotes:search_preview()
                     setObjectCamera(previewSkinGroup, 'camHUD')
                     addLuaSprite(previewSkinGroup, true)
                end
+
+               setTextString('genInfoSkinName', getCurrentPreviewSkinNames())
           end
      end
 end
@@ -913,14 +936,13 @@ function SkinNotes:preview()
      local curPage = self.selectSkinCurSelectedIndex - (16 * (self.sliderPageIndex - 1))
      local getCurrentPreviewSkinNames = function()
           local skinNames   = self.totalSkinObjectNames[self.sliderPageIndex]
-          return curPage > 0 and skinNames[curPage]:gsub('%s+', '_'):lower() or self.totalSkinObjectNames[1][1]
+          return curPage > 0 and skinNames[curPage]:gsub('_', ' ') or self.totalSkinObjectNames[1][1]
      end
      local getCurrentPreviewSkinObjects = function()
           local skinObjects = self.totalSkinObjects[self.sliderPageIndex]
           return curPage > 0 and skinObjects[curPage] or self.totalSkinObjects[1][1]
      end
 
-     local curSkinName = getCurrentPreviewSkinNames()
      for strums = 1, 4 do
           local previewSkinTemplate = {state = (self.stateClass):upperAtStart(), groupID = strums}
           local previewSkinGroup    = ('previewSkinGroup${state}-${groupID}'):interpol(previewSkinTemplate)
@@ -938,6 +960,8 @@ function SkinNotes:preview()
           setObjectCamera(previewSkinGroup, 'camHUD')
           addLuaSprite(previewSkinGroup, true)
      end
+
+     setTextString('genInfoSkinName', getCurrentPreviewSkinNames())
 end
 
 function SkinNotes:switch()

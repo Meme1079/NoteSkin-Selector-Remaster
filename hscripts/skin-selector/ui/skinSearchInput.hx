@@ -42,7 +42,7 @@ function onCreate() {
      skinSearchInput.maxLength = 50;
 
      skinSearchInput.onChange     = function(preText:String, curText:String) {
-          Paths.soundRandom('keyclicks/keyClick', 1, 8, true);
+          FlxG.sound.play(Paths.soundRandom('keyclicks/keyClick', 1, 8, true), 1);
           setVar('skinSearchInput_textPreContent', preText);
           setVar('skinSearchInput_textContent', curText);
 
