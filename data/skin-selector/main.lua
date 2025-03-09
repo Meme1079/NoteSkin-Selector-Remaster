@@ -33,27 +33,29 @@ addLuaSprite('displaySliderTrack', true)
 
 -- Selection Buttons --
 
---[[ makeAnimatedLuaSprite('selectionSkinButton_player', 'ui/buttons/checkbox_buttons', 775 + 12, 315)
+makeAnimatedLuaSprite('selectionSkinButton_player', 'ui/buttons/checkbox_buttons', 775 + 12, 315)
 addAnimationByPrefix('selectionSkinButton_player', 'default', 'default')
 addAnimationByPrefix('selectionSkinButton_player', 'hover', 'hover0')
 addAnimationByPrefix('selectionSkinButton_player', 'selected', 'selected')
 addAnimationByPrefix('selectionSkinButton_player', 'hover-alt', 'hover-alt')
 playAnim('selectionSkinButton_player', 'default')
-scaleObject('selectionSkinButton_player', 0.5, 0.5)
+scaleObject('selectionSkinButton_player', 0.4, 0.4)
 setObjectCamera('selectionSkinButton_player', 'camHUD')
 setProperty('selectionSkinButton_player.antialiasing', false)
 addLuaSprite('selectionSkinButton_player')
 
-makeAnimatedLuaSprite('selectionSkinButton_opponent', 'ui/buttons/checkbox_buttons', 775 + 220 + 12, 315)
-scaleObject('selectionSkinButton_opponent', 0.5, 0.5)
-addAnimationByPrefix('selectionSkinButton_opponent', 'checking', 'checking', 24, false)
-addAnimationByPrefix('selectionSkinButton_opponent', 'unchecking', 'unchecking', 24, false)
-playAnim('selectionSkinButton_opponent', 'checking')
+makeAnimatedLuaSprite('selectionSkinButton_opponent', 'ui/buttons/checkbox_buttons', 775 + 12, 315 + (80 * 0.8))
+addAnimationByPrefix('selectionSkinButton_opponent', 'default', 'default')
+addAnimationByPrefix('selectionSkinButton_opponent', 'hover', 'hover0')
+addAnimationByPrefix('selectionSkinButton_opponent', 'selected', 'selected')
+addAnimationByPrefix('selectionSkinButton_opponent', 'hover-alt', 'hover-alt')
+playAnim('selectionSkinButton_opponent', 'default')
+scaleObject('selectionSkinButton_opponent', 0.4, 0.4)
 setObjectCamera('selectionSkinButton_opponent', 'camHUD')
 setProperty('selectionSkinButton_opponent.antialiasing', false)
-addLuaSprite('selectionSkinButton_opponent') ]]
+addLuaSprite('selectionSkinButton_opponent')
 
---[[ makeLuaText('selectionSkinText_player', 'Player', 0, 775 + 80, 315 + 11)
+makeLuaText('selectionSkinText_player', 'Player', 0, 775 + 75, 315 + 7)
 setTextFont('selectionSkinText_player', 'sonic.ttf')
 setTextSize('selectionSkinText_player', 30)
 setTextColor('selectionSkinText_player', '31b0d1')
@@ -61,13 +63,13 @@ setObjectCamera('selectionSkinText_player', 'camHUD')
 setProperty('selectionSkinText_player.antialiasing', false)
 addLuaText('selectionSkinText_player')
 
-makeLuaText('selectionSkinText_opponent', 'Opponent', 0, 775 + 220 + ((80 * 2) / 2), 315 + 11)
+makeLuaText('selectionSkinText_opponent', 'Opponent', 0, 775 + 75, 315 + 7 + (80 * 0.8))
 setTextFont('selectionSkinText_opponent', 'sonic.ttf')
 setTextSize('selectionSkinText_opponent', 30)
 setTextColor('selectionSkinText_opponent', 'af66ce')
 setObjectCamera('selectionSkinText_opponent', 'camHUD')
 setProperty('selectionSkinText_opponent.antialiasing', false)
-addLuaText('selectionSkinText_opponent') ]]
+addLuaText('selectionSkinText_opponent')
 
 -- General Infos --
 
@@ -147,12 +149,9 @@ Notes:save_load()
 function onCreatePost()
      playMusic(getModSetting('song_select', modFolder):lower(), 0.5, true)
 
-     
      --[[ local width,height = 800, 450
      callMethodFromClass('flixel.FlxG', 'resizeWindow', {width,height})
      callMethodFromClass('flixel.FlxG', 'resizeGame', {width,height}) ]]
-
-     Notes:preload()
 end
 
 function onUpdate(elapsed)

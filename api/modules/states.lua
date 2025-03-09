@@ -22,12 +22,29 @@ function states.getTotalSkins(skin, withPath)
           end
      end
 
+     local directorySkinModSubFolder  = {}
      local directorySkinModFolderPath = 'mods/NoteSkin Selector Remastered/images/'..totalSkinFolder
      local directorySkinModFolder     = directoryFileList(directorySkinModFolderPath)
      for _,v in next, directorySkinModFolder do
           if v:match('^('..totalSkinPrefix..'%-.+)%.png$') then
                local includedPath = withPath == true and totalSkinFolder..'/' or ''
                totalSkins[#totalSkins + 1] = includedPath..v:match('^('..totalSkinPrefix..'%-.+)%.png$')
+          end
+
+          if not v:match('%.%w+$') then
+               table.insert(directorySkinModSubFolder, v)
+          end
+     end
+
+     for _,v in next, directorySkinModSubFolder do
+          local directorySubSkinModFolderPath = 'mods/NoteSkin Selector Remastered/images/'..totalSkinFolder..'/'..v
+          local directorySubSkinModFolder     = directoryFileList(directorySubSkinModFolderPath)
+
+          for _,q in next, directorySubSkinModFolder do
+               if q:match('^('..totalSkinPrefix..'%-.+)%.png$') then
+                    local includedPath = withPath == true and totalSkinFolder..'/'..v..'/' or v..'/'
+                    totalSkins[#totalSkins + 1] = includedPath..q:match('^('..totalSkinPrefix..'%-.+)%.png$')
+               end
           end
      end
      return totalSkins
@@ -46,11 +63,27 @@ function states.getTotalSkinNames(skin)
           end
      end
 
+     local directorySkinModSubFolder  = {}
      local directorySkinModFolderPath = 'mods/NoteSkin Selector Remastered/images/'..totalSkinFolder
      local directorySkinModFolder     = directoryFileList(directorySkinModFolderPath)
      for _,v in next, directorySkinModFolder do
           if v:match('^('..totalSkinPrefix..'%-.+)%.png$') then
                totalSkins[#totalSkins + 1] = v:match('^'..totalSkinPrefix..'%-(.+)%.png$'):upperAtStart()
+          end
+
+          if not v:match('%.%w+$') then
+               table.insert(directorySkinModSubFolder, v)
+          end
+     end
+
+     for _,v in next, directorySkinModSubFolder do
+          local directorySubSkinModFolderPath = 'mods/NoteSkin Selector Remastered/images/'..totalSkinFolder..'/'..v
+          local directorySubSkinModFolder     = directoryFileList(directorySubSkinModFolderPath)
+
+          for _,q in next, directorySubSkinModFolder do
+               if q:match('^('..totalSkinPrefix..'%-.+)%.png$') then
+                    totalSkins[#totalSkins + 1] = q:match('^'..totalSkinPrefix..'%-(.+)%.png$'):upperAtStart()
+               end
           end
      end
      return totalSkins

@@ -533,13 +533,24 @@ function SkinNotes:search_create()
           end
      end
 
-     local function filter_search(list, input, element, filter)
+     --- Searches the closest skin name it can possibly find
+     ---@param list table[string] The given list of skins for the algorithm to do its work.
+     ---@param input string The given input to search the closest skins.
+     ---@param element string What element it can return either its 'id' or 'skins'.
+     ---@param match string The prefix of the skin to match.
+     ---@param allowPath? boolean Wheather it will include a path or not.
+     ---@return table
+     local function filter_search(list, input, element, match, allowPath)
           local search_result = {}
           for i = 1, #list, 1 do
-               local startPos = list[i]:gsub(filter or '', ''):upper():find(input:upper())
+               local startName   = list[i]:match(match..'(.+)')   == nil and 'funkin' or list[i]:match(match..'(.+)')
+               local startFolder = list[i]:match('(%w+/)'..match) == nil and ''       or list[i]:match('(%w+/)'..match)
+
+               local startPos = startName:upper():find(input:upper())
                local wordPos  = startPos == nil and -1 or startPos
                if wordPos > -1 and #search_result < 16 then
-                    search_result[i] = list[i]:gsub(filter or '', '')
+                    local p = allowPath == true and startFolder..match:gsub('%%%-', '-')..startName or startName
+                    search_result[i] = p:match(match..'funkin') == nil and p or match:gsub('%%%-', '')
                end
           end
 
@@ -575,8 +586,9 @@ function SkinNotes:search_create()
      end
 
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent')
-     local filterSearchByID     = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'ids', 'NOTE_assets')
-     local filterSearchBySkin   = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'skins', 'NOTE_assets')
+     local filterSearchByID   = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'ids', 'NOTE_assets%-', false)
+     local filterSearchByName = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'skins', 'NOTE_assets%-', false)
+     local filterSearchBySkin = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'skins', 'NOTE_assets%-', true)
 
      local currenMinPageIndex = (self.sliderPageIndex - 1) * 16 == 0 and 1 or (self.sliderPageIndex - 1) * 16
      local currenMaxPageIndex =  self.sliderPageIndex      * 16
@@ -586,7 +598,7 @@ function SkinNotes:search_create()
      local searchFilterSkins        = #filterSearchByID == 0 and table.sub(searchFilterSkinsDefault, 1, 16) or table.sub(searchFilterSkinsTyped, 1, 16)
      for ids, displays in pairs(searchFilterSkins) do
           if #filterSearchByID    == 0 then return end -- !DO NOT DELETE
-          if #filterSearchBySkin < ids then return end -- !DO NOT DELETE
+          if #filterSearchByName < ids then return end -- !DO NOT DELETE
 
           local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = displays}
           local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
@@ -605,7 +617,7 @@ function SkinNotes:search_create()
           setProperty(displaySkinIconButton..'.antialiasing', false)
           addLuaSprite(displaySkinIconButton)
 
-          local displaySkinImageTemplate = {path = self.statePaths, skin = 'NOTE_assets'..filterSearchBySkin[ids]}
+          local displaySkinImageTemplate = {path = self.statePaths, skin = filterSearchBySkin[ids]}
           local displaySkinImage = ('${path}/${skin}'):interpol(displaySkinImageTemplate)
 
           local displaySkinImagePositionX = displaySkinPositionX + 16.5
@@ -665,19 +677,30 @@ function SkinNotes:search_skins()
           return
      end ]]
 
-     local function filter_search(list, input, element, filter)
+     --- Searches the closest skin name it can possibly find
+     ---@param list table[string] The given list of skins for the algorithm to do its work.
+     ---@param input string The given input to search the closest skins.
+     ---@param element string What element it can return either its 'id' or 'skins'.
+     ---@param match string The prefix of the skin to match.
+     ---@param allowPath? boolean Wheather it will include a path or not.
+     ---@return table
+     local function filter_search(list, input, element, match, allowPath)
           local search_result = {}
           for i = 1, #list, 1 do
-               local startPos = list[i]:gsub(filter or '', ''):upper():find(input:upper())
+               local startName   = list[i]:match(match..'(.+)')   == nil and 'funkin' or list[i]:match(match..'(.+)')
+               local startFolder = list[i]:match('(%w+/)'..match) == nil and ''       or list[i]:match('(%w+/)'..match)
+
+               local startPos = startName:upper():find(input:upper())
                local wordPos  = startPos == nil and -1 or startPos
                if wordPos > -1 and #search_result < 16 then
-                    search_result[i] = list[i]:gsub(filter or '', '')
+                    local p = allowPath == true and startFolder..match:gsub('%%%-', '-')..startName or startName
+                    search_result[i] = p:match(match..'funkin') == nil and p or match:gsub('%%%-', '')
                end
           end
 
           local search_resultFilter = {}
           for ids, skins in pairs(search_result) do
-               if skins ~= nil and #search_resultFilter < 16 then 
+               if skins ~= nil and #search_resultFilter < 16 then
                     if element == 'skins' then
                          search_resultFilter[#search_resultFilter + 1] = skins
                     elseif element == 'ids' then
