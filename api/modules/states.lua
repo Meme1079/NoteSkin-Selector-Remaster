@@ -8,6 +8,10 @@ local states = {}
 states.notes    = {prefix = 'NOTE_assets',  folder = 'noteSkins'}
 states.splashes = {prefix = 'noteSplashes', folder = 'noteSplashes'}
 
+--- Gets the total amount of skins it has.
+---@param skin string The specified skin to find the total amount it currently has.
+---@param withPath? boolean Wheather the result will include a path to the skin or not.
+---@return table[table[string]]
 function states.getTotalSkins(skin, withPath)
      local totalSkins = {states[skin]['prefix']}
      local totalSkinPrefix = states[skin]['prefix']
@@ -50,6 +54,9 @@ function states.getTotalSkins(skin, withPath)
      return totalSkins
 end
 
+--- Gets the total amount of skins it has and returns said names of the skin.
+---@param skin string The specified skin to find the total amount it currently has.
+---@return table[table[string]]
 function states.getTotalSkinNames(skin)
      local totalSkins = {'Funkin'}
      local totalSkinPrefix = states[skin]['prefix']
@@ -89,6 +96,9 @@ function states.getTotalSkinNames(skin)
      return totalSkins
 end
 
+--- Gets the maximum limit skin pages.
+---@param skin string The specified skin to find the total amount it currently has.
+---@return number
 function states.getTotalSkinLimit(skin)
      local totalLimit = 1
      local totalSkins = states.getTotalSkins(skin)
@@ -100,6 +110,16 @@ function states.getTotalSkinLimit(skin)
      return totalLimit
 end
 
+---@alias byData string What metadata it should create for.
+---| 'skins' # The skin's texture path
+---| 'names' # The skin's name
+---| 'ids'   # The skin's corresponding ID number
+---| 'bools' # THe skin's togglable values
+
+--- Gets multiple metadata properties for the data to be used for interaction.
+---@param skin string The specified skin to find the total amount it currently has.
+---@param byData byData
+---@return table[table[any]]
 function states.getTotalSkinObjects(skin, byData)
      local byData = byData == nil and 'skins' or byData:lower()
 
@@ -131,6 +151,9 @@ function states.getTotalSkinObjects(skin, byData)
      return totalSkinObjects[skin]
 end
 
+--- Gets and calculates the positions for the slider functionality
+---@param skin The specified skin to contain the positions
+---@return table[table[number]]
 function states.getPageSkinSliderPositions(skin)
      local sliderTrackData = table.new(3, 0)
      sliderTrackData[skin] = {intervals = table.new(0xff, 0), semiIntervals = table.new(0xff, 0), pages = table.new(0xff, 0)}

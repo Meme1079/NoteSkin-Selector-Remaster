@@ -33,12 +33,15 @@ NoteSkin Selector Remastered © 2024 by Meme0179 is licensed under CC BY-NC-ND 4
 ### Additions/Changes
 - Overhual the main GUI with a new redesign, cuz it looks cool. _(inspired by OreUI from Minecraft)_
 - Overhual the main source-code of the mod for organization and an ability to soft-code new skin states.
-     - Loads separated chunks of object sprites for skins when switching pages.
      - Classes to create custom states for different skins by using inheritance and polymorphism stuff.
+     - Loads separated chunks of object sprites of the skins when switching pages.
 - Additions/Changes on the NoteSkin Selector State.
      - Added a functional slider for switching skin pages.
           - It automatically snaps to its nearest page index.
           - It also automatically disables itself if there's only currently `1` page index.
+     - Added an implementation for custom skin packs
+          - Subfolders for the textures of skins within the skin packs (images folder)
+          - Subfolders for certain metadata JSON files within the skin packs (json folder)
      - Added a functional search bar for finding certain skins.
           - Automatically filters to the closest skin it can find.
      - Increase the skin grid selections from `3x4` to `4x4`, cuz it's better.
@@ -46,7 +49,7 @@ NoteSkin Selector Remastered © 2024 by Meme0179 is licensed under CC BY-NC-ND 4
      - Added an `api` folder to group: `classes`, `libraries`, and `modules` for convenient sake.
      
 > [!NOTE]
-> The Noteskin Debug State is temporarily removed for reasons. Because I wanna rush it out becuase it has been almost a year without an update. And making an editor is the most hardest part, so cut me some slack here. This will be re-added back in the version 3.0.0.
+> The Noteskin Debug State is temporarily removed for reasons. Because I wanna rush it out becuase it has been almost a year without an update. And making an editor is the most hardest part, so cut me some slack here. This will be re-added back in v3.0.0.
 
 ***
 
@@ -76,3 +79,4 @@ NoteSkin Selector Remastered © 2024 by Meme0179 is licensed under CC BY-NC-ND 4
 
 ## Other
 - Cursor - [Sonic Legacy](https://gamebanana.com/mods/496733)
+- FridayNight Font - [Due Debts (BF Mix)](https://gamebanana.com/mods/575991); Creator: [LeGooey](https://gamebanana.com/members/2322712)

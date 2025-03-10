@@ -544,7 +544,7 @@ function SkinNotes:search_create()
           local search_result = {}
           for i = 1, #list, 1 do
                local startName   = list[i]:match(match..'(.+)')   == nil and 'funkin' or list[i]:match(match..'(.+)')
-               local startFolder = list[i]:match('(%w+/)'..match) == nil and ''       or list[i]:match('(%w+/)'..match)
+               local startFolder = list[i]:match('(.+/)'..match) == nil and ''       or list[i]:match('(.+/)'..match)
 
                local startPos = startName:upper():find(input:upper())
                local wordPos  = startPos == nil and -1 or startPos
@@ -712,8 +712,7 @@ function SkinNotes:search_skins()
      end
 
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent')
-     local filterSearchByID   = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'ids', 'NOTE_assets')
-     local filterSearchBySkin = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'skins', 'NOTE_assets')
+     local filterSearchByID = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'ids', 'NOTE_assets%-', false)
 
      local searchSkinIndex = 0
      for searchPage = 1, #self.totalSkinObjectID do
@@ -913,15 +912,15 @@ function SkinNotes:search_preview()
           local searchSkinIndex = tonumber( self.searchSkinObjectIndex[searchIndex] )
           local searchSkinPage  = tonumber( self.searchSkinObjectPage[searchIndex]  )
 
-          local curPage = self.selectSkinCurSelectedIndex
-          local e = table.find(self.totalSkinObjectID[searchSkinPage], searchSkinIndex)
+          local curPage   = self.selectSkinCurSelectedIndex
+          local curPageID = table.find(self.totalSkinObjectID[searchSkinPage], searchSkinIndex)
           local getCurrentPreviewSkinNames = function()
                local skinNames   = self.totalSkinObjectNames[searchSkinPage]
-               return curPage > 0 and skinNames[e]:gsub('_', ' ') or self.totalSkinObjectNames[1][1]
+               return curPage > 0 and skinNames[curPageID]:gsub('_', ' ') or self.totalSkinObjectNames[1][1]
           end
           local getCurrentPreviewSkinObjects = function()
                local skinObjects = self.totalSkinObjects[searchSkinPage]
-               return curPage > 0 and skinObjects[e] or self.totalSkinObjects[1][1]
+               return curPage > 0 and skinObjects[curPageID] or self.totalSkinObjects[1][1]
           end
 
           local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = searchSkinIndex}
@@ -936,10 +935,10 @@ function SkinNotes:search_preview()
                     local previewSkinPositionY = 135
                     makeAnimatedLuaSprite(previewSkinGroup, previewSkinImagePath, previewSkinPositionX, previewSkinPositionY)
                     scaleObject(previewSkinGroup, 0.65, 0.65)
-                    addAnimationByPrefix(previewSkinGroup, 'left', 'arrowLEFT', 24, false)
-                    addAnimationByPrefix(previewSkinGroup, 'down', 'arrowDOWN', 24, false)
-                    addAnimationByPrefix(previewSkinGroup, 'up', 'arrowUP', 24, false)
-                    addAnimationByPrefix(previewSkinGroup, 'right', 'arrowRIGHT', 24, false)
+                    addAnimationByPrefix(previewSkinGroup, 'left', 'arrowLEFT', 24, true)
+                    addAnimationByPrefix(previewSkinGroup, 'down', 'arrowDOWN', 24, true)
+                    addAnimationByPrefix(previewSkinGroup, 'up', 'arrowUP', 24, true)
+                    addAnimationByPrefix(previewSkinGroup, 'right', 'arrowRIGHT', 24, true)
                     playAnim(previewSkinGroup, ({'left', 'down', 'up', 'right'})[strums])
                     setObjectCamera(previewSkinGroup, 'camHUD')
                     addLuaSprite(previewSkinGroup, true)
@@ -975,16 +974,19 @@ function SkinNotes:preview()
           local previewSkinPositionY = 135
           makeAnimatedLuaSprite(previewSkinGroup, previewSkinImagePath, previewSkinPositionX, previewSkinPositionY)
           scaleObject(previewSkinGroup, 0.65, 0.65)
-          addAnimationByPrefix(previewSkinGroup, 'left', 'arrowLEFT', 24, false)
-          addAnimationByPrefix(previewSkinGroup, 'down', 'arrowDOWN', 24, false)
-          addAnimationByPrefix(previewSkinGroup, 'up', 'arrowUP', 24, false)
-          addAnimationByPrefix(previewSkinGroup, 'right', 'arrowRIGHT', 24, false)
+          addAnimationByPrefix(previewSkinGroup, 'left', 'arrowLEFT', 24, true)
+          addAnimationByPrefix(previewSkinGroup, 'down', 'arrowDOWN', 24, true)
+          addAnimationByPrefix(previewSkinGroup, 'up', 'arrowUP', 24, true)
+          addAnimationByPrefix(previewSkinGroup, 'right', 'arrowRIGHT', 24, true)
           playAnim(previewSkinGroup, ({'left', 'down', 'up', 'right'})[strums])
           setObjectCamera(previewSkinGroup, 'camHUD')
           addLuaSprite(previewSkinGroup, true)
      end
 
      setTextString('genInfoSkinName', getCurrentPreviewSkinNames())
+end
+
+function SkinNotes:preview_animation()
 end
 
 function SkinNotes:switch()
