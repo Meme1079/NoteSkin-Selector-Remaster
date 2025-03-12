@@ -9,10 +9,10 @@ NoteSkin Selector Remastered © 2024 by Meme0179 is licensed under CC BY-NC-ND 4
 ## Installation Requirements
 1. Computer
      - Windows, MacOS, and Linux are only supported when playing this mod. 
-     - Android, Switch, Browser and other devices are not supported due to controller issues. 
+     - Android, Switch, Consoles and other devices are not supported due to controller issues. 
           - Never ask a FUCKING port of this, especially Android I ain't doin' that shit.
 2. Psych Engine & P-Slice
-     - Some version of Psych Engine are only supported when playing this mod:
+     - Some specific version of Psych Engine are only supported when playing this mod:
           - 1.0.3
           - 0.7.3
 
@@ -25,7 +25,7 @@ NoteSkin Selector Remastered © 2024 by Meme0179 is licensed under CC BY-NC-ND 4
 - A preview of every animation of the skins
 - ~~A preview-editor for offsetings the skin's animation preview~~
 - Support for data saving
-- Customizable Background Music
+- Customizable background Music
 
 ***
 
@@ -33,8 +33,8 @@ NoteSkin Selector Remastered © 2024 by Meme0179 is licensed under CC BY-NC-ND 4
 ### Additions/Changes
 - Overhual the main GUI with a new redesign, cuz it looks cool. _(inspired by OreUI from Minecraft)_
 - Overhual the main source-code of the mod for organization and an ability to soft-code new skin states.
+     - Loads separated chunks of object sprites for skins when switching pages.
      - Classes to create custom states for different skins by using inheritance and polymorphism stuff.
-     - Loads separated chunks of object sprites of the skins when switching pages.
 - Additions/Changes on the NoteSkin Selector State.
      - Added a functional slider for switching skin pages.
           - It automatically snaps to its nearest page index.
@@ -49,7 +49,7 @@ NoteSkin Selector Remastered © 2024 by Meme0179 is licensed under CC BY-NC-ND 4
      - Added an `api` folder to group: `classes`, `libraries`, and `modules` for convenient sake.
      
 > [!NOTE]
-> The Noteskin Debug State is temporarily removed for reasons. Because I wanna rush it out becuase it has been almost a year without an update. And making an editor is the most hardest part, so cut me some slack here. This will be re-added back in v3.0.0.
+> The Noteskin Debug State is temporarily removed for reasons. Because I wanna rush it out becuase it has been almost a year without an update. And making an editor is the most hardest part, so cut me some slack here. This will be re-added back in the version 3.0.0.
 
 ***
 

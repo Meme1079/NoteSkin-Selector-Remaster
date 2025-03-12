@@ -1,0 +1,26 @@
+{
+     "animations": {
+          "note_splash1": {
+               "left_splash1": {
+                    "prefix": "splash electro purple 1",
+                    "offsets": [0,0]
+               },
+               "down_splash1": {
+                    "prefix": "splash electro blue 1",
+                    "offsets": [0,0]
+               },
+               "up_splash1": {
+                    "prefix": "splash electro reen 1",
+                    "offsets": [0,0]
+               },
+               "right_splash1": {
+                    "prefix": "splash electro red 1",
+                    "offsets": [0,0]
+               }
+          }
+     },
+     "size": [0.65, 0.65],
+     "initial": ["splash electro purple 1", "splash electro blue 1", "splash electro green 1", "splash electro red 1"],
+     "frames": 24,
+     "loop": false
+}

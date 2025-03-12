@@ -16,9 +16,7 @@ end
 
 local Parser = {}
 
-function table.new()
-    return {}
-end
+require 'table.new'
 
 setmetatable(Parser, {
     __call = function(self, opts)

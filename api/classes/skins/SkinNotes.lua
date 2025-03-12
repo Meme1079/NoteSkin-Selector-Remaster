@@ -4,6 +4,7 @@ local SkinSaves = require 'mods.NoteSkin Selector Remastered.api.classes.skins.s
 
 local string    = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.string'
 local table     = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.table'
+local math      = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.math'
 local json      = require 'mods.NoteSkin Selector Remastered.api.libraries.json.main'
 local funkinlua = require 'mods.NoteSkin Selector Remastered.api.modules.funkinlua'
 local states    = require 'mods.NoteSkin Selector Remastered.api.modules.states'
@@ -29,14 +30,16 @@ local SkinNotes = {}
 
 --- Initializes the creation of a skin state to display skins.
 ---@param stateClass string The given tag for the class to inherit.
----@param statePath string The given corresponding image path to display its skins.
+---@param statePath string The corresponding image path to display its skins.
+---@param statePrefix string the corresponding prefix image for the said state. 
 ---@param stateStart boolean Whether to the given class state will be displayed at the start or not.
 ---@return table
-function SkinNotes:new(stateClass, statePaths, startStart)
+function SkinNotes:new(stateClass, statePaths, statePrefix, startStart)
      local self = setmetatable({}, {__index = self})
-     self.stateClass = stateClass
-     self.statePaths = statePaths
-     self.stateStart = stateStart
+     self.stateClass  = stateClass
+     self.statePaths  = statePaths
+     self.statePrefix = statePrefix
+     self.stateStart  = stateStart
 
      return self
 end
@@ -44,9 +47,6 @@ end
 --- Loads multiple-unique data to the class itself, to be used later.
 ---@return nil
 function SkinNotes:load()
-     self.metadata_display = json.parse(getTextFromFile('json/'..self.stateClass..'/metadata_display.json'))
-     self.metadata_preview = json.parse(getTextFromFile('json/'..self.stateClass..'/metadata_preview.json'))
-
      self.totalSkins     = states.getTotalSkins(self.stateClass, self.statePaths)
      self.totalSkinNames = states.getTotalSkinNames(self.stateClass)
 
@@ -180,6 +180,10 @@ function SkinNotes:page_slider(snapToPage)
      local snapToPage = snapToPage == nil and true or false
 
      local function sliderTrackThumbAnimations()
+          if self.totalSkinLimit < 2 then
+               return
+          end
+
           if mousePressed('left') then
                playAnim('displaySliderIcon', 'pressed')
                setProperty('displaySliderIcon.y', getMouseY('camHUD') - getProperty('displaySliderIcon.height') / 2)
@@ -253,7 +257,8 @@ function SkinNotes:page_slider(snapToPage)
 
           if self.sliderTrackThumbPressed == false and mouseReleased('left') then
                if sliderTrackCurrentPageIndex == self.totalSkinLimit then
-                    setProperty('displaySliderIcon.y', 643); return
+                    setProperty('displaySliderIcon.y', 643)
+                    return
                end
                setProperty('displaySliderIcon.y', self.sliderTrackIntervals[sliderTrackCurrentPageIndex])
           end
@@ -261,6 +266,31 @@ function SkinNotes:page_slider(snapToPage)
 
      sliderTrackSwitchPage()
      sliderTrackSnapPage()
+end
+
+--- Creates the sliders interval marks for visual aid purposes.
+---@return nil
+function SkinNotes:page_sliderMarks()
+     local function sectionSliderMarks(tag, color, width, offsetTrackX, sliderTracks, sliderTrackIndex)
+          local sectionSliderMarksTemplate = {tag = tag:upperAtStart(), index = sliderTrackIndex}
+          local sectionSliderMarksTag = ('displaySliderMark${tag}${index}'):interpol(sectionSliderMarksTemplate)
+          local sectionSliderMarksX   = getProperty('displaySliderTrack.x') - offsetTrackX
+          local sectionSliderMarksY   = sliderTracks[sliderTrackIndex]
+     
+          makeLuaSprite(sectionSliderMarksTag, nil, sectionSliderMarksX, sectionSliderMarksY)
+          makeGraphic(sectionSliderMarksTag, width, 3, color)
+          setObjectOrder(sectionSliderMarksTag, getObjectOrder('displaySliderIcon') - 0)
+          setObjectCamera(sectionSliderMarksTag, 'camHUD')
+          setProperty(sectionSliderMarksTag..'.antialiasing', false)
+          addLuaSprite(sectionSliderMarksTag)
+     end
+
+     for intervalIndex = 1, #self.sliderTrackIntervals do
+          sectionSliderMarks('interval', '3b8527', 12 * 2, 12 / 2, self.sliderTrackIntervals, intervalIndex)
+     end
+     for semiIntervalIndex = 2, #self.sliderTrackSemiIntervals do
+          sectionSliderMarks('semiInterval', '847500', 12 * 1.5, 12 / 4, self.sliderTrackSemiIntervals, semiIntervalIndex)
+     end
 end
 
 --- Alternative functionlity of the slider for switching pages.
@@ -470,17 +500,29 @@ function SkinNotes:selection_cursor()
      for pageSkins = 1, math.max(#skinObjectsPerClicked, #skinObjectsPerHovered) do
           if skinObjectsPerClicked[pageSkins] == true then
                playAnim('mouseTexture', 'handClick', true)
-               break
+               return
           end
           if skinObjectsPerHovered[pageSkins] == true then
                playAnim('mouseTexture', 'hand', true)
-               break
+               return
           end
+     end
+
+     if hoverObject('displaySliderIcon', 'camHUD') == true and self.totalSkinLimit == 1 then
           if mouseClicked('left') or mousePressed('left') then 
-               playAnim('mouseTexture', 'idleClick', true)
+               playAnim('mouseTexture', 'disabledClick', true)
           else
-               playAnim('mouseTexture', 'idle', true)
+               playAnim('mouseTexture', 'disabled', true)
           end
+
+          if mouseClicked('left') then playSound('cancel') end
+          return
+     end
+
+     if mouseClicked('left') or mousePressed('left') then 
+          playAnim('mouseTexture', 'idleClick', true)
+     else
+          playAnim('mouseTexture', 'idle', true)
      end
 end
 
@@ -586,9 +628,9 @@ function SkinNotes:search_create()
      end
 
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent')
-     local filterSearchByID   = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'ids', 'NOTE_assets%-', false)
-     local filterSearchByName = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'skins', 'NOTE_assets%-', false)
-     local filterSearchBySkin = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'skins', 'NOTE_assets%-', true)
+     local filterSearchByID   = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'ids', self.statePrefix..'%-', false)
+     local filterSearchByName = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'skins', self.statePrefix..'%-', false)
+     local filterSearchBySkin = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'skins', self.statePrefix..'%-', true)
 
      local currenMinPageIndex = (self.sliderPageIndex - 1) * 16 == 0 and 1 or (self.sliderPageIndex - 1) * 16
      local currenMaxPageIndex =  self.sliderPageIndex      * 16
@@ -653,7 +695,6 @@ function SkinNotes:search_create()
                     if ids == 16 then return end
                end
           end
-
           self:selection_sync()
      end
 end
@@ -712,7 +753,7 @@ function SkinNotes:search_skins()
      end
 
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent')
-     local filterSearchByID = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'ids', 'NOTE_assets%-', false)
+     local filterSearchByID = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'ids', self.statePrefix..'%-', false)
 
      local searchSkinIndex = 0
      for searchPage = 1, #self.totalSkinObjectID do
@@ -887,18 +928,29 @@ function SkinNotes:search_cursor()
           local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
           if skinObjectsPerClicked[curPage] == true and luaSpriteExists(displaySkinIconButton) == true then
                playAnim('mouseTexture', 'handClick', true)
-               break
+               return
           end
           if skinObjectsPerHovered[curPage] == true and luaSpriteExists(displaySkinIconButton) == true then
                playAnim('mouseTexture', 'hand', true)
-               break
+               return
           end
-          
+     end
+     
+     if hoverObject('displaySliderIcon', 'camHUD') == true and self.totalSkinLimit == 1 then
           if mouseClicked('left') or mousePressed('left') then 
-               playAnim('mouseTexture', 'idleClick', true)
+               playAnim('mouseTexture', 'disabledClick', true)
           else
-               playAnim('mouseTexture', 'idle', true)
+               playAnim('mouseTexture', 'disabled', true)
           end
+
+          if mouseClicked('left') then playSound('cancel') end
+          return
+     end
+
+     if mouseClicked('left') or mousePressed('left') then 
+          playAnim('mouseTexture', 'idleClick', true)
+     else
+          playAnim('mouseTexture', 'idle', true)
      end
 end
 
@@ -998,7 +1050,10 @@ end
 ---@return nil
 function SkinNotes:save_load()
      self:create(self.selectSkinPagePositionIndex)
-     setProperty('displaySliderIcon.y', self.sliderTrackIntervals[self.selectSkinPagePositionIndex])
+
+     if math.isReal(self.sliderTrackIntervals[self.selectSkinPagePositionIndex]) == true then
+          setProperty('displaySliderIcon.y', self.sliderTrackIntervals[self.selectSkinPagePositionIndex])
+     end
 end
 
 return SkinNotes

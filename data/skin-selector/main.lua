@@ -120,6 +120,7 @@ for keyID = 1, 4 do
      addLuaText(genInfoKeybinds)
 end
 
+
 -- Search Input --
 
 addHScript('hscripts/skin-selector/ui/skinSearchInput')
@@ -132,6 +133,8 @@ addAnimationByPrefix('mouseTexture', 'idle', 'idle', false)
 addAnimationByPrefix('mouseTexture', 'idleClick', 'idleClick', false)
 addAnimationByPrefix('mouseTexture', 'hand', 'hand', false)
 addAnimationByPrefix('mouseTexture', 'handClick', 'handClick', false)
+addAnimationByPrefix('mouseTexture', 'disabled', 'disabled', false)
+addAnimationByPrefix('mouseTexture', 'disabledClick', 'disabledClick', false)
 playAnim('mouseTexture', 'idle')
 setObjectCamera('mouseTexture', 'camOther')
 addLuaSprite('mouseTexture', true)
@@ -139,11 +142,12 @@ setPropertyFromClass('flixel.FlxG', 'mouse.visible', false)
 
 -- Skins --
 
-local Notes = SkinNotes:new('notes', 'noteSkins', true)
+local Notes = SkinNotes:new('notes', 'noteSkins', 'NOTE_assets', true)
 Notes:load()
 Notes:precache()
-Notes:preload()
 Notes:preview()
+Notes:preload()
+Notes:page_sliderMarks()
 Notes:save_load()
 
 function onCreatePost()
@@ -172,27 +176,6 @@ function onUpdatePost(elapsed)
      Notes:page_moved()
      Notes:selection()
      Notes:search()
-end
-
-local sliderTrackPosition = states.getPageSkinSliderPositions('notes').intervals
-local sliderTrackDivider  = states.getPageSkinSliderPositions('notes').semiIntervals
-local function displaySliderMarks(uniqueTag, color, widthBy, sliderTracks, sliderIndex)
-     local hitboxMarkSliderTrackTag = ('displaySliderMark${tag}${index}'):interpol({tag = uniqueTag:upperAtStart(), index = sliderIndex})
-     local hitboxMarkSliderTrackX = (600 + (getProperty('displaySliderIcon.width') / 2.7)) - widthBy[2]
-     local hitboxMarkSliderTrackY = sliderTracks[sliderIndex]
-
-     makeLuaSprite(hitboxMarkSliderTrackTag, nil, hitboxMarkSliderTrackX, hitboxMarkSliderTrackY)
-     makeGraphic(hitboxMarkSliderTrackTag, widthBy[1], 3, color)
-     setObjectOrder(hitboxMarkSliderTrackTag, getObjectOrder('displaySliderIcon') - 0)
-     setProperty(hitboxMarkSliderTrackTag..'.camera', instanceArg('camHUD'), false, true)
-     setProperty(hitboxMarkSliderTrackTag..'.antialiasing', false)
-     addLuaSprite(hitboxMarkSliderTrackTag)
-end
-for positionIndex = 1, #sliderTrackPosition-2 do
-     displaySliderMarks('positions', '3b8527', {12 * 2, 12 / 2}, sliderTrackPosition, positionIndex)
-end
-for dividerIndex = 2, #sliderTrackDivider-2 do
-     displaySliderMarks('divider', '847500', {12 * 1.5, 12 / 4}, sliderTrackDivider, dividerIndex)
 end
 
 local allowCountdown = false;

@@ -152,6 +152,8 @@ function states.getTotalSkinObjects(skin, byData)
 end
 
 --- Gets and calculates the positions for the slider functionality
+--- If the current state has only one page, it will cause a calculation error, cuz of dividing zero.
+--- If the error occured, it must have a piece of code to detect it to prevent visual bugs.
 ---@param skin The specified skin to contain the positions
 ---@return table[table[number]]
 function states.getPageSkinSliderPositions(skin)

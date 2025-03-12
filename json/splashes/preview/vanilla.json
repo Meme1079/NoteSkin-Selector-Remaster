@@ -1,0 +1,44 @@
+{
+     "animations": {
+          "note_splash1": {
+               "left_splash1": {
+                    "prefix": "vanilla splash purple 1",
+                    "offsets": [0,0]
+               },
+               "down_splash1": {
+                    "prefix": "vanilla splash blue 1",
+                    "offsets": [0,0]
+               },
+               "up_splash1": {
+                    "prefix": "vanilla splash green 1",
+                    "offsets": [0,0]
+               },
+               "right_splash1": {
+                    "prefix": "vanilla splash red 1",
+                    "offsets": [0,0]
+               }
+          },
+          "note_splash2": {
+               "left_splash2": {
+                    "prefix": "vanilla splash purple 2",
+                    "offsets": [0,0]
+               },
+               "down_splash2": {
+                    "prefix": "vanilla splash blue 2",
+                    "offsets": [0,0]
+               },
+               "up_splash2": {
+                    "prefix": "vanilla splash green 2",
+                    "offsets": [0,0]
+               },
+               "right_splash2": {
+                    "prefix": "vanilla splash red 2",
+                    "offsets": [0,0]
+               }
+          }
+     },
+     "size": [0.65, 0.65],
+     "initial": ["vanilla splash purple 1", "vanilla splash blue 1", "vanilla splash green 1", "vanilla splash red 1"],
+     "frames": 24,
+     "loop": false
+}
