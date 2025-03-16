@@ -178,4 +178,17 @@ function states.getPageSkinSliderPositions(skin)
      return sliderTrackData[skin]
 end
 
+---
+---@param metadataFolder string
+---@return table<string, any>
+function states.getMetadataSkins(metadataFolder)
+     local woef = table.new(0, 0xff)
+
+     --for k,v in pairs() do
+     --end
+end
+
+function states.getMetadataSkinElements()
+end
+
 return states

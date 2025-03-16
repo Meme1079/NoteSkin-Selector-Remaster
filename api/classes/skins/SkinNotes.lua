@@ -231,9 +231,9 @@ function SkinNotes:page_slider(snapToPage)
           local sliderTrackThumbReleased = sliderTrackCurrentPageIndex == false and self.sliderTrackToggle == true
 
           if sliderTrackThumbPressed and sliderTrackCurrentPageIndex ~= self.sliderPageIndex then
-               if self.sliderTrackThumbPressed == true then 
+               if self.sliderTrackThumbPressed == true then
+                    self:create(sliderTrackCurrentPageIndex)
                     self.sliderPageIndex = sliderTrackCurrentPageIndex
-                    self:create(self.sliderPageIndex)
 
                     if self.sliderPageIndex == self.totalSkinLimit then
                          setTextColor('genInfoStatePage', 'ff0000')
@@ -586,7 +586,7 @@ function SkinNotes:search_create()
           local search_result = {}
           for i = 1, #list, 1 do
                local startName   = list[i]:match(match..'(.+)')   == nil and 'funkin' or list[i]:match(match..'(.+)')
-               local startFolder = list[i]:match('(.+/)'..match) == nil and ''       or list[i]:match('(.+/)'..match)
+               local startFolder = list[i]:match('(.+/)'..match) == nil and ''        or list[i]:match('(.+/)'..match)
 
                local startPos = startName:upper():find(input:upper())
                local wordPos  = startPos == nil and -1 or startPos

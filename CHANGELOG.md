@@ -13,6 +13,7 @@
           - Subfolders for certain metadata JSON files within the skin packs (json folder)
      - Added a functional search bar for finding certain skins.
           - Automatically filters to the closest skin it can find.
+     - Added an `inOutExpo` easing tween to the color changing background.
      - Increase the skin grid selections from `3x4` to `4x4`, cuz it's better.
 - Organized file locations.
      - Added an `api` folder to group: `classes`, `libraries`, and `modules` for convenient sake.

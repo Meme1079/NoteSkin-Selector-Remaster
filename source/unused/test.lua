@@ -9,3 +9,9 @@ local function filter_search(list, input)
      end
      return search_result
 end
+
+local isMovedX = getPropertyFromClass('flixel.FlxG', 'mouse.deltaScreenX')
+local isMovedY = getPropertyFromClass('flixel.FlxG', 'mouse.deltaScreenY')
+if isMovedX == 0 and isMovedY == 0 then
+     return
+end

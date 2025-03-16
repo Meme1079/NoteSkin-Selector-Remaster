@@ -44,6 +44,7 @@ NoteSkin Selector Remastered © 2024 by Meme0179 is licensed under CC BY-NC-ND 4
           - Subfolders for certain metadata JSON files within the skin packs (json folder)
      - Added a functional search bar for finding certain skins.
           - Automatically filters to the closest skin it can find.
+     - Added an `inOutExpo` easing tween to the color changing background.
      - Increase the skin grid selections from `3x4` to `4x4`, cuz it's better.
 - Organized file locations.
      - Added an `api` folder to group: `classes`, `libraries`, and `modules` for convenient sake.
@@ -76,6 +77,7 @@ NoteSkin Selector Remastered © 2024 by Meme0179 is licensed under CC BY-NC-ND 4
 ## Lua Libraries
 - [MathParser](https://github.com/bytexenon/MathParser.lua) - bytexenon
 - [Lua Pretty JSON](https://github.com/xiedacon/lua-pretty-json) - xiedaco
+- [Lua Easing Library](https://github.com/EmmanuelOga/easing) - EmmanuelOga
 
 ## Other
 - Cursor - [Sonic Legacy](https://gamebanana.com/mods/496733)
