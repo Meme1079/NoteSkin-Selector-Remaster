@@ -74,6 +74,8 @@ function SkinNotes:load()
 
      self.searchSkinObjectIndex = table.new(16, 0)
      self.searchSkinObjectPage  = table.new(16, 0)
+
+     --debugPrint( states.getMetadataSkins(self.stateClass, 'display') )
 end
 
 --- Creates a chunk to display the selected skins
@@ -160,6 +162,9 @@ end
 ---@return nil
 function SkinNotes:preload()
      for pages = self.totalSkinLimit, 1, -1 do
+          if pages ~= self.selectSkinPagePositionIndex then
+               break
+          end
           self:create(pages)
      end
 end
@@ -638,6 +643,7 @@ function SkinNotes:search_create()
      local searchFilterSkinsDefault = table.tally(currenMinPageIndex, currenMaxPageIndex)
      local searchFilterSkinsTyped   = table.singularity(table.merge(filterSearchByID, searchFilterSkinsDefault), false)
      local searchFilterSkins        = #filterSearchByID == 0 and table.sub(searchFilterSkinsDefault, 1, 16) or table.sub(searchFilterSkinsTyped, 1, 16)
+
      for ids, displays in pairs(searchFilterSkins) do
           if #filterSearchByID    == 0 then return end -- !DO NOT DELETE
           if #filterSearchByName < ids then return end -- !DO NOT DELETE

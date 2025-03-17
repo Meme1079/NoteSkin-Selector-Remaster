@@ -152,7 +152,7 @@ setPropertyFromClass('flixel.FlxG', 'mouse.visible', false)
 addHScript('hscripts/skin-selector/selectorGridBG')     -- Checkerboard & Infinitely BG Stuff
 addHScript('hscripts/skin-selector/ui/skinSearchInput') -- Search Input Functionality
 
--- Color Changer --
+-- General Stuff --
 
 local hueChangeSwitch = true
 local hueChangeCPM    = 0.09
@@ -208,6 +208,8 @@ local function hueChangeBG()
      end
 end
 
+-- 'splashes', 'noteSplashes', 'noteSplashes', true
+-- 'notes', 'noteSkins', 'NOTE_assets', true
 local Notes = SkinNotes:new('notes', 'noteSkins', 'NOTE_assets', true)
 Notes:load()
 Notes:precache()

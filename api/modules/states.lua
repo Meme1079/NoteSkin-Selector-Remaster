@@ -179,16 +179,69 @@ function states.getPageSkinSliderPositions(skin)
 end
 
 ---
+---@param skin string
 ---@param metadataFolder string
 ---@return table<string, any>
-function states.getMetadataSkins(metadataFolder)
-     local woef = table.new(0, 0xff)
+function states.getMetadataSkins(skin, metadataFolder)
+     local totalMetadataFolder = table.new(0xff, 0)
+     local totalSkinPrefix = states[skin]['prefix']
+     local totalSkinFolder = states[skin]['folder']
 
-     --for k,v in pairs() do
-     --end
+     local directorySkinMetadataFolderPath = 'mods/NoteSkin Selector Remastered/json/${skin}/${folder}'
+     local directorySkinMetadataFolderStr  = (directorySkinMetadataFolderPath):interpol{skin = skin, folder = metadataFolder}
+     local directorySkinMetadataFolder     = directoryFileList(directorySkinMetadataFolderStr)     
+     for _,v in next, directorySkinMetadataFolder do
+          if v:match('^(.+)%.json$') then
+               totalMetadataFolder[#totalMetadataFolder + 1] = v:match('^(.+%.json)$')
+          end
+     end
+
+     local totalSkins = {'funkin.json'}
+     local directorySkinFolderPath = 'assets/shared/images/'..totalSkinFolder
+     local directorySkinFolder     = directoryFileList(directorySkinFolderPath)
+     for _,v in next, directorySkinFolder do
+          if v:match('^('..totalSkinPrefix..'%-.+)%.png$') then
+               totalSkins[#totalSkins + 1] = v:match('^'..totalSkinPrefix..'%-(.+)%.png$')..'.json'
+          end
+     end
+
+     for skinInd = 1, #totalSkins do
+          table.remove(totalMetadataFolder, table.find(totalMetadataFolder, totalSkins[skinInd]))
+          table.insert(totalMetadataFolder, skinInd, totalSkins[skinInd])
+
+          totalMetadataFolder[skinInd] = 'json/'..skin..'/'..metadataFolder..'/'..totalSkins[skinInd]
+     end
+
+     if #directorySkinMetadataFolder == 0 then
+          error('Metadata folder missing!')
+     end
+     return totalMetadataFolder
 end
 
-function states.getMetadataSkinElements()
+---
+---@param skin string
+---@return table[table[any]]
+function states.getMetadataSkinNames(skin)
+     local totalMetadataSkinIndex = 0
+     local totalMetadataSkinNames = table.new(0xff, 0)
+     totalMetadataSkinNames[skin] = table.new(0xff, 0)
+
+     local totalSkinNames = states.getTotalSkinNames(skin)
+     for pages = 1, #totalSkinNames do
+          if (pages-1) % 16 == 0 then --! DO NOT REMOVE PARENTHESIS
+               totalMetadataSkinIndex = totalMetadataSkinIndex + 1
+               totalMetadataSkinNames[skin][totalMetadataSkinIndex] = table.new(16, 0)
+          end
+     
+          if pages % 16+1 ~= 0 then   --! DO NOT ADD PARENTHESIS
+               local totalMetadataSkinObjectNames = totalMetadataSkinNames[skin][totalMetadataSkinIndex]
+               totalMetadataSkinObjectNames[#totalMetadataSkinObjectNames + 1] = totalSkinNames[pages]
+          end
+     end
+     return totalMetadataSkinNames[skin]
+end
+
+function states.getMetadataSkinElements(skin, metadataFolder)
 end
 
 return states
