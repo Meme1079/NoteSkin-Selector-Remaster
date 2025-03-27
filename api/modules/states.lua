@@ -17,37 +17,35 @@ function states.getTotalSkins(skin, withPath)
      local totalSkinPrefix = states[skin]['prefix']
      local totalSkinFolder = states[skin]['folder']
 
-     local directorySkinFolderPath = 'assets/shared/images/'..totalSkinFolder
-     local directorySkinFolder     = directoryFileList(directorySkinFolderPath)
-     for _,v in next, directorySkinFolder do
-          if v:match('^('..totalSkinPrefix..'%-.+)%.png$') then
+     local directorySkinLocalFolderPath = 'assets/shared/images/'..totalSkinFolder
+     local directorySkinLocalFolder     = directoryFileList(directorySkinLocalFolderPath)
+     for _,skins in next, directorySkinLocalFolder do
+          if skins:match('^('..totalSkinPrefix..'%-.+)%.png$') then
                local includedPath = withPath == true and 'assets/shared/images/'..totalSkinFolder..'/' or ''
-               totalSkins[#totalSkins + 1] = includedPath..v:match('^('..totalSkinPrefix..'%-.+)%.png$')
+               totalSkins[#totalSkins + 1] = includedPath..skins:match('^('..totalSkinPrefix..'%-.+)%.png$')
           end
      end
 
-     local directorySkinModSubFolder  = {}
-     local directorySkinModFolderPath = 'mods/NoteSkin Selector Remastered/images/'..totalSkinFolder
-     local directorySkinModFolder     = directoryFileList(directorySkinModFolderPath)
-     for _,v in next, directorySkinModFolder do
-          if v:match('^('..totalSkinPrefix..'%-.+)%.png$') then
+     local directorySkinFolderGroup = {}
+     local directorySkinFolderPath  = 'mods/NoteSkin Selector Remastered/images/'..totalSkinFolder
+     local directorySkinFolder      = directoryFileList(directorySkinFolderPath)
+     for _,skins in next, directorySkinFolder do
+          if skins:match('^('..totalSkinPrefix..'%-.+)%.png$') then
                local includedPath = withPath == true and totalSkinFolder..'/' or ''
-               totalSkins[#totalSkins + 1] = includedPath..v:match('^('..totalSkinPrefix..'%-.+)%.png$')
+               totalSkins[#totalSkins + 1] = includedPath..skins:match('^('..totalSkinPrefix..'%-.+)%.png$')
           end
-
-          if not v:match('%.%w+$') then
-               table.insert(directorySkinModSubFolder, v)
+          if not skins:match('%.%w+$') then
+               table.insert(directorySkinFolderGroup, skins)
           end
      end
 
-     for _,v in next, directorySkinModSubFolder do
-          local directorySubSkinModFolderPath = 'mods/NoteSkin Selector Remastered/images/'..totalSkinFolder..'/'..v
-          local directorySubSkinModFolder     = directoryFileList(directorySubSkinModFolderPath)
-
-          for _,q in next, directorySubSkinModFolder do
-               if q:match('^('..totalSkinPrefix..'%-.+)%.png$') then
-                    local includedPath = withPath == true and totalSkinFolder..'/'..v..'/' or v..'/'
-                    totalSkins[#totalSkins + 1] = includedPath..q:match('^('..totalSkinPrefix..'%-.+)%.png$')
+     for _,folders in next, directorySkinFolderGroup do
+          local directorySkinSubFolderPath = 'mods/NoteSkin Selector Remastered/images/'..totalSkinFolder..'/'..folders
+          local directorySkinSubFolder     = directoryFileList(directorySkinSubFolderPath)
+          for _,skins in next, directorySkinSubFolder do
+               if skins:match('^('..totalSkinPrefix..'%-.+)%.png$') then
+                    local includedPath = withPath == true and totalSkinFolder..'/'..skins..'/' or skins..'/'
+                    totalSkins[#totalSkins + 1] = includedPath..skins:match('^('..totalSkinPrefix..'%-.+)%.png$')
                end
           end
      end
@@ -62,34 +60,32 @@ function states.getTotalSkinNames(skin)
      local totalSkinPrefix = states[skin]['prefix']
      local totalSkinFolder = states[skin]['folder']
 
-     local directorySkinFolderPath = 'assets/shared/images/'..totalSkinFolder
-     local directorySkinFolder     = directoryFileList(directorySkinFolderPath)
-     for _,v in next, directorySkinFolder do
-          if v:match('^('..totalSkinPrefix..'%-.+)%.png$') then
-               totalSkins[#totalSkins + 1] = v:match('^'..totalSkinPrefix..'%-(.+)%.png$'):upperAtStart()
+     local directorySkinLocalFolderPath = 'assets/shared/images/'..totalSkinFolder
+     local directorySkinLocalFolder     = directoryFileList(directorySkinLocalFolderPath)
+     for _,skins in next, directorySkinLocalFolder do
+          if skins:match('^('..totalSkinPrefix..'%-.+)%.png$') then
+               totalSkins[#totalSkins + 1] = skins:match('^'..totalSkinPrefix..'%-(.+)%.png$'):upperAtStart()
           end
      end
 
-     local directorySkinModSubFolder  = {}
-     local directorySkinModFolderPath = 'mods/NoteSkin Selector Remastered/images/'..totalSkinFolder
-     local directorySkinModFolder     = directoryFileList(directorySkinModFolderPath)
-     for _,v in next, directorySkinModFolder do
-          if v:match('^('..totalSkinPrefix..'%-.+)%.png$') then
-               totalSkins[#totalSkins + 1] = v:match('^'..totalSkinPrefix..'%-(.+)%.png$'):upperAtStart()
+     local directorySkinFolderGroup = {}
+     local directorySkinFolderPath  = 'mods/NoteSkin Selector Remastered/images/'..totalSkinFolder
+     local directorySkinFolder      = directoryFileList(directorySkinFolderPath)
+     for _,skins in next, directorySkinFolder do
+          if skins:match('^('..totalSkinPrefix..'%-.+)%.png$') then
+               totalSkins[#totalSkins + 1] = skins:match('^'..totalSkinPrefix..'%-(.+)%.png$'):upperAtStart()
           end
-
-          if not v:match('%.%w+$') then
-               table.insert(directorySkinModSubFolder, v)
+          if not skins:match('%.%w+$') then
+               table.insert(irectorySkinFolderGroup, skins)
           end
      end
 
-     for _,v in next, directorySkinModSubFolder do
-          local directorySubSkinModFolderPath = 'mods/NoteSkin Selector Remastered/images/'..totalSkinFolder..'/'..v
-          local directorySubSkinModFolder     = directoryFileList(directorySubSkinModFolderPath)
-
-          for _,q in next, directorySubSkinModFolder do
-               if q:match('^('..totalSkinPrefix..'%-.+)%.png$') then
-                    totalSkins[#totalSkins + 1] = q:match('^'..totalSkinPrefix..'%-(.+)%.png$'):upperAtStart()
+     for _,folders in next, directorySkinFolderGroup do
+          local directorySkinSubFolderPath = 'mods/NoteSkin Selector Remastered/images/'..totalSkinFolder..'/'..folders
+          local directorySkinSubFolder     = directoryFileList(directorySkinSubFolderPath)
+          for _,skins in next, directorySkinSubFolder do
+               if skins:match('^('..totalSkinPrefix..'%-.+)%.png$') then
+                    totalSkins[#totalSkins + 1] = skins:match('^'..totalSkinPrefix..'%-(.+)%.png$'):upperAtStart()
                end
           end
      end
@@ -151,6 +147,29 @@ function states.getTotalSkinObjects(skin, byData)
      return totalSkinObjects[skin]
 end
 
+---
+---@param skin string
+---@return table[table[any]]
+function states.getTotalSkinObjectNames(skin)
+     local totalSkinObjectNameIndex = 0
+     local totalSkinObjectNames = table.new(0xff, 0)
+     totalSkinObjectNames[skin] = table.new(0xff, 0)
+
+     local totalSkinNames = states.getTotalSkinNames(skin)
+     for pages = 1, #totalSkinNames do
+          if (pages-1) % 16 == 0 then --! DO NOT REMOVE PARENTHESIS
+               totalSkinObjectNameIndex = totalSkinObjectNameIndex + 1
+               totalSkinObjectNames[skin][totalSkinObjectNameIndex] = table.new(16, 0)
+          end
+     
+          if pages % 16+1 ~= 0 then   --! DO NOT ADD PARENTHESIS
+               local totalSkinObjectNameGroup = totalSkinObjectNames[skin][totalSkinObjectNameIndex]
+               totalSkinObjectNameGroup[#totalSkinObjectNameGroup + 1] = totalSkinNames[pages]
+          end
+     end
+     return totalSkinObjectNames[skin]
+end
+
 --- Gets and calculates the positions for the slider functionality
 --- If the current state has only one page, it will cause a calculation error, cuz of dividing zero.
 --- If the error occured, it must have a piece of code to detect it to prevent visual bugs.
@@ -183,62 +202,7 @@ end
 ---@param metadataFolder string
 ---@return table<string, any>
 function states.getMetadataSkins(skin, metadataFolder)
-     local totalMetadataFolder = table.new(0xff, 0)
-     local totalSkinPrefix = states[skin]['prefix']
-     local totalSkinFolder = states[skin]['folder']
 
-     local directorySkinMetadataFolderPath = 'mods/NoteSkin Selector Remastered/json/${skin}/${folder}'
-     local directorySkinMetadataFolderStr  = (directorySkinMetadataFolderPath):interpol{skin = skin, folder = metadataFolder}
-     local directorySkinMetadataFolder     = directoryFileList(directorySkinMetadataFolderStr)     
-     for _,v in next, directorySkinMetadataFolder do
-          if v:match('^(.+)%.json$') then
-               totalMetadataFolder[#totalMetadataFolder + 1] = v:match('^(.+%.json)$')
-          end
-     end
-
-     local totalSkins = {'funkin.json'}
-     local directorySkinFolderPath = 'assets/shared/images/'..totalSkinFolder
-     local directorySkinFolder     = directoryFileList(directorySkinFolderPath)
-     for _,v in next, directorySkinFolder do
-          if v:match('^('..totalSkinPrefix..'%-.+)%.png$') then
-               totalSkins[#totalSkins + 1] = v:match('^'..totalSkinPrefix..'%-(.+)%.png$')..'.json'
-          end
-     end
-
-     for skinInd = 1, #totalSkins do
-          table.remove(totalMetadataFolder, table.find(totalMetadataFolder, totalSkins[skinInd]))
-          table.insert(totalMetadataFolder, skinInd, totalSkins[skinInd])
-
-          totalMetadataFolder[skinInd] = 'json/'..skin..'/'..metadataFolder..'/'..totalSkins[skinInd]
-     end
-
-     if #directorySkinMetadataFolder == 0 then
-          error('Metadata folder missing!')
-     end
-     return totalMetadataFolder
-end
-
----
----@param skin string
----@return table[table[any]]
-function states.getMetadataSkinNames(skin)
-     local totalMetadataSkinIndex = 0
-     local totalMetadataSkinNames = table.new(0xff, 0)
-     totalMetadataSkinNames[skin] = table.new(0xff, 0)
-
-     local totalSkinNames = states.getTotalSkinNames(skin)
-     for pages = 1, #totalSkinNames do
-          if (pages-1) % 16 == 0 then --! DO NOT REMOVE PARENTHESIS
-               totalMetadataSkinIndex = totalMetadataSkinIndex + 1
-               totalMetadataSkinNames[skin][totalMetadataSkinIndex] = table.new(16, 0)
-          end
-     
-          if pages % 16+1 ~= 0 then   --! DO NOT ADD PARENTHESIS
-               local totalMetadataSkinObjectNames = totalMetadataSkinNames[skin][totalMetadataSkinIndex]
-               totalMetadataSkinObjectNames[#totalMetadataSkinObjectNames + 1] = totalSkinNames[pages]
-          end
-     end
-     return totalMetadataSkinNames[skin]
 end
 
 function states.getMetadataSkinElements(skin, metadataFolder)

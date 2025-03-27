@@ -74,8 +74,6 @@ function SkinNotes:load()
 
      self.searchSkinObjectIndex = table.new(16, 0)
      self.searchSkinObjectPage  = table.new(16, 0)
-
-     --debugPrint( states.getMetadataSkins(self.stateClass, 'display') )
 end
 
 --- Creates a chunk to display the selected skins
