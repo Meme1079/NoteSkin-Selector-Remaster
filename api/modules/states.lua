@@ -76,7 +76,7 @@ function states.getTotalSkinNames(skin)
                totalSkins[#totalSkins + 1] = skins:match('^'..totalSkinPrefix..'%-(.+)%.png$'):upperAtStart()
           end
           if not skins:match('%.%w+$') then
-               table.insert(irectorySkinFolderGroup, skins)
+               table.insert(directorySkinFolderGroup, skins)
           end
      end
 
@@ -113,6 +113,7 @@ end
 ---| 'bools' # THe skin's togglable values
 
 --- Gets multiple metadata properties for the data to be used for interaction.
+--- Each data within metadata properties are spliced in every 16-index, inserted to their designated page array.
 ---@param skin string The specified skin to find the total amount it currently has.
 ---@param byData byData
 ---@return table[table[any]]
@@ -147,8 +148,8 @@ function states.getTotalSkinObjects(skin, byData)
      return totalSkinObjects[skin]
 end
 
----
----@param skin string
+--- Gets the skin's name each are spliced in every 16-index, inserted to their designated page array.
+---@param skin string The specified skin to find the total amount it currently has.
 ---@return table[table[any]]
 function states.getTotalSkinObjectNames(skin)
      local totalSkinObjectNameIndex = 0
@@ -202,7 +203,51 @@ end
 ---@param metadataFolder string
 ---@return table<string, any>
 function states.getMetadataSkins(skin, metadataFolder)
+     local totalSkins      = {}
+     local totalSkinPrefix = states[skin]['prefix']
+     local totalSkinFolder = states[skin]['folder']
 
+     local directorySkinLocalFolderGroup = {'funkin.json'}
+     local directorySkinLocalFolderPath  = 'assets/shared/images/'..totalSkinFolder
+     local directorySkinLocalFolder      = directoryFileList(directorySkinLocalFolderPath)
+     for _,skins in next, directorySkinLocalFolder do
+          if skins:match('^('..totalSkinPrefix..'%-.+)%.png$') then
+               local skinName = skins:match('^'..totalSkinPrefix..'%-(.+)%.png$'):gsub('%s', '_'):lower()
+               table.insert(directorySkinLocalFolderGroup, skinName..'.json')
+          end
+     end
+
+     local directoryMetadataFolderGroup = {}
+     local directoryMetadataFolderPath  = 'mods/NoteSkin Selector Remastered/json/'..skin..'/'..metadataFolder
+     local directoryMetadataFolder      = directoryFileList(directoryMetadataFolderPath)
+     for _,skins in next, directoryMetadataFolder do
+          if skins:match('.-%.json$') then
+               totalSkins[#totalSkins + 1] = 'json/'..skin..'/'..skins:match('.-%.json$')
+          end
+          if not skins:match('%.%w+$') then
+               table.insert(directoryMetadataFolderGroup, skins)
+          end
+     end
+
+     for _,folders in next, directoryMetadataFolderGroup do
+          local directoryMetadataSubFolderPath = 'mods/NoteSkin Selector Remastered/json/'..skin..'/'..metadataFolder..'/'..folders
+          local directoryMetadataSubFolder     = directoryFileList(directoryMetadataSubFolderPath)
+          for _,skins in next, directoryMetadataSubFolder do
+               if skins:match('.-%.json$') then
+                    totalSkins[#totalSkins + 1] = 'json/'..skin..'/'..folders..'/'..skins:match('.-%.json$')
+               end
+          end
+     end
+
+     table.sort(totalSkins)
+     for localSkinInd, localSkins in next, directorySkinLocalFolderGroup do
+          table.remove(totalSkins, table.find(totalSkins, 'json/'..skin..'/'..localSkins))
+          table.insert(totalSkins, localSkinInd, 'json/'..skin..'/'..localSkins)
+     end
+     return totalSkins
+end
+
+function states.getMetadataObjectSkins(skin, metadataFolder)
 end
 
 function states.getMetadataSkinElements(skin, metadataFolder)
