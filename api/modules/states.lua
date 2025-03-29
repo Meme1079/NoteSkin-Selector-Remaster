@@ -124,22 +124,22 @@ function states.getTotalSkinObjects(skin, byData)
      local totalSkinObjects = table.new(0xff, 0)
      totalSkinObjects[skin] = table.new(0xff, 0)
 
-     local totalSkinNames = states.getTotalSkinNames(skin)
      local totalSkins     = states.getTotalSkins(skin)
-     for pages = 1, #totalSkins do
-          if (pages-1) % 16 == 0 then --! DO NOT REMOVE PARENTHESIS
+     local totalSkinNames = states.getTotalSkinNames(skin)
+     for objects = 1, #totalSkins do
+          if (objects-1) % 16 == 0 then --! DO NOT REMOVE PARENTHESIS
                totalSkinGroupIndex = totalSkinGroupIndex + 1
                totalSkinObjects[skin][totalSkinGroupIndex] = table.new(16, 0)
           end
      
-          if pages % 16+1 ~= 0 then   --! DO NOT ADD PARENTHESIS
+          if objects % 16+1 ~= 0 then   --! DO NOT ADD PARENTHESIS
                local totalSkinObjectGroup = totalSkinObjects[skin][totalSkinGroupIndex]
                if byData == 'skins' then
-                    totalSkinObjectGroup[#totalSkinObjectGroup + 1] = totalSkins[pages]
+                    totalSkinObjectGroup[#totalSkinObjectGroup + 1] = totalSkins[objects]
                elseif byData == 'names' then
-                    totalSkinObjectGroup[#totalSkinObjectGroup + 1] = totalSkinNames[pages]
+                    totalSkinObjectGroup[#totalSkinObjectGroup + 1] = totalSkinNames[objects]
                elseif byData == 'ids' then
-                    totalSkinObjectGroup[#totalSkinObjectGroup + 1] = pages
+                    totalSkinObjectGroup[#totalSkinObjectGroup + 1] = objects
                elseif byData == 'bools' then
                     totalSkinObjectGroup[#totalSkinObjectGroup + 1] = false
                end
@@ -157,15 +157,15 @@ function states.getTotalSkinObjectNames(skin)
      totalSkinObjectNames[skin] = table.new(0xff, 0)
 
      local totalSkinNames = states.getTotalSkinNames(skin)
-     for pages = 1, #totalSkinNames do
-          if (pages-1) % 16 == 0 then --! DO NOT REMOVE PARENTHESIS
+     for objects = 1, #totalSkinNames do
+          if (objects-1) % 16 == 0 then --! DO NOT REMOVE PARENTHESIS
                totalSkinObjectNameIndex = totalSkinObjectNameIndex + 1
                totalSkinObjectNames[skin][totalSkinObjectNameIndex] = table.new(16, 0)
           end
      
-          if pages % 16+1 ~= 0 then   --! DO NOT ADD PARENTHESIS
+          if objects % 16+1 ~= 0 then   --! DO NOT ADD PARENTHESIS
                local totalSkinObjectNameGroup = totalSkinObjectNames[skin][totalSkinObjectNameIndex]
-               totalSkinObjectNameGroup[#totalSkinObjectNameGroup + 1] = totalSkinNames[pages]
+               totalSkinObjectNameGroup[#totalSkinObjectNameGroup + 1] = totalSkinNames[objects]
           end
      end
      return totalSkinObjectNames[skin]
@@ -198,9 +198,9 @@ function states.getPageSkinSliderPositions(skin)
      return sliderTrackData[skin]
 end
 
----
----@param skin string
----@param metadataFolder string
+--- Gets the total amount of skin metadata it has.
+---@param skin string The specified skin to find the total amount of metadata it currently has.
+---@param metadataFolder string The specified metadata folder to get the amount of metadata.
 ---@return table<string, any>
 function states.getMetadataSkins(skin, metadataFolder)
      local totalSkins      = {}
@@ -222,7 +222,9 @@ function states.getMetadataSkins(skin, metadataFolder)
      local directoryMetadataFolder      = directoryFileList(directoryMetadataFolderPath)
      for _,skins in next, directoryMetadataFolder do
           if skins:match('.-%.json$') then
-               totalSkins[#totalSkins + 1] = 'json/'..skin..'/'..skins:match('.-%.json$')
+               local skinMetadataTemp = {skin = skin, file = skins:match('.-%.json$')}
+               local skinMetadata     = ('json/${skin}/${file}'):interpol(skinMetadataTemp)
+               totalSkins[#totalSkins + 1] = skinMetadata
           end
           if not skins:match('%.%w+$') then
                table.insert(directoryMetadataFolderGroup, skins)
@@ -234,20 +236,54 @@ function states.getMetadataSkins(skin, metadataFolder)
           local directoryMetadataSubFolder     = directoryFileList(directoryMetadataSubFolderPath)
           for _,skins in next, directoryMetadataSubFolder do
                if skins:match('.-%.json$') then
-                    totalSkins[#totalSkins + 1] = 'json/'..skin..'/'..folders..'/'..skins:match('.-%.json$')
+                    local skinMetadataTemp = {skin = skin, folder = folders, file = skins:match('.-%.json$')}
+                    local skinMetadata     = ('json/${skin}/${folder}/${file}'):interpol(skinMetadataTemp)
+                    totalSkins[#totalSkins + 1] = skinMetadata
                end
           end
      end
 
-     table.sort(totalSkins)
+     table.sort(totalSkins) -- this table sort function is a heterosexual
      for localSkinInd, localSkins in next, directorySkinLocalFolderGroup do
-          table.remove(totalSkins, table.find(totalSkins, 'json/'..skin..'/'..localSkins))
-          table.insert(totalSkins, localSkinInd, 'json/'..skin..'/'..localSkins)
+          local skinMetadata = ('json/${skin}/${file}'):interpol({skin = skin, file = localSkins})
+          table.remove(totalSkins, table.find(totalSkins, skinMetadata))
+          table.insert(totalSkins, localSkinInd, skinMetadata)
      end
      return totalSkins
 end
 
+local stateMetadataObjectNames = table.new(0xff, 0)
+local stateMetadataObjectDatas = table.new(0xff, 0)
+local stateMetadataObjectIndex = table.new(0xff, 0)
 function states.getMetadataObjectSkins(skin, metadataFolder)
+     local totalSkinObjectMetadataIndex = 0
+     local totalSkinObjectMetadatas = table.new(0xff, 0)
+     totalSkinObjectMetadatas[skin] = table.new(0xff, 0)
+
+     local totalSkinNames     = states.getTotalSkinNames(skin)
+     local totalSkinMetadatas = states.getMetadataSkins(skin, metadataFolder)
+     for objects = 1, #totalSkinMetadatas do
+          table.insert(stateMetadataObjectNames, totalSkinNames[objects]:gsub('%s', '_'):lower())
+          table.insert(stateMetadataObjectDatas, totalSkinMetadatas[objects]:match('.+/(.-)%.json'))
+     end
+     for objects = 1, #totalSkinMetadatas do
+          table.insert(stateMetadataObjectIndex, objects, table.find(stateMetadataObjectNames, stateMetadataObjectDatas[objects]))
+     end
+     for objects = 1, #totalSkinMetadatas do
+          if (objects-1) % 16 == 0 then --! DO NOT REMOVE PARENTHESIS
+               totalSkinObjectMetadataIndex = totalSkinObjectMetadataIndex + 1
+               totalSkinObjectMetadatas[skin][totalSkinObjectMetadataIndex] = table.new(16, 0)
+          end
+          if objects % 16+1 ~= 0 then   --! DO NOT ADD PARENTHESIS
+               local totalSkinObjectMetadataGroup = totalSkinObjectMetadatas[skin][totalSkinObjectMetadataIndex]
+               if stateMetadataObjectIndex[table.find(stateMetadataObjectIndex, objects)] == nil then
+                    totalSkinObjectMetadataGroup[#totalSkinObjectMetadataGroup + 1] = false
+               else
+                    totalSkinObjectMetadataGroup[#totalSkinObjectMetadataGroup + 1] = totalSkinMetadatas[objects]
+               end
+          end
+     end
+     return totalSkinObjectMetadatas[skin]
 end
 
 function states.getMetadataSkinElements(skin, metadataFolder)
