@@ -247,6 +247,14 @@ function states.getMetadataSkins(skin, metadataFolder)
      return totalSkins
 end
 
+function states.getMetadataSkinsOrdered(skin, metadataFolder)
+     local metadataOrderedSkins = ''
+     for _,skins in next, states.getMetadataObjectSkins(skin, metadataFolder) do
+          metadataOrderedSkins = metadataOrderedSkins .. table.concat(skins, ', ') .. ', '
+     end
+     return metadataOrderedSkins:sub(1, #metadataOrderedSkins-#(', ')):split(', ')
+end
+
 --- Gets the skin's JSON each are spliced in every 16-index, inserted to their designated page array.
 ---@param skin string The specified skin to find the total amount of JSON data it currently has.
 ---@param metadataFolder string The specified metadata folder to get the amount of JSON data.
@@ -295,7 +303,7 @@ function states.getMetadataObjectSkins(skin, metadataFolder)
                     local metadataPaths = stateMetadataObjectFolder[metadataNames]
                     totalSkinObjectMetadataGroup[#totalSkinObjectMetadataGroup + 1] = metadataPaths..metadataNames..'.json'
                else
-                    totalSkinObjectMetadataGroup[#totalSkinObjectMetadataGroup + 1] = false
+                    totalSkinObjectMetadataGroup[#totalSkinObjectMetadataGroup + 1] = '@void'
                end
           end
      end

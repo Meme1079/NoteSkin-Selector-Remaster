@@ -55,9 +55,11 @@ function SkinNotes:load()
      self.totalSkinObjectID    = states.getTotalSkinObjects(self.stateClass, 'ids')
      self.totalSkinObjectNames = states.getTotalSkinObjects(self.stateClass, 'names')
 
-     self.totalMetadataDisplay = states.getMetadataObjectSkins(self.stateClass, 'display')
-     self.totalMetadataPreview = states.getMetadataObjectSkins(self.stateClass, 'preview')
-     self.totalMetadataSkins   = states.getMetadataObjectSkins(self.stateClass, 'skins')
+     self.totalMetadataOrderedDisplay = states.getMetadataSkinsOrdered(self.stateClass, 'display')
+
+     self.totalMetadataObjectDisplay = states.getMetadataObjectSkins(self.stateClass, 'display')
+     self.totalMetadataObjectPreview = states.getMetadataObjectSkins(self.stateClass, 'preview')
+     self.totalMetadataObjectSkins   = states.getMetadataObjectSkins(self.stateClass, 'skins')
      
      self.totalSkinObjectHovered  = states.getTotalSkinObjects(self.stateClass, 'bools')
      self.totalSkinObjectClicked  = states.getTotalSkinObjects(self.stateClass, 'bools')
@@ -138,14 +140,20 @@ function SkinNotes:create(index)
           setObjectCamera(displaySkinIconButton, 'camHUD')
           setProperty(displaySkinIconButton..'.antialiasing', false)
           addLuaSprite(displaySkinIconButton)
-          
-          local displaySkinMetadata = json.parse(getTextFromFile(self.totalMetadataDisplay[index][displays]))
-          local displaySkinMetadata_prefixes = displaySkinMetadata.prefixes   or 'arrowUP'
-          local displaySkinMetadata_frames   = displaySkinMetadata.frames     or 24
-          local displaySkinMetadata_sizeX    = displaySkinMetadata.size[1]    or 0.55
-          local displaySkinMetadata_sizeY    = displaySkinMetadata.size[2]    or 0.55
-          local displaySkinMetadata_offsetX  = displaySkinMetadata.offsets[1] or 0
-          local displaySkinMetadata_offsetY  = displaySkinMetadata.offsets[2] or 0
+
+          local displaySkinMetadataJSON = function(default)
+               if self.totalMetadataObjectDisplay[index][displays] == '@void' then
+                    return default
+               end
+               return json.parse(getTextFromFile(self.totalMetadataObjectDisplay[index][displays])) or default
+          end
+
+          local displaySkinMetadata_prefixes = displaySkinMetadataJSON('arrowUP').prefixes
+          local displaySkinMetadata_frames   = displaySkinMetadataJSON(24).frames
+          local displaySkinMetadata_sizeX    = displaySkinMetadataJSON(0.55).size[1]
+          local displaySkinMetadata_sizeY    = displaySkinMetadataJSON(0.55).size[2]
+          local displaySkinMetadata_offsetX  = displaySkinMetadataJSON(0).offsets[1]
+          local displaySkinMetadata_offsetY  = displaySkinMetadataJSON(0).offsets[2]
 
           local displaySkinImageTemplate = {path = self.statePaths, skin = self.totalSkinObjects[index][displays]}
           local displaySkinImage         = ('${path}/${skin}'):interpol(displaySkinImageTemplate)
@@ -601,7 +609,7 @@ function SkinNotes:search_create()
           local search_result = {}
           for i = 1, #list, 1 do
                local startName   = list[i]:match(match..'(.+)')   == nil and 'funkin' or list[i]:match(match..'(.+)')
-               local startFolder = list[i]:match('(.+/)'..match) == nil and ''        or list[i]:match('(.+/)'..match)
+               local startFolder = list[i]:match('(.+/)'..match)  == nil and ''       or list[i]:match('(.+/)'..match)
 
                local startPos = startName:upper():find(input:upper())
                local wordPos  = startPos == nil and -1 or startPos
@@ -675,18 +683,32 @@ function SkinNotes:search_create()
           setProperty(displaySkinIconButton..'.antialiasing', false)
           addLuaSprite(displaySkinIconButton)
 
+          local displaySkinMetadataJSON = function(default)
+               if self.totalMetadataOrderedDisplay[tonumber(displays)] == '@void' then
+                    return default
+               end
+               return json.parse(getTextFromFile(self.totalMetadataOrderedDisplay[tonumber(displays)])) or default
+          end
+
+          local displaySkinMetadata_prefixes = displaySkinMetadataJSON('arrowUP').prefixes
+          local displaySkinMetadata_frames   = displaySkinMetadataJSON(24).frames
+          local displaySkinMetadata_sizeX    = displaySkinMetadataJSON(0.55).size[1]
+          local displaySkinMetadata_sizeY    = displaySkinMetadataJSON(0.55).size[2]
+          local displaySkinMetadata_offsetX  = displaySkinMetadataJSON(0).offsets[1]
+          local displaySkinMetadata_offsetY  = displaySkinMetadataJSON(0).offsets[2]
+          
           local displaySkinImageTemplate = {path = self.statePaths, skin = filterSearchBySkin[ids]}
           local displaySkinImage = ('${path}/${skin}'):interpol(displaySkinImageTemplate)
 
           local displaySkinImagePositionX = displaySkinPositionX + 16.5
           local displaySkinImagePositionY = displaySkinPositionY + 12
           makeAnimatedLuaSprite(displaySkinIconSkin, displaySkinImage, displaySkinImagePositionX, displaySkinImagePositionY)
-          scaleObject(displaySkinIconSkin, 0.55, 0.55)
-          addAnimationByPrefix(displaySkinIconSkin, 'static', 'arrowUP', 24, true)
+          scaleObject(displaySkinIconSkin, displaySkinMetadata_sizeX, displaySkinMetadata_sizeY)
+          addAnimationByPrefix(displaySkinIconSkin, 'static', displaySkinMetadata_prefixes, displaySkinMetadata_frames, true)
 
           local curOffsetX = getProperty(displaySkinIconSkin..'.offset.x')
           local curOffsetY = getProperty(displaySkinIconSkin..'.offset.y')
-          --addOffset(displaySkinIconSkin, 'static', curOffsetX - getSkinMetadata.offsets[1], curOffsetY + getSkinMetadata.offsets[2])
+          addOffset(displaySkinIconSkin, 'static', curOffsetX - displaySkinMetadata_offsetX, curOffsetY + displaySkinMetadata_offsetY)
           playAnim(displaySkinIconSkin, 'static')
           setObjectCamera(displaySkinIconSkin, 'camHUD')
           addLuaSprite(displaySkinIconSkin)
