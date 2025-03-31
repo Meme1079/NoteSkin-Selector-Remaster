@@ -138,23 +138,27 @@ function SkinNotes:create(index)
           setObjectCamera(displaySkinIconButton, 'camHUD')
           setProperty(displaySkinIconButton..'.antialiasing', false)
           addLuaSprite(displaySkinIconButton)
+          
+          local displaySkinMetadata = json.parse(getTextFromFile(self.totalMetadataDisplay[index][displays]))
+          local displaySkinMetadata_prefixes = displaySkinMetadata.prefixes   or 'arrowUP'
+          local displaySkinMetadata_frames   = displaySkinMetadata.frames     or 24
+          local displaySkinMetadata_sizeX    = displaySkinMetadata.size[1]    or 0.55
+          local displaySkinMetadata_sizeY    = displaySkinMetadata.size[2]    or 0.55
+          local displaySkinMetadata_offsetX  = displaySkinMetadata.offsets[1] or 0
+          local displaySkinMetadata_offsetY  = displaySkinMetadata.offsets[2] or 0
 
           local displaySkinImageTemplate = {path = self.statePaths, skin = self.totalSkinObjects[index][displays]}
-          local displaySkinImage = ('${path}/${skin}'):interpol(displaySkinImageTemplate)
+          local displaySkinImage         = ('${path}/${skin}'):interpol(displaySkinImageTemplate)
 
           local displaySkinImagePositionX = displaySkinPositionX + 16.5
           local displaySkinImagePositionY = displaySkinPositionY + 12
           makeAnimatedLuaSprite(displaySkinIconSkin, displaySkinImage, displaySkinImagePositionX, displaySkinImagePositionY)
-          scaleObject(displaySkinIconSkin, 0.55, 0.55)
-          addAnimationByPrefix(displaySkinIconSkin, 'static', 'arrowUP', 24, true)
-
-
+          scaleObject(displaySkinIconSkin, displaySkinMetadata_sizeX, displaySkinMetadata_sizeY)
+          addAnimationByPrefix(displaySkinIconSkin, 'static', displaySkinMetadata_prefixes, displaySkinMetadata_frames, true)
 
           local curOffsetX = getProperty(displaySkinIconSkin..'.offset.x')
           local curOffsetY = getProperty(displaySkinIconSkin..'.offset.y')
-
-          local subterfuge = json.parse(getTextFromFile(self.totalMetadataDisplay[index][displays])).offsets
-          addOffset(displaySkinIconSkin, 'static', curOffsetX - subterfuge[1], curOffsetY + subterfuge[2])
+          addOffset(displaySkinIconSkin, 'static', curOffsetX - displaySkinMetadata_offsetX, curOffsetY + displaySkinMetadata_offsetY)
           playAnim(displaySkinIconSkin, 'static')
           setObjectCamera(displaySkinIconSkin, 'camHUD')
           addLuaSprite(displaySkinIconSkin)
