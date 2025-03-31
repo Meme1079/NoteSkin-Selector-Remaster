@@ -302,7 +302,4 @@ function states.getMetadataObjectSkins(skin, metadataFolder)
      return totalSkinObjectMetadatas[skin]
 end
 
-function states.getMetadataSkinElements(skin, metadataFolder)
-end
-
 return states

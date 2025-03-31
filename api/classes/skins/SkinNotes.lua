@@ -54,6 +54,10 @@ function SkinNotes:load()
      self.totalSkinObjects     = states.getTotalSkinObjects(self.stateClass)
      self.totalSkinObjectID    = states.getTotalSkinObjects(self.stateClass, 'ids')
      self.totalSkinObjectNames = states.getTotalSkinObjects(self.stateClass, 'names')
+
+     self.totalMetadataDisplay = states.getMetadataObjectSkins(self.stateClass, 'display')
+     self.totalMetadataPreview = states.getMetadataObjectSkins(self.stateClass, 'preview')
+     self.totalMetadataSkins   = states.getMetadataObjectSkins(self.stateClass, 'skins')
      
      self.totalSkinObjectHovered  = states.getTotalSkinObjects(self.stateClass, 'bools')
      self.totalSkinObjectClicked  = states.getTotalSkinObjects(self.stateClass, 'bools')
@@ -74,9 +78,6 @@ function SkinNotes:load()
 
      self.searchSkinObjectIndex = table.new(16, 0)
      self.searchSkinObjectPage  = table.new(16, 0)
-
-     local a = states.getMetadataObjectSkins(self.stateClass, 'preview')
-     debugPrint( json.stringify(a, nil, 5) )
 end
 
 --- Creates a chunk to display the selected skins
@@ -147,9 +148,13 @@ function SkinNotes:create(index)
           scaleObject(displaySkinIconSkin, 0.55, 0.55)
           addAnimationByPrefix(displaySkinIconSkin, 'static', 'arrowUP', 24, true)
 
+
+
           local curOffsetX = getProperty(displaySkinIconSkin..'.offset.x')
           local curOffsetY = getProperty(displaySkinIconSkin..'.offset.y')
-          --addOffset(displaySkinIconSkin, 'static', curOffsetX - getSkinMetadata.offsets[1], curOffsetY + getSkinMetadata.offsets[2])
+
+          local subterfuge = json.parse(getTextFromFile(self.totalMetadataDisplay[index][displays])).offsets
+          addOffset(displaySkinIconSkin, 'static', curOffsetX - subterfuge[1], curOffsetY + subterfuge[2])
           playAnim(displaySkinIconSkin, 'static')
           setObjectCamera(displaySkinIconSkin, 'camHUD')
           addLuaSprite(displaySkinIconSkin)
