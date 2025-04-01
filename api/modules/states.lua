@@ -201,8 +201,9 @@ end
 --- Gets the total amount of skin metadata it has.
 ---@param skin string The specified skin to find the total amount of metadata it currently has.
 ---@param metadataFolder string The specified metadata folder to get the amount of metadata.
+---@param converted? boolean
 ---@return table<string, any>
-function states.getMetadataSkins(skin, metadataFolder)
+function states.getMetadataSkins(skin, metadataFolder, converted)
      local totalSkins      = table.new(0xff, 0)
      local totalSkinPrefix = states[skin]['prefix']
      local totalSkinFolder = states[skin]['folder']
@@ -244,22 +245,31 @@ function states.getMetadataSkins(skin, metadataFolder)
      end
 
      table.sort(totalSkins) -- this table sort function is a heterosexual
+     if converted == true then
+          for objects, skins in next, totalSkins do
+               if skins ~= '@void' then
+                    totalSkins[objects] = json.parse(getTextFromFile(skins))
+               end
+          end
+     end
      return totalSkins
 end
 
-function states.getMetadataSkinsOrdered(skin, metadataFolder)
-     local metadataOrderedSkins = ''
-     for _,skins in next, states.getMetadataObjectSkins(skin, metadataFolder) do
-          metadataOrderedSkins = metadataOrderedSkins .. table.concat(skins, ', ') .. ', '
+function states.getMetadataSkinsOrdered(skin, metadataFolder, converted)
+     local metadataOrderedSkins = {}
+     for _,pages in next, states.getMetadataObjectSkins(skin, metadataFolder, converted) do
+          for _,skins in next, pages do
+               metadataOrderedSkins[#metadataOrderedSkins + 1] = skins
+          end
      end
-     return metadataOrderedSkins:sub(1, #metadataOrderedSkins-#(', ')):split(', ')
+     return metadataOrderedSkins
 end
 
 --- Gets the skin's JSON each are spliced in every 16-index, inserted to their designated page array.
 ---@param skin string The specified skin to find the total amount of JSON data it currently has.
 ---@param metadataFolder string The specified metadata folder to get the amount of JSON data.
 ---@return table[table[any]]
-function states.getMetadataObjectSkins(skin, metadataFolder)
+function states.getMetadataObjectSkins(skin, metadataFolder, converted)
      local stateMetadataObjectNames  = table.new(0xff, 0)
      local stateMetadataObjectDatas  = table.new(0xff, 0)
      local stateMetadataObjectFolder = table.new(0, 0xff) -- dictionary
@@ -301,7 +311,12 @@ function states.getMetadataObjectSkins(skin, metadataFolder)
                if stateMetadataObjectNames[totalSkinObjectMetadataFindIndex] == nil then
                     local metadataNames = stateMetadataObjectNames[objects]
                     local metadataPaths = stateMetadataObjectFolder[metadataNames]
-                    totalSkinObjectMetadataGroup[#totalSkinObjectMetadataGroup + 1] = metadataPaths..metadataNames..'.json'
+
+                    if converted == true then
+                         totalSkinObjectMetadataGroup[#totalSkinObjectMetadataGroup + 1] = json.parse(getTextFromFile(metadataPaths..metadataNames..'.json'))
+                    else
+                         totalSkinObjectMetadataGroup[#totalSkinObjectMetadataGroup + 1] = metadataPaths..metadataNames..'.json'
+                    end
                else
                     totalSkinObjectMetadataGroup[#totalSkinObjectMetadataGroup + 1] = '@void'
                end

@@ -214,7 +214,6 @@ local Notes = SkinNotes:new('notes', 'noteSkins', 'NOTE_assets', true)
 Notes:load()
 Notes:precache()
 Notes:preview()
-Notes:preload()
 Notes:page_sliderMarks()
 Notes:save_load() 
 
