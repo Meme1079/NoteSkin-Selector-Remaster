@@ -145,19 +145,11 @@ function SkinNotes:create(index)
           setProperty(displaySkinIconButton..'.antialiasing', false)
           addLuaSprite(displaySkinIconButton)
 
-          local displaySkinMetadataJSON = function(default)
-               if self.totalMetadataObjectDisplay[index][displays] == '@void' then
-                    return default
-               end
-               return self.totalMetadataObjectDisplay[index][displays] or default
-          end
-
-          local displaySkinMetadata_prefixes = displaySkinMetadataJSON('arrowUP').prefixes
-          local displaySkinMetadata_frames   = displaySkinMetadataJSON(24).frames
-          local displaySkinMetadata_sizeX    = displaySkinMetadataJSON(0.55).size[1]
-          local displaySkinMetadata_sizeY    = displaySkinMetadataJSON(0.55).size[2]
-          local displaySkinMetadata_offsetX  = displaySkinMetadataJSON(0).offsets[1]
-          local displaySkinMetadata_offsetY  = displaySkinMetadataJSON(0).offsets[2]
+          local displaySkinMetadataJSON = self.totalMetadataObjectDisplay[index][displays]
+          local displaySkinMetadata_frames   = displaySkinMetadataJSON == '@void' and 24           or (displaySkinMetadataJSON.frames   or 24)
+          local displaySkinMetadata_prefixes = displaySkinMetadataJSON == '@void' and 'arrowUP'    or (displaySkinMetadataJSON.prefixes or 'arrowUP')
+          local displaySkinMetadata_size     = displaySkinMetadataJSON == '@void' and {0.55, 0.55} or (displaySkinMetadataJSON.size     or {0.55, 0.55})
+          local displaySkinMetadata_offsets  = displaySkinMetadataJSON == '@void' and {0, 0}       or (displaySkinMetadataJSON.offsets  or {0, 0})
 
           local displaySkinImageTemplate = {path = self.statePaths, skin = self.totalSkinObjects[index][displays]}
           local displaySkinImage = ('${path}/${skin}'):interpol(displaySkinImageTemplate)
@@ -165,12 +157,12 @@ function SkinNotes:create(index)
           local displaySkinImagePositionX = displaySkinPositionX + 16.5
           local displaySkinImagePositionY = displaySkinPositionY + 12
           makeAnimatedLuaSprite(displaySkinIconSkin, displaySkinImage, displaySkinImagePositionX, displaySkinImagePositionY)
-          scaleObject(displaySkinIconSkin, displaySkinMetadata_sizeX, displaySkinMetadata_sizeY)
+          scaleObject(displaySkinIconSkin, displaySkinMetadata_size[1], displaySkinMetadata_size[2])
           addAnimationByPrefix(displaySkinIconSkin, 'static', displaySkinMetadata_prefixes, displaySkinMetadata_frames, true)
 
           local curOffsetX = getProperty(displaySkinIconSkin..'.offset.x')
           local curOffsetY = getProperty(displaySkinIconSkin..'.offset.y')
-          addOffset(displaySkinIconSkin, 'static', curOffsetX - displaySkinMetadata_offsetX, curOffsetY + displaySkinMetadata_offsetY)
+          addOffset(displaySkinIconSkin, 'static', curOffsetX - displaySkinMetadata_offsets[1], curOffsetY + displaySkinMetadata_offsets[2])
           playAnim(displaySkinIconSkin, 'static')
           setObjectCamera(displaySkinIconSkin, 'camHUD')
           addLuaSprite(displaySkinIconSkin)
@@ -687,19 +679,11 @@ function SkinNotes:search_create()
           setProperty(displaySkinIconButton..'.antialiasing', false)
           addLuaSprite(displaySkinIconButton)
 
-          local displaySkinMetadataJSON = function(default)
-               if self.totalMetadataOrderedDisplay[tonumber(displays)] == '@void' then
-                    return default
-               end
-               return self.totalMetadataOrderedDisplay[tonumber(displays)] or default
-          end
-
-          local displaySkinMetadata_prefixes = displaySkinMetadataJSON('arrowUP').prefixes
-          local displaySkinMetadata_frames   = displaySkinMetadataJSON(24).frames
-          local displaySkinMetadata_sizeX    = displaySkinMetadataJSON(0.55).size[1]
-          local displaySkinMetadata_sizeY    = displaySkinMetadataJSON(0.55).size[2]
-          local displaySkinMetadata_offsetX  = displaySkinMetadataJSON(0).offsets[1]
-          local displaySkinMetadata_offsetY  = displaySkinMetadataJSON(0).offsets[2]
+          local displaySkinMetadataJSON = self.totalMetadataOrderedDisplay[tonumber(displays)]
+          local displaySkinMetadata_frames   = displaySkinMetadataJSON == '@void' and 24           or (displaySkinMetadataJSON.frames   or 24)
+          local displaySkinMetadata_prefixes = displaySkinMetadataJSON == '@void' and 'arrowUP'    or (displaySkinMetadataJSON.prefixes or 'arrowUP')
+          local displaySkinMetadata_size     = displaySkinMetadataJSON == '@void' and {0.55, 0.55} or (displaySkinMetadataJSON.size     or {0.55, 0.55})
+          local displaySkinMetadata_offsets  = displaySkinMetadataJSON == '@void' and {0, 0}       or (displaySkinMetadataJSON.offsets  or {0, 0})
 
           local displaySkinImageTemplate = {path = self.statePaths, skin = filterSearchBySkin[ids]}
           local displaySkinImage = ('${path}/${skin}'):interpol(displaySkinImageTemplate)
@@ -707,12 +691,12 @@ function SkinNotes:search_create()
           local displaySkinImagePositionX = displaySkinPositionX + 16.5
           local displaySkinImagePositionY = displaySkinPositionY + 12
           makeAnimatedLuaSprite(displaySkinIconSkin, displaySkinImage, displaySkinImagePositionX, displaySkinImagePositionY)
-          scaleObject(displaySkinIconSkin, displaySkinMetadata_sizeX, displaySkinMetadata_sizeY)
+          scaleObject(displaySkinIconSkin, displaySkinMetadata_size[1], displaySkinMetadata_size[2])
           addAnimationByPrefix(displaySkinIconSkin, 'static', displaySkinMetadata_prefixes, displaySkinMetadata_frames, true)
 
           local curOffsetX = getProperty(displaySkinIconSkin..'.offset.x')
           local curOffsetY = getProperty(displaySkinIconSkin..'.offset.y')
-          addOffset(displaySkinIconSkin, 'static', curOffsetX - displaySkinMetadata_offsetX, curOffsetY + displaySkinMetadata_offsetY)
+          addOffset(displaySkinIconSkin, 'static', curOffsetX - displaySkinMetadata_offsets[1], curOffsetY + displaySkinMetadata_offsets[2])
           playAnim(displaySkinIconSkin, 'static')
           setObjectCamera(displaySkinIconSkin, 'camHUD')
           addLuaSprite(displaySkinIconSkin)

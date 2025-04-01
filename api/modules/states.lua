@@ -201,7 +201,7 @@ end
 --- Gets the total amount of skin metadata it has.
 ---@param skin string The specified skin to find the total amount of metadata it currently has.
 ---@param metadataFolder string The specified metadata folder to get the amount of metadata.
----@param converted? boolean
+---@param converted? boolean An optional parameter, converts the JSON path into a real JSON data to utilize with.
 ---@return table<string, any>
 function states.getMetadataSkins(skin, metadataFolder, converted)
      local totalSkins      = table.new(0xff, 0)
@@ -255,6 +255,11 @@ function states.getMetadataSkins(skin, metadataFolder, converted)
      return totalSkins
 end
 
+--- Gets the skin's JSON in an ordered manner.
+---@param skin string The specified skin to find the total amount of JSON data it currently has.
+---@param metadataFolder string The specified metadata folder to get the amount of JSON data.
+---@param converted boolean An optional parameter, converts the JSON path into a real JSON data to utilize with.
+---@return table[table[any]]
 function states.getMetadataSkinsOrdered(skin, metadataFolder, converted)
      local metadataOrderedSkins = {}
      for _,pages in next, states.getMetadataObjectSkins(skin, metadataFolder, converted) do
@@ -268,6 +273,7 @@ end
 --- Gets the skin's JSON each are spliced in every 16-index, inserted to their designated page array.
 ---@param skin string The specified skin to find the total amount of JSON data it currently has.
 ---@param metadataFolder string The specified metadata folder to get the amount of JSON data.
+---@param converted? boolean An optional parameter, converts the JSON path into a real JSON data to utilize with.
 ---@return table[table[any]]
 function states.getMetadataObjectSkins(skin, metadataFolder, converted)
      local stateMetadataObjectNames  = table.new(0xff, 0)
@@ -308,6 +314,7 @@ function states.getMetadataObjectSkins(skin, metadataFolder, converted)
           if objects % 16+1 ~= 0 then   --! DO NOT ADD PARENTHESIS
                local totalSkinObjectMetadataGroup     = totalSkinObjectMetadatas[skin][totalSkinObjectMetadataIndex]
                local totalSkinObjectMetadataFindIndex = table.find(stateMetadataObjectNames, stateMetadataObjectPaths[objects])
+
                if stateMetadataObjectNames[totalSkinObjectMetadataFindIndex] == nil then
                     local metadataNames = stateMetadataObjectNames[objects]
                     local metadataPaths = stateMetadataObjectFolder[metadataNames]
