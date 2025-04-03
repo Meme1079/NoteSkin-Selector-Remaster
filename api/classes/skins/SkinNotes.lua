@@ -1043,24 +1043,35 @@ function SkinNotes:preview()
           return curPage > 0 and skinObjects[curPage] or self.totalSkinObjects[1][1]
      end
 
+     if self.totalMetadataObjectPreview[self.sliderPageIndex][curPage] == nil then
+          return
+     end
+
+     local a = self.totalMetadataObjectPreview[self.sliderPageIndex][curPage]
+
      for strums = 1, 4 do
           local previewSkinTemplate = {state = (self.stateClass):upperAtStart(), groupID = strums}
           local previewSkinGroup    = ('previewSkinGroup${state}-${groupID}'):interpol(previewSkinTemplate)
+
+          local tw = function(skinAnim, element)
+               return a['animations'][skinAnim][a['names'][skinAnim][strums]][element]
+          end
 
           local previewSkinImagePath = self.statePaths..'/'..getCurrentPreviewSkinObjects()
           local previewSkinPositionX = 790 + (105*(strums-1))
           local previewSkinPositionY = 135
           makeAnimatedLuaSprite(previewSkinGroup, previewSkinImagePath, previewSkinPositionX, previewSkinPositionY)
           scaleObject(previewSkinGroup, 0.65, 0.65)
-          addAnimationByPrefix(previewSkinGroup, 'left', 'arrowLEFT', 24, true)
-          addAnimationByPrefix(previewSkinGroup, 'down', 'arrowDOWN', 24, true)
-          addAnimationByPrefix(previewSkinGroup, 'up', 'arrowUP', 24, true)
-          addAnimationByPrefix(previewSkinGroup, 'right', 'arrowRIGHT', 24, true)
+          addAnimationByPrefix(previewSkinGroup, tw('strums', 'name'), tw('strums', 'prefix'), 24, true)
+
+          local curOffsetX = getProperty(previewSkinGroup..'.offset.x')
+          local curOffsetY = getProperty(previewSkinGroup..'.offset.y')
+          addOffset(previewSkinGroup, tw('strums', 'name'), curOffsetX - tw('strums', 'offsets')[1], curOffsetY + tw('strums', 'offsets')[2])
           playAnim(previewSkinGroup, ({'left', 'down', 'up', 'right'})[strums])
           setObjectCamera(previewSkinGroup, 'camHUD')
           addLuaSprite(previewSkinGroup, true)
      end
-
+     
      setTextString('genInfoSkinName', getCurrentPreviewSkinNames())
 end
 

@@ -3,78 +3,99 @@
           "confirm": {
                "left_confirm": {
                     "prefix": "left confirm",
+                    "name": "left_confirm",
                     "offsets": [0,0]
                },
                "down_confirm": {
                     "prefix": "down confirm",
+                    "name": "down_confirm",
                     "offsets": [0,0]
                },
                "up_confirm": {
                     "prefix": "up_confirm",
+                    "name": "up_confirm",
                     "offsets": [0,0]
                },
                "right_confirm": {
                     "prefix": "right_confirm",
+                    "name": "right_confirm",
                     "offsets": [0,0]
                }
           },
           "pressed": {
                "left_pressed": {
                     "prefix": "left press",
+                    "name": "left_pressed",
                     "offsets": [0,0]
                },
                "down_pressed": {
                     "prefix": "down press",
+                    "name": "down_pressed",
                     "offsets": [0,0]
                },
                "up_pressed": {
                     "prefix": "up press",
+                    "name": "up_pressed",
                     "offsets": [0,0]
                },
                "right_pressed": {
                     "prefix": "right press",
+                    "name": "right_pressed",
                     "offsets": [0,0]
                }
           },
           "colored": {
                "left_colored": {
                     "prefix": "purple0",
+                    "name": "left_colored",
                     "offsets": [0,0]
                },
                "down_colored": {
                     "prefix": "blue0",
+                    "name": "down_colored",
                     "offsets": [0,0]
                },
                "up_colored": {
                     "prefix": "green0",
+                    "name": "up_colored",
                     "offsets": [0,0]
                },
                "right_colored": {
                     "prefix": "red0",
+                    "name": "right_colored",
                     "offsets": [0,0]
                }
           },
           "strums": {
                "left": {
                     "prefix": "arrowLEFT",
+                    "name": "left",
                     "offsets": [0,0]
                },
                "down": {
                     "prefix": "arrowDOWN",
+                    "name": "down",
                     "offsets": [0,0]
                },
                "up": {
                     "prefix": "arrowUP",
+                    "name": "up",
                     "offsets": [0,0]
                },
                "right": {
                     "prefix": "arrowRIGHT",
+                    "name": "right",
                     "offsets": [0,0]
                }
           }
      },
+     "names": {
+          "confirm": ["left_confirm", "down_confirm", "up_confirm", "right_confirm"],
+          "pressed": ["left_pressed", "down_pressed", "up_pressed", "right_pressed"],
+          "colored": ["left_colored", "down_colored", "up_colored", "right_colored"],
+          "strums": ["left", "down", "up", "right"]
+     },
      "size": [0.65, 0.65],
-     "initial": ["left", "down", "up", "right"],
      "frames": 24,
      "loop": false
 }
