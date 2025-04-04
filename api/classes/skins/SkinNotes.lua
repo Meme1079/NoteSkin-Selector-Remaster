@@ -74,16 +74,57 @@ function SkinNotes:load()
      self.sliderTrackIntervals     = states.getPageSkinSliderPositions(self.stateClass).intervals
      self.sliderTrackSemiIntervals = states.getPageSkinSliderPositions(self.stateClass).semiIntervals
      
-     self.selectSkinPagePositionIndex = 1     -- lordx
-     self.selectSkinInitSelectedIndex = 0     -- d2011x
-     self.selectSkinPreSelectedIndex  = 0     -- xeno
-     self.selectSkinCurSelectedIndex  = 0     -- s2017x
-     self.selectSkinHasBeenClicked    = false -- sunky
+     self.selectSkinPagePositionIndex = 1     -- current page index
+     self.selectSkinInitSelectedIndex = 0     -- current pressed selected skin
+     self.selectSkinPreSelectedIndex  = 0     -- highlighting the current selected skin
+     self.selectSkinCurSelectedIndex  = 0     -- current selected skin index
+     self.selectSkinHasBeenClicked    = false -- whether the skin display has been clicked or not
 
      self.searchSkinObjectIndex = table.new(16, 0)
      self.searchSkinObjectPage  = table.new(16, 0)
 
+     self.metadataErrorExists = false
+
      self:preload()
+     self:preventError()
+end
+
+--- Checks if the any of skin states' data misaligned with each other.
+--- If found it will reset the skin states' data to its default.
+---@return nil
+function SkinNotes:preventError()
+     if self.totalSkinLimit <= self.sliderPageIndex then
+          self.metadataErrorExists = true
+     end
+     if self.totalSkinLimit <= self.sliderTrackPageIndex then
+          self.metadataErrorExists = true
+     end
+     if self.totalSkinLimit <= self.selectSkinPagePositionIndex then
+          self.metadataErrorExists = true
+     end
+
+     if #self.totalSkins <= self.selectSkinInitSelectedIndex then
+          self.metadataErrorExists = true
+     end
+     if #self.totalSkins <= self.selectSkinPreSelectedIndex then
+          self.metadataErrorExists = true
+     end
+     if #self.totalSkins <= self.selectSkinCurSelectedIndex then
+          self.metadataErrorExists = true
+     end
+
+     if self.metadataErrorExists == true then
+          self.sliderPageIndex          = 1
+          self.sliderTrackPageIndex     = 1
+
+          self.selectSkinPagePositionIndex = 1
+          self.selectSkinInitSelectedIndex = 0
+          self.selectSkinPreSelectedIndex  = 0
+          self.selectSkinCurSelectedIndex  = 0
+
+          self:page_text()
+          self:selection_sync()
+     end
 end
 
 --- Creates a chunk to display the selected skins
