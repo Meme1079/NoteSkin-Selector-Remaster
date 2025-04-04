@@ -76,8 +76,8 @@ function SkinNotes:load()
      
      self.selectSkinPagePositionIndex = 1     -- current page index
      self.selectSkinInitSelectedIndex = 0     -- current pressed selected skin
-     self.selectSkinPreSelectedIndex  = 0     -- highlighting the current selected skin
-     self.selectSkinCurSelectedIndex  = 0     -- current selected skin index
+     self.selectSkinPreSelectedIndex  = 3     -- highlighting the current selected skin
+     self.selectSkinCurSelectedIndex  = 3     -- current selected skin index
      self.selectSkinHasBeenClicked    = false -- whether the skin display has been clicked or not
 
      self.searchSkinObjectIndex = table.new(16, 0)
@@ -465,10 +465,10 @@ function SkinNotes:preview()
           local curOffsets = function(previewMetadataObject, positionType)
                local curOffsetX = getProperty(previewSkinGroup..'.offset.x')
                local curOffsetY = getProperty(previewSkinGroup..'.offset.y')
-               if positionType == 'y' then
+               if positionType == 'x' then
                     return curOffsetX - previewMetadataObject.offsets[1]
                end
-               if positionType == 'x' then
+               if positionType == 'y' then
                     return curOffsetY + previewMetadataObject.offsets[2]
                end
           end
