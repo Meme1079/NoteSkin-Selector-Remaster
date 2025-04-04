@@ -12,12 +12,12 @@
                     "offsets": [0,0]
                },
                "up_confirm": {
-                    "prefix": "up_confirm",
+                    "prefix": "up confirm",
                     "name": "up_confirm",
                     "offsets": [0,0]
                },
                "right_confirm": {
-                    "prefix": "right_confirm",
+                    "prefix": "right confirm",
                     "name": "right_confirm",
                     "offsets": [0,0]
                }
