@@ -252,7 +252,8 @@ function SkinNotes:page_slider(snapToPage)
           if sliderTrackThumbPressed and sliderTrackCurrentPageIndex ~= self.sliderPageIndex then
                if self.sliderTrackThumbPressed == true then
                     self:create(sliderTrackCurrentPageIndex)
-                    self.sliderPageIndex = sliderTrackCurrentPageIndex
+                    self.selectSkinPagePositionIndex = sliderTrackCurrentPageIndex
+                    self.sliderPageIndex             = sliderTrackCurrentPageIndex
 
                     if self.sliderPageIndex == self.totalSkinLimit then
                          setTextColor('genInfoStatePage', 'ff0000')
@@ -576,6 +577,12 @@ function SkinNotes:search_create()
      if not (justReleased ~= -1 and justReleased ~= nil and getVar('skinSearchInputFocus') == true) then
           return
      end
+     if getVar('skinSearchInputFocus') == true and getVar('skinSearchInput_textContent') == '' then
+          self:create(self.sliderPageIndex)
+          self:page_text()
+          self:selection_sync()
+          return
+     end
 
      for pages = 1, self.totalSkinLimit do
           for displays = 1, #self.totalSkinObjects[pages] do
@@ -651,8 +658,9 @@ function SkinNotes:search_create()
      local filterSearchByName = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'skins', self.statePrefix..'%-', false)
      local filterSearchBySkin = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'skins', self.statePrefix..'%-', true)
 
-     local currenMinPageIndex = (self.sliderPageIndex - 1) * 16 == 0 and 1 or (self.sliderPageIndex - 1) * 16
-     local currenMaxPageIndex =  self.sliderPageIndex      * 16
+     local currenMinPage = (self.selectSkinPagePositionIndex - 1) * 16
+     local currenMinPageIndex = currenMinPage == 0 and 1 or currenMinPage
+     local currenMaxPageIndex = self.selectSkinPagePositionIndex * 16
 
      local searchFilterSkinsDefault = table.tally(currenMinPageIndex, currenMaxPageIndex)
      local searchFilterSkinsTyped   = table.singularity(table.merge(filterSearchByID, searchFilterSkinsDefault), false)
