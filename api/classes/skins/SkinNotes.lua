@@ -68,14 +68,14 @@ function SkinNotes:load()
      self.totalMetadataOrderedPreview = states.getMetadataSkinsOrdered(self.stateClass, 'preview', true)
      self.totalMetadataOrderedSkins   = states.getMetadataSkinsOrdered(self.stateClass, 'skins', true)
 
-     self.sliderPageIndex          = 2
-     self.sliderTrackPageIndex     = 2
+     self.sliderPageIndex          = 1
+     self.sliderTrackPageIndex     = 1
      self.sliderTrackPressed       = false
      self.sliderTrackToggle        = false
      self.sliderTrackIntervals     = states.getPageSkinSliderPositions(self.stateClass).intervals
      self.sliderTrackSemiIntervals = states.getPageSkinSliderPositions(self.stateClass).semiIntervals
      
-     self.selectSkinPagePositionIndex = 2     -- current page index
+     self.selectSkinPagePositionIndex = 1     -- current page index
      self.selectSkinInitSelectedIndex = 0     -- current pressed selected skin
      self.selectSkinPreSelectedIndex  = 0     -- highlighting the current selected skin
      self.selectSkinCurSelectedIndex  = 0     -- current selected skin index
@@ -379,16 +379,16 @@ function SkinNotes:page_moved()
      end
 
      if conditionPressedUp and self.selectSkinPagePositionIndex > 1 then
-          self.selectSkinPagePositionIndex = self.selectSkinPagePositionIndex - 1
+          self.sliderPageIndex             = self.sliderPageIndex - 1
           self.selectSkinPagePositionIndex = self.selectSkinPagePositionIndex - 1
           self:create(self.selectSkinPagePositionIndex)
 
           playSound('ding', 0.5)
-          setProperty('displaySliderIcon.y', self.sliderTrackIntervals[sself.selectSkinPagePositionIndex])
+          setProperty('displaySliderIcon.y', self.sliderTrackIntervals[self.selectSkinPagePositionIndex])
           callOnScripts('skinSearchInput_callResetSearch')
      end
      if conditionPressedDown and self.selectSkinPagePositionIndex < self.totalSkinLimit then
-          self.selectSkinPagePositionIndex = self.selectSkinPagePositionIndex + 1
+          self.sliderPageIndex             = self.sliderPageIndex + 1
           self.selectSkinPagePositionIndex = self.selectSkinPagePositionIndex + 1
           self:create(self.selectSkinPagePositionIndex)
 
