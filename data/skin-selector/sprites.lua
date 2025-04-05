@@ -212,10 +212,12 @@ end
 -- 'notes', 'noteSkins', 'NOTE_assets', true
 local Notes = SkinNotes:new('notes', 'noteSkins', 'NOTE_assets', true)
 Notes:load()
+Notes:save_load()
 Notes:precache()
+Notes:preload()
+--Notes:preventError()
 Notes:preview()
 Notes:page_sliderMarks()
-Notes:save_load() 
 
 function onUpdate(elapsed)
      Notes:page_slider()

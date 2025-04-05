@@ -50,10 +50,11 @@ function SkinNotes:load()
      self.totalSkins     = states.getTotalSkins(self.stateClass, self.statePaths)
      self.totalSkinNames = states.getTotalSkinNames(self.stateClass)
 
-     self.totalSkinLimit       = states.getTotalSkinLimit(self.stateClass)
-     self.totalSkinObjects     = states.getTotalSkinObjects(self.stateClass)
-     self.totalSkinObjectID    = states.getTotalSkinObjects(self.stateClass, 'ids')
-     self.totalSkinObjectNames = states.getTotalSkinObjects(self.stateClass, 'names')
+     self.totalSkinLimit         = states.getTotalSkinLimit(self.stateClass)
+     self.totalSkinObjects       = states.getTotalSkinObjects(self.stateClass)
+     self.totalSkinObjectID      = states.getTotalSkinObjects(self.stateClass, 'ids')
+     self.totalSkinObjectNames   = states.getTotalSkinObjects(self.stateClass, 'names')
+     self.totalSkinObjectIndexes = states.getTotalSkinObjectIndexes(self.stateClass)
      
      self.totalSkinObjectHovered  = states.getTotalSkinObjects(self.stateClass, 'bools')
      self.totalSkinObjectClicked  = states.getTotalSkinObjects(self.stateClass, 'bools')
@@ -67,26 +68,23 @@ function SkinNotes:load()
      self.totalMetadataOrderedPreview = states.getMetadataSkinsOrdered(self.stateClass, 'preview', true)
      self.totalMetadataOrderedSkins   = states.getMetadataSkinsOrdered(self.stateClass, 'skins', true)
 
-     self.sliderPageIndex          = 1
-     self.sliderTrackPageIndex     = 1
+     self.sliderPageIndex          = 2
+     self.sliderTrackPageIndex     = 2
      self.sliderTrackPressed       = false
      self.sliderTrackToggle        = false
      self.sliderTrackIntervals     = states.getPageSkinSliderPositions(self.stateClass).intervals
      self.sliderTrackSemiIntervals = states.getPageSkinSliderPositions(self.stateClass).semiIntervals
      
-     self.selectSkinPagePositionIndex = 1     -- current page index
+     self.selectSkinPagePositionIndex = 2     -- current page index
      self.selectSkinInitSelectedIndex = 0     -- current pressed selected skin
-     self.selectSkinPreSelectedIndex  = 3     -- highlighting the current selected skin
-     self.selectSkinCurSelectedIndex  = 3     -- current selected skin index
+     self.selectSkinPreSelectedIndex  = 0     -- highlighting the current selected skin
+     self.selectSkinCurSelectedIndex  = 0     -- current selected skin index
      self.selectSkinHasBeenClicked    = false -- whether the skin display has been clicked or not
 
      self.searchSkinObjectIndex = table.new(16, 0)
      self.searchSkinObjectPage  = table.new(16, 0)
 
      self.metadataErrorExists = false
-
-     self:preload()
-     self:preventError()
 end
 
 --- Checks if the any of skin states' data misaligned with each other.
@@ -366,40 +364,40 @@ function SkinNotes:page_moved()
           return
      end
 
-     local skinObjectsPerClicked = self.totalSkinObjectClicked[self.sliderPageIndex]
-     local curPage = self.selectSkinPreSelectedIndex - (16 * (self.sliderPageIndex - 1))
+     local skinObjectsPerClicked = self.totalSkinObjectClicked[self.selectSkinPagePositionIndex]
+     local curPage = self.selectSkinPreSelectedIndex - (16 * (self.selectSkinPagePositionIndex - 1))
      if not (skinObjectsPerClicked[curPage] == nil or skinObjectsPerClicked[curPage] == false) then
-          if conditionPressedUp and self.sliderPageIndex > 1 then
+          if conditionPressedUp and self.selectSkinPagePositionIndex > 1 then
                setTextColor('genInfoStatePage', 'f0b72f')
                playSound('cancel')
           end
-          if conditionPressedDown and self.sliderPageIndex < self.totalSkinLimit then
+          if conditionPressedDown and self.selectSkinPagePositionIndex < self.totalSkinLimit then
                setTextColor('genInfoStatePage', 'f0b72f')
                playSound('cancel')
           end
           return
      end
 
-     if conditionPressedUp and self.sliderPageIndex > 1 then
-          self.sliderPageIndex = self.sliderPageIndex - 1
+     if conditionPressedUp and self.selectSkinPagePositionIndex > 1 then
           self.selectSkinPagePositionIndex = self.selectSkinPagePositionIndex - 1
-          self:create(self.sliderPageIndex)
+          self.selectSkinPagePositionIndex = self.selectSkinPagePositionIndex - 1
+          self:create(self.selectSkinPagePositionIndex)
 
           playSound('ding', 0.5)
-          setProperty('displaySliderIcon.y', self.sliderTrackIntervals[self.sliderPageIndex])
+          setProperty('displaySliderIcon.y', self.sliderTrackIntervals[sself.selectSkinPagePositionIndex])
           callOnScripts('skinSearchInput_callResetSearch')
      end
-     if conditionPressedDown and self.sliderPageIndex < self.totalSkinLimit then
-          self.sliderPageIndex = self.sliderPageIndex + 1
+     if conditionPressedDown and self.selectSkinPagePositionIndex < self.totalSkinLimit then
           self.selectSkinPagePositionIndex = self.selectSkinPagePositionIndex + 1
-          self:create(self.sliderPageIndex)
+          self.selectSkinPagePositionIndex = self.selectSkinPagePositionIndex + 1
+          self:create(self.selectSkinPagePositionIndex)
 
           playSound('ding', 0.5)
-          setProperty('displaySliderIcon.y', self.sliderTrackIntervals[self.sliderPageIndex])
+          setProperty('displaySliderIcon.y', self.sliderTrackIntervals[self.selectSkinPagePositionIndex])
           callOnScripts('skinSearchInput_callResetSearch')
      end
 
-     if self.sliderPageIndex == self.totalSkinLimit then
+     if self.selectSkinPagePositionIndex == self.totalSkinLimit then
           setTextColor('genInfoStatePage', 'ff0000')
      else
           setTextColor('genInfoStatePage', 'ffffff')
@@ -409,7 +407,7 @@ end
 --- Setups the current page text, that's it.
 ---@return nil
 function SkinNotes:page_text()
-     local currentPage = ('%.3d'):format(self.sliderPageIndex)
+     local currentPage = ('%.3d'):format(self.selectSkinPagePositionIndex)
      local maximumPage = ('%.3d'):format(self.totalSkinLimit)
      setTextString('genInfoStatePage', (' Page ${cur} / ${max}'):interpol({cur = currentPage, max = maximumPage}))
 end
@@ -423,28 +421,33 @@ function SkinNotes:preview()
      end
 
      local curPage  = self.selectSkinPagePositionIndex
-     local curIndex = tonumber(self.selectSkinCurSelectedIndex - (16 * (curPage - 1)))
-     local getCurrentPreviewSkinNames = function()
-          local skinNames = self.totalSkinObjectNames[curPage]
-          return curIndex > 0 and skinNames[curIndex]:gsub('_', ' ') or self.totalSkinObjectNames[1][1]
-     end
-     local getCurrentPreviewSkinObjects = function()
-          local skinObjects = self.totalSkinObjects[curPage]
-          return curIndex > 0 and skinObjects[curIndex] or self.totalSkinObjects[1][1]
+     local curIndex = self.selectSkinCurSelectedIndex
+     local function getCurrentPreviewSkin(previewSkinArray)
+          if curIndex == 0 then
+               return previewSkinArray[1][1]
+          end
+
+          for pages = 1, self.totalSkinLimit do
+               local presentObjectIndex = table.find(self.totalSkinObjectIndexes[pages], curIndex)
+               if presentObjectIndex ~= nil then
+                    return previewSkinArray[pages][presentObjectIndex]
+               end
+          end
      end
 
-     local previewMetadataObjectIndex = curIndex > 0 and curIndex or 1
-     local previewMetadataObjects     = self.totalMetadataObjectPreview[curPage][previewMetadataObjectIndex]
+     local getCurrentPreviewSkinObjects       = getCurrentPreviewSkin(self.totalSkinObjects)
+     local getCurrentPreviewSkinObjectNames   = getCurrentPreviewSkin(self.totalSkinObjectNames)
+     local getCurrentPreviewSkinObjectPreview = getCurrentPreviewSkin(self.totalMetadataObjectPreview)
      for strums = 1, 4 do
           local previewSkinTemplate = {state = (self.stateClass):upperAtStart(), groupID = strums}
           local previewSkinGroup    = ('previewSkinGroup${state}-${groupID}'):interpol(previewSkinTemplate)
 
           local previewMetadataObjectData = function(skinAnim)
-               local previewMetadataObjecNames = previewMetadataObjects['names'][skinAnim][strums]
-               return previewMetadataObjects['animations'][skinAnim][previewMetadataObjecNames]
+               local previewMetadataObjecNames = getCurrentPreviewSkinObjectPreview['names'][skinAnim][strums]
+               return getCurrentPreviewSkinObjectPreview['animations'][skinAnim][previewMetadataObjecNames]
           end
           local previewMetadataObjectNames = function(skinAnim)
-               return previewMetadataObjects['names'][skinAnim]
+               return getCurrentPreviewSkinObjectPreview['names'][skinAnim]
           end
 
           local previewMetadataConfirmObject = previewMetadataObjectData('confirm')
@@ -452,7 +455,7 @@ function SkinNotes:preview()
           local previewMetadataColoredObject = previewMetadataObjectData('colored')
           local previewMetadataStrumsObject  = previewMetadataObjectData('strums')
 
-          local previewSkinImagePath = self.statePaths..'/'..getCurrentPreviewSkinObjects()
+          local previewSkinImagePath = self.statePaths..'/'..getCurrentPreviewSkinObjects
           local previewSkinPositionX = 790 + (105*(strums-1))
           local previewSkinPositionY = 135
           makeAnimatedLuaSprite(previewSkinGroup, previewSkinImagePath, previewSkinPositionX, previewSkinPositionY)
@@ -487,7 +490,7 @@ function SkinNotes:preview()
           addLuaSprite(previewSkinGroup, true)
      end
 
-     setTextString('genInfoSkinName', getCurrentPreviewSkinNames())
+     setTextString('genInfoSkinName', getCurrentPreviewSkinObjectNames)
 end
 
 --- Selection functionality; group similair functions of 'selection'.
@@ -501,10 +504,10 @@ end
 --- Selects the selected skin, focuses on the click functionality.
 ---@return nil
 function SkinNotes:selection_byclick()
-     local skinObjectsPerIDs      = self.totalSkinObjectID[self.sliderPageIndex]
-     local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.sliderPageIndex]
-     local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.sliderPageIndex]
-     local skinObjectsPerSelected = self.totalSkinObjectSelected[self.sliderPageIndex]
+     local skinObjectsPerIDs      = self.totalSkinObjectID[self.selectSkinPagePositionIndex]
+     local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.selectSkinPagePositionIndex]
+     local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.selectSkinPagePositionIndex]
+     local skinObjectsPerSelected = self.totalSkinObjectSelected[self.selectSkinPagePositionIndex]
 
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
      if #skinSearchInput_textContent > 0 then
@@ -512,7 +515,7 @@ function SkinNotes:selection_byclick()
      end
 
      for pageSkins = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
-          local curPage = pageSkins - (16 * (self.sliderPageIndex - 1))
+          local curPage = pageSkins - (16 * (self.selectSkinPagePositionIndex - 1))
 
           local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = pageSkins}
           local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
@@ -534,7 +537,7 @@ function SkinNotes:selection_byclick()
      
                     self.selectSkinInitSelectedIndex = self.selectSkinCurSelectedIndex
                     self.selectSkinCurSelectedIndex  = pageSkins
-                    self.selectSkinPagePositionIndex = self.sliderPageIndex
+                    self.selectSkinPagePositionIndex = self.selectSkinPagePositionIndex
                     self.selectSkinHasBeenClicked    = false
                     
                     self:preview()
@@ -589,9 +592,9 @@ end
 --- Selects the selected skin, focuses on the hovering functionality.
 ---@return nil
 function SkinNotes:selection_byhover()
-     local skinObjectsPerIDs      = self.totalSkinObjectID[self.sliderPageIndex]
-     local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.sliderPageIndex]
-     local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.sliderPageIndex]
+     local skinObjectsPerIDs      = self.totalSkinObjectID[self.selectSkinPagePositionIndex]
+     local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.selectSkinPagePositionIndex]
+     local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.selectSkinPagePositionIndex]
 
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
      if #skinSearchInput_textContent > 0 then
@@ -599,7 +602,7 @@ function SkinNotes:selection_byhover()
      end
 
      for pageSkins = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
-          local curPage = pageSkins - (16 * (self.sliderPageIndex - 1))
+          local curPage = pageSkins - (16 * (self.selectSkinPagePositionIndex - 1))
 
           local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = pageSkins}
           local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
@@ -626,8 +629,8 @@ end
 --- Cursor behavior when selecting certain skins.
 ---@return nil
 function SkinNotes:selection_cursor()
-     local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.sliderPageIndex]
-     local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.sliderPageIndex]
+     local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.selectSkinPagePositionIndex]
+     local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.selectSkinPagePositionIndex]
 
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
      if #skinSearchInput_textContent > 0 then
@@ -697,7 +700,7 @@ function SkinNotes:search_create()
 
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent')
      if skinSearchInput_textContent == '' and getVar('skinSearchInputFocus') == true then
-          self:create(self.sliderPageIndex)
+          self:create(self.selectSkinPagePositionIndex)
           self:page_text()
           self:selection_sync()
           return
@@ -971,7 +974,7 @@ function SkinNotes:search_byclick()
      
                     self.selectSkinInitSelectedIndex = self.selectSkinCurSelectedIndex
                     self.selectSkinCurSelectedIndex  = skinObjectsPerIDs[searchSkinPresentIndex]
-                    self.selectSkinPagePositionIndex = self.sliderPageIndex
+                    self.selectSkinPagePositionIndex = self.selectSkinPagePositionIndex
                     self.selectSkinHasBeenClicked    = false
                     
                     self:search_preview()

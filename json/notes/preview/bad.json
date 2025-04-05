@@ -75,12 +75,12 @@
                "down": {
                     "prefix": "arrowDOWN",
                     "name": "down",
-                    "offsets": [0,0]
+                    "offsets": [2,0]
                },
                "up": {
                     "prefix": "arrowUP",
                     "name": "up",
-                    "offsets": [0,0]
+                    "offsets": [2,0]
                },
                "right": {
                     "prefix": "arrowRIGHT",

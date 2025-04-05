@@ -171,6 +171,26 @@ function states.getTotalSkinObjectNames(skin)
      return totalSkinObjectNames[skin]
 end
 
+function states.getTotalSkinObjectIndexes(skin)
+     local totalSkinObjectIndexesIndex = 0
+     local totalSkinObjectIndexes = table.new(0xff, 0)
+     totalSkinObjectIndexes[skin] = table.new(0xff, 0)
+
+     local totalSkinNames = states.getTotalSkinNames(skin)
+     for objects = 1, #totalSkinNames do
+          if (objects-1) % 16 == 0 then --! DO NOT REMOVE PARENTHESIS
+               totalSkinObjectIndexesIndex = totalSkinObjectIndexesIndex + 1
+               totalSkinObjectIndexes[skin][totalSkinObjectIndexesIndex] = table.new(16, 0)
+          end
+     
+          if objects % 16+1 ~= 0 then   --! DO NOT ADD PARENTHESIS
+               local totalSkinObjectIndexesGroup = totalSkinObjectIndexes[skin][totalSkinObjectIndexesIndex]
+               totalSkinObjectIndexesGroup[#totalSkinObjectIndexesGroup + 1] = objects
+          end
+     end
+     return totalSkinObjectIndexes[skin]
+end
+
 --- Gets and calculates the positions for the slider functionality
 --- If the current state has only one page, it will cause a calculation error, cuz of dividing zero.
 --- If the error occured, it must have a piece of code to detect it to prevent visual bugs.
