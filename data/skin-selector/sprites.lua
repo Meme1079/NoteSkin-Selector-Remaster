@@ -224,6 +224,7 @@ function onUpdate(elapsed)
      Notes:page_moved()
      Notes:selection()
      Notes:search()
+     Notes:preview_animation()
 
      hueChangeBG()
 end

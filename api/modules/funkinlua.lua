@@ -56,7 +56,7 @@ function funkinlua.keyboardJustConditionPress(key, condition)
 end
 
 function funkinlua.keyboardJustConditionReleased(key, condition)
-     if condition and keyboardJustReleased(key:upper()) then
+     if condition and keyboardReleased(key:upper()) then
           return true
      end
 end
