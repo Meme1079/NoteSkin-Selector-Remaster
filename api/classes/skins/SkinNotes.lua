@@ -538,7 +538,7 @@ function SkinNotes:preview_animation()
      end
 end
 
---- Selection functionality; group similair functions of 'selection'.
+--- Selection functionality; group of similair functions from 'selection'.
 ---@return nil
 function SkinNotes:selection()
      self:selection_byclick()
@@ -586,6 +586,7 @@ function SkinNotes:selection_byclick()
                     self.selectSkinHasBeenClicked    = false
                     
                     self:preview()
+                    self:search_preview()
                     skinObjectsPerSelected[curPage] = true
                     skinObjectsPerClicked[curPage]  = false
                end
@@ -610,6 +611,7 @@ function SkinNotes:selection_byclick()
                     self.selectSkinHasBeenClicked   = false
 
                     self:preview()
+                    self:search_preview()
                     skinObjectsPerSelected[curPage] = false
                     skinObjectsPerClicked[curPage]  = false
                     skinObjectsPerHovered[curPage]  = false
@@ -726,7 +728,7 @@ function SkinNotes:selection_sync()
      end
 end
 
---- Search functionality; group similair functions of 'search'.
+--- Search functionality; group of (almost) similair functions from 'search'.
 ---@return nil
 function SkinNotes:search()
      self:search_create()
@@ -734,7 +736,6 @@ function SkinNotes:search()
      self:search_byclick()
      self:search_byhover()
      self:search_cursor()
-     self:search_preview()
 end
 
 --- Creates a chunk to display the selected skins when searching.
@@ -920,12 +921,6 @@ function SkinNotes:search_skins()
      if not (justReleased ~= -1 and justReleased ~= nil and getVar('skinSearchInputFocus') == true) then
           return
      end
-
-     --[[ local isMovedX = getPropertyFromClass('flixel.FlxG', 'mouse.deltaScreenX')
-     local isMovedY = getPropertyFromClass('flixel.FlxG', 'mouse.deltaScreenY')
-     if isMovedX == 0 and isMovedY == 0 then
-          return
-     end ]]
 
      --- Searches the closest skin name it can possibly find
      ---@param list table[string] The given list of skins for the algorithm to do its work.
