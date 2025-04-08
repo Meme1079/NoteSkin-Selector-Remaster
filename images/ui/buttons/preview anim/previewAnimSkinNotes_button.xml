@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="previewAnimSkinNotes_button.png">
+	<!-- Created using the Spritesheet and XML generator -->
+	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
+	<SubTexture name="notes-colored0000" x="0" y="0" width="72" height="72" frameX="-21" frameY="-19" frameWidth="114" frameHeight="120"/>
+	<SubTexture name="notes-confirm0000" x="144" y="0" width="72" height="72" frameX="-21" frameY="-19" frameWidth="114" frameHeight="120"/>
+	<SubTexture name="notes-pressed0000" x="0" y="72" width="72" height="72" frameX="-21" frameY="-19" frameWidth="114" frameHeight="120"/>
+	<SubTexture name="notes-strums0000" x="72" y="0" width="72" height="72" frameX="-21" frameY="-19" frameWidth="114" frameHeight="120"/>
+</TextureAtlas>

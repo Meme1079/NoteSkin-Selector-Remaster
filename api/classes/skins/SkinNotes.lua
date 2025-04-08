@@ -505,8 +505,6 @@ function SkinNotes:preview_animation()
           return
      end
 
-     debugPrint('e')
-
      local curPage  = self.selectSkinPagePositionIndex
      local curIndex = self.selectSkinCurSelectedIndex
      local function getCurrentPreviewSkin(previewSkinArray)
