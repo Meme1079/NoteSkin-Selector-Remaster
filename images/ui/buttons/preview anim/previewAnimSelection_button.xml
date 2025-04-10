@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="previewAnimSelection_button.png">
+	<!-- Created using the Spritesheet and XML generator -->
+	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
+	<SubTexture name="selection-hovered-pressed0000" x="0" y="0" width="484" height="124" frameX="2" frameY="2" frameWidth="480" frameHeight="120"/>
+	<SubTexture name="selection-hovered-static0000" x="0" y="124" width="484" height="124" frameX="2" frameY="2" frameWidth="480" frameHeight="120"/>
+	<SubTexture name="selection-pressed0000" x="0" y="248" width="484" height="124" frameX="2" frameY="2" frameWidth="480" frameHeight="120"/>
+	<SubTexture name="selection-static0000" x="484" y="0" width="484" height="124" frameX="2" frameY="2" frameWidth="480" frameHeight="120"/>
+</TextureAtlas>

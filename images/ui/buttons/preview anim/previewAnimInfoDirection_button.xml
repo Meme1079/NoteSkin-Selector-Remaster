@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="previewAnimInfoDirection_button.png">
+	<!-- Created using the Spritesheet and XML generator -->
+	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
+	<SubTexture name="icons-left0000" x="0" y="0" width="64" height="64" frameX="2" frameY="2" frameWidth="60" frameHeight="60"/>
+	<SubTexture name="icons-none0000" x="64" y="0" width="64" height="64" frameX="2" frameY="2" frameWidth="60" frameHeight="60"/>
+	<SubTexture name="icons-right0000" x="128" y="0" width="64" height="64" frameX="2" frameY="2" frameWidth="60" frameHeight="60"/>
+</TextureAtlas>
