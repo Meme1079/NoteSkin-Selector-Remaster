@@ -294,7 +294,9 @@ function onUpdate(elapsed)
      Notes:page_moved()
      Notes:selection()
      Notes:search()
+     Notes:preview_selection_animation()
      Notes:preview_animation()
+     
 
      hueChangeBG()
 end

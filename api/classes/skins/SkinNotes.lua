@@ -84,6 +84,9 @@ function SkinNotes:load()
      self.searchSkinObjectIndex = table.new(16, 0)
      self.searchSkinObjectPage  = table.new(16, 0)
 
+     self.previewAnimationObjectList  = {'confirm', 'pressed', 'colored'}
+     self.previewAnimationObjectIndex = 1
+
      self.metadataErrorExists = false
 end
 
@@ -519,22 +522,51 @@ function SkinNotes:preview_animation()
           local previewSkinTemplate = {state = (self.stateClass):upperAtStart(), groupID = strums}
           local previewSkinGroup    = ('previewSkinGroup${state}-${groupID}'):interpol(previewSkinTemplate)
 
-          local previewMetadataObjectData = function(skinAnim)
+          local previewMetadataObjectAnims = self.previewAnimationObjectList[self.previewAnimationObjectIndex]
+          local previewMetadataObjectData  = function(skinAnim)
                local previewMetadataObjecNames = getCurrentPreviewSkinObjectPreview['names'][skinAnim][strums]
                return getCurrentPreviewSkinObjectPreview['animations'][skinAnim][previewMetadataObjecNames]
           end
 
-          local previewMetadataConfirmObject = previewMetadataObjectData('confirm')
-          local previewMetadataPressedObject = previewMetadataObjectData('pressed')
-          local previewMetadataColoredObject = previewMetadataObjectData('colored')
-          local previewMetadataStrumsObject  = previewMetadataObjectData('strums')
+          local previewMetadataObjects     = {
+               confirm = previewMetadataObjectData('confirm'), pressed = previewMetadataObjectData('pressed'),
+               colored = previewMetadataObjectData('colored'), strums  = previewMetadataObjectData('strums')
+          }
 
-          if keyboardJustConditionPressed(getKeyBinds(strums), not getVar('skinSearchInputFocus')) then
-               playAnim(previewSkinGroup, previewMetadataConfirmObject.name, true)
+          if keyboardJustConditionPressed('X', not getVar('skinSearchInputFocus')) then
+               if previewMetadataObjectAnims == 'colored' then
+                    playAnim(previewSkinGroup, previewMetadataObjects['colored']['name'], true)
+               else
+                    playAnim(previewSkinGroup, previewMetadataObjects['strums']['name'], true)
+               end
           end
-          if keyboardJustConditionReleased(getKeyBinds(strums), not getVar('skinSearchInputFocus')) then
-               playAnim(previewSkinGroup, previewMetadataStrumsObject.name, true)
+          if keyboardJustConditionPressed('Z', not getVar('skinSearchInputFocus')) then
+               if previewMetadataObjectAnims == 'colored' then
+                    playAnim(previewSkinGroup, previewMetadataObjects['colored']['name'], true)
+               else
+                    playAnim(previewSkinGroup, previewMetadataObjects['strums']['name'], true)
+               end
           end
+
+          if previewMetadataObjectAnims ~= 'colored' then
+               if keyboardJustConditionPressed(getKeyBinds(strums), not getVar('skinSearchInputFocus')) then
+                    playAnim(previewSkinGroup, previewMetadataObjects[previewMetadataObjectAnims]['name'], true)
+               end
+               if keyboardJustConditionReleased(getKeyBinds(strums), not getVar('skinSearchInputFocus')) then
+                    playAnim(previewSkinGroup, previewMetadataObjects['strums']['name'], true)
+               end  
+          end
+     end
+end
+
+function SkinNotes:preview_selection_animation()
+     if keyboardJustConditionPressed('X', not getVar('skinSearchInputFocus')) then
+          local previewMetadataObjectAnims = self.previewAnimationObjectList[self.previewAnimationObjectIndex]
+          self.previewAnimationObjectIndex = self.previewAnimationObjectIndex + 1
+     end
+     if keyboardJustConditionPressed('Z', not getVar('skinSearchInputFocus')) then
+          local previewMetadataObjectAnims = self.previewAnimationObjectList[self.previewAnimationObjectIndex]
+          self.previewAnimationObjectIndex = self.previewAnimationObjectIndex - 1
      end
 end
 
