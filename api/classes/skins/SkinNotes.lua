@@ -517,6 +517,8 @@ function SkinNotes:preview_animation()
           end
      end
 
+     local conditionPressedLeft  = keyboardJustConditionPressed('Z', not getVar('skinSearchInputFocus'))
+     local conditionPressedRight = keyboardJustConditionPressed('X', not getVar('skinSearchInputFocus'))
      local getCurrentPreviewSkinObjectPreview = getCurrentPreviewSkin(self.totalMetadataObjectPreview)
      for strums = 1, 4 do
           local previewSkinTemplate = {state = (self.stateClass):upperAtStart(), groupID = strums}
@@ -528,45 +530,68 @@ function SkinNotes:preview_animation()
                return getCurrentPreviewSkinObjectPreview['animations'][skinAnim][previewMetadataObjecNames]
           end
 
-          local previewMetadataObjects     = {
+          local previewMetadataObjectGroupData = {
                confirm = previewMetadataObjectData('confirm'), pressed = previewMetadataObjectData('pressed'),
                colored = previewMetadataObjectData('colored'), strums  = previewMetadataObjectData('strums')
           }
-
-          if keyboardJustConditionPressed('X', not getVar('skinSearchInputFocus')) then
+          if conditionPressedLeft or conditionPressedRight then
                if previewMetadataObjectAnims == 'colored' then
-                    playAnim(previewSkinGroup, previewMetadataObjects['colored']['name'], true)
-               else
-                    playAnim(previewSkinGroup, previewMetadataObjects['strums']['name'], true)
+                    playAnim(previewSkinGroup, previewMetadataObjectGroupData['colored']['name'], true)
+                    goto previewAnimFunctionSkip
                end
-          end
-          if keyboardJustConditionPressed('Z', not getVar('skinSearchInputFocus')) then
-               if previewMetadataObjectAnims == 'colored' then
-                    playAnim(previewSkinGroup, previewMetadataObjects['colored']['name'], true)
-               else
-                    playAnim(previewSkinGroup, previewMetadataObjects['strums']['name'], true)
-               end
+               playAnim(previewSkinGroup, previewMetadataObjectGroupData['strums']['name'], true)
           end
 
-          if previewMetadataObjectAnims ~= 'colored' then
-               if keyboardJustConditionPressed(getKeyBinds(strums), not getVar('skinSearchInputFocus')) then
-                    playAnim(previewSkinGroup, previewMetadataObjects[previewMetadataObjectAnims]['name'], true)
-               end
-               if keyboardJustConditionReleased(getKeyBinds(strums), not getVar('skinSearchInputFocus')) then
-                    playAnim(previewSkinGroup, previewMetadataObjects['strums']['name'], true)
-               end  
+          if previewMetadataObjectAnims == 'colored' then
+               goto previewAnimFunctionSkip
           end
+
+          if keyboardJustConditionPressed(getKeyBinds(strums), not getVar('skinSearchInputFocus')) then
+               playAnim(previewSkinGroup, previewMetadataObjectGroupData[previewMetadataObjectAnims]['name'], true)
+          end
+          if keyboardJustConditionReleased(getKeyBinds(strums), not getVar('skinSearchInputFocus')) then
+               playAnim(previewSkinGroup, previewMetadataObjectGroupData['strums']['name'], true)
+          end
+          ::previewAnimFunctionSkip::
      end
 end
 
-function SkinNotes:preview_selection_animation()
-     if keyboardJustConditionPressed('X', not getVar('skinSearchInputFocus')) then
-          local previewMetadataObjectAnims = self.previewAnimationObjectList[self.previewAnimationObjectIndex]
+function SkinNotes:preview_animation_selection()
+     local conditionPressedLeft  = keyboardJustConditionPressed('Z', not getVar('skinSearchInputFocus'))
+     local conditionPressedRight = keyboardJustConditionPressed('X', not getVar('skinSearchInputFocus'))
+
+     local previewAnimationMinIndex = self.previewAnimationObjectIndex > 1
+     local previewAnimationMaxIndex = self.previewAnimationObjectIndex < #self.previewAnimationObjectList
+     local previewAnimationInverseMinIndex = self.previewAnimationObjectIndex <= 1
+     local previewAnimationInverseMaxIndex = self.previewAnimationObjectIndex >= #self.previewAnimationObjectList
+
+     if conditionPressedRight and previewAnimationMaxIndex then
           self.previewAnimationObjectIndex = self.previewAnimationObjectIndex + 1
-     end
-     if keyboardJustConditionPressed('Z', not getVar('skinSearchInputFocus')) then
+
           local previewMetadataObjectAnims = self.previewAnimationObjectList[self.previewAnimationObjectIndex]
+          setTextString('qew', previewMetadataObjectAnims:upperAtStart())
+          playSound('ding', 0.5)
+     end
+     if conditionPressedLeft and previewAnimationMinIndex then
           self.previewAnimationObjectIndex = self.previewAnimationObjectIndex - 1
+
+          local previewMetadataObjectAnims = self.previewAnimationObjectList[self.previewAnimationObjectIndex]
+          setTextString('qew', previewMetadataObjectAnims:upperAtStart())
+          playSound('ding', 0.5)
+     end
+
+     if previewAnimationInverseMinIndex then
+          playAnim('geu1', 'none', true)
+          playAnim('geu2', 'right', true)
+     else
+          playAnim('geu1', 'left', true)
+     end
+
+     if previewAnimationInverseMaxIndex then
+          playAnim('geu1', 'left', true)
+          playAnim('geu2', 'none', true)
+     else
+          playAnim('geu2', 'right', true)
      end
 end
 
