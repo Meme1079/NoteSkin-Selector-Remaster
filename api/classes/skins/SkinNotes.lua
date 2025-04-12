@@ -498,6 +498,51 @@ function SkinNotes:preview()
      self:preview_animation(true)
 end
 
+--- Changes the skin's current preview animation, that's it.
+---@return nil
+function SkinNotes:preview_moved()
+     local conditionPressedLeft  = keyboardJustConditionPressed('Z', not getVar('skinSearchInputFocus'))
+     local conditionPressedRight = keyboardJustConditionPressed('X', not getVar('skinSearchInputFocus'))
+
+     local previewAnimationMinIndex = self.previewAnimationObjectIndex > 1
+     local previewAnimationMaxIndex = self.previewAnimationObjectIndex < #self.previewAnimationObjectList
+     local previewAnimationInverseMinIndex = self.previewAnimationObjectIndex <= 1
+     local previewAnimationInverseMaxIndex = self.previewAnimationObjectIndex >= #self.previewAnimationObjectList
+
+     if conditionPressedRight and previewAnimationMaxIndex then
+          self.previewAnimationObjectIndex = self.previewAnimationObjectIndex + 1
+          self.previewAnimationObjectInit  = true
+          playSound('ding', 0.5)
+     end
+     if conditionPressedLeft and previewAnimationMinIndex then
+          self.previewAnimationObjectIndex = self.previewAnimationObjectIndex - 1
+          self.previewAnimationObjectInit  = true
+          playSound('ding', 0.5)
+     end
+
+     if self.previewAnimationObjectInit == true then --! DO NOT DELETE
+          self.previewAnimationObjectInit = false
+          return
+     end
+
+     if previewAnimationInverseMinIndex then
+          playAnim('previewSkinInfoIconLeft', 'none', true)
+          playAnim('previewSkinInfoIconRight', 'right', true)
+     else
+          playAnim('previewSkinInfoIconLeft', 'left', true)
+     end
+
+     if previewAnimationInverseMaxIndex then
+          playAnim('previewSkinInfoIconLeft', 'left', true)
+          playAnim('previewSkinInfoIconRight', 'none', true)
+     else
+          playAnim('previewSkinInfoIconRight', 'right', true)
+     end
+
+     local previewMetadataObjectAnims = self.previewAnimationObjectList[self.previewAnimationObjectIndex]
+     setTextString('previewSkinButtonSelectionText', previewMetadataObjectAnims:upperAtStart())
+end
+
 --- Creates and loads the selected skin's preview animations.
 ---@param loadAnim? boolean Will only load the current skin's preview animations or not, bug fixing purposes.
 ---@return nil
@@ -563,49 +608,13 @@ function SkinNotes:preview_animation(loadAnim)
      end
 end
 
---- Changes the skin's current preview animation, that's it.
----@return nil
-function SkinNotes:preview_moved()
-     local conditionPressedLeft  = keyboardJustConditionPressed('Z', not getVar('skinSearchInputFocus'))
-     local conditionPressedRight = keyboardJustConditionPressed('X', not getVar('skinSearchInputFocus'))
+function SkinNotes:preview_selection_byclick()
+end
 
-     local previewAnimationMinIndex = self.previewAnimationObjectIndex > 1
-     local previewAnimationMaxIndex = self.previewAnimationObjectIndex < #self.previewAnimationObjectList
-     local previewAnimationInverseMinIndex = self.previewAnimationObjectIndex <= 1
-     local previewAnimationInverseMaxIndex = self.previewAnimationObjectIndex >= #self.previewAnimationObjectList
+function SkinNotes:preview_selection_byhover()
+end
 
-     if conditionPressedRight and previewAnimationMaxIndex then
-          self.previewAnimationObjectIndex = self.previewAnimationObjectIndex + 1
-          self.previewAnimationObjectInit  = true
-          playSound('ding', 0.5)
-     end
-     if conditionPressedLeft and previewAnimationMinIndex then
-          self.previewAnimationObjectIndex = self.previewAnimationObjectIndex - 1
-          self.previewAnimationObjectInit  = true
-          playSound('ding', 0.5)
-     end
-
-     if self.previewAnimationObjectInit == true then --! DO NOT DELETE
-          self.previewAnimationObjectInit = false
-          return
-     end
-
-     if previewAnimationInverseMinIndex then
-          playAnim('geu1', 'none', true)
-          playAnim('geu2', 'right', true)
-     else
-          playAnim('geu1', 'left', true)
-     end
-
-     if previewAnimationInverseMaxIndex then
-          playAnim('geu1', 'left', true)
-          playAnim('geu2', 'none', true)
-     else
-          playAnim('geu2', 'right', true)
-     end
-
-     local previewMetadataObjectAnims = self.previewAnimationObjectList[self.previewAnimationObjectIndex]
-     setTextString('qew', previewMetadataObjectAnims:upperAtStart())
+function SkinNotes:preview_selection_bycursor()
 end
 
 --- Selection functionality; group of similair functions from 'selection'.
