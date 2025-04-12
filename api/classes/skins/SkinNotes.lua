@@ -86,6 +86,7 @@ function SkinNotes:load()
 
      self.previewAnimationObjectList  = {'confirm', 'pressed', 'colored'}
      self.previewAnimationObjectIndex = 1
+     self.previewAnimationObjectInit  = true
 
      self.metadataErrorExists = false
 end
@@ -494,12 +495,21 @@ function SkinNotes:preview()
      end
 
      setTextString('genInfoSkinName', getCurrentPreviewSkinObjectNames)
+     self:preview_animation(true)
 end
 
-function SkinNotes:preview_animation()
+--- Creates and loads the selected skin's preview animations.
+---@param loadAnim? boolean Will only load the current skin's preview animations or not, bug fixing purposes.
+---@return nil
+function SkinNotes:preview_animation(loadAnim)
+     local loadAnim = loadAnim ~= nil and true or false
+
      local firstJustPressed  = callMethodFromClass('flixel.FlxG', 'keys.firstJustPressed', {''})
      local firstJustReleased = callMethodFromClass('flixel.FlxG', 'keys.firstJustReleased', {''})
-     if not ((firstJustPressed ~= -1 and firstJustPressed ~= nil) or (firstJustReleased ~= -1 and firstJustReleased ~= nil)) then
+
+     local firstJustInputPressed  = (firstJustPressed ~= -1 and firstJustPressed ~= nil)
+     local firstJustInputReleased = (firstJustReleased ~= -1 and firstJustReleased ~= nil)
+     if not (firstJustInputPressed or firstJustInputReleased) and loadAnim == false then
           return
      end
 
@@ -534,18 +544,15 @@ function SkinNotes:preview_animation()
                confirm = previewMetadataObjectData('confirm'), pressed = previewMetadataObjectData('pressed'),
                colored = previewMetadataObjectData('colored'), strums  = previewMetadataObjectData('strums')
           }
-          if conditionPressedLeft or conditionPressedRight then
-               if previewMetadataObjectAnims == 'colored' then
-                    playAnim(previewSkinGroup, previewMetadataObjectGroupData['colored']['name'], true)
-                    goto previewAnimFunctionSkip
-               end
-               playAnim(previewSkinGroup, previewMetadataObjectGroupData['strums']['name'], true)
-          end
 
           if previewMetadataObjectAnims == 'colored' then
+               playAnim(previewSkinGroup, previewMetadataObjectGroupData['colored']['name'], true)
                goto previewAnimFunctionSkip
           end
-
+          if conditionPressedLeft or conditionPressedRight then
+               playAnim(previewSkinGroup, previewMetadataObjectGroupData['strums']['name'], true)
+          end
+          
           if keyboardJustConditionPressed(getKeyBinds(strums), not getVar('skinSearchInputFocus')) then
                playAnim(previewSkinGroup, previewMetadataObjectGroupData[previewMetadataObjectAnims]['name'], true)
           end
@@ -556,7 +563,9 @@ function SkinNotes:preview_animation()
      end
 end
 
-function SkinNotes:preview_animation_selection()
+--- Changes the skin's current preview animation, that's it.
+---@return nil
+function SkinNotes:preview_moved()
      local conditionPressedLeft  = keyboardJustConditionPressed('Z', not getVar('skinSearchInputFocus'))
      local conditionPressedRight = keyboardJustConditionPressed('X', not getVar('skinSearchInputFocus'))
 
@@ -567,17 +576,18 @@ function SkinNotes:preview_animation_selection()
 
      if conditionPressedRight and previewAnimationMaxIndex then
           self.previewAnimationObjectIndex = self.previewAnimationObjectIndex + 1
-
-          local previewMetadataObjectAnims = self.previewAnimationObjectList[self.previewAnimationObjectIndex]
-          setTextString('qew', previewMetadataObjectAnims:upperAtStart())
+          self.previewAnimationObjectInit  = true
           playSound('ding', 0.5)
      end
      if conditionPressedLeft and previewAnimationMinIndex then
           self.previewAnimationObjectIndex = self.previewAnimationObjectIndex - 1
-
-          local previewMetadataObjectAnims = self.previewAnimationObjectList[self.previewAnimationObjectIndex]
-          setTextString('qew', previewMetadataObjectAnims:upperAtStart())
+          self.previewAnimationObjectInit  = true
           playSound('ding', 0.5)
+     end
+
+     if self.previewAnimationObjectInit == true then --! DO NOT DELETE
+          self.previewAnimationObjectInit = false
+          return
      end
 
      if previewAnimationInverseMinIndex then
@@ -593,6 +603,9 @@ function SkinNotes:preview_animation_selection()
      else
           playAnim('geu2', 'right', true)
      end
+
+     local previewMetadataObjectAnims = self.previewAnimationObjectList[self.previewAnimationObjectIndex]
+     setTextString('qew', previewMetadataObjectAnims:upperAtStart())
 end
 
 --- Selection functionality; group of similair functions from 'selection'.
@@ -1309,6 +1322,7 @@ function SkinNotes:search_preview()
      
           setTextString('genInfoSkinName', getCurrentPreviewSkinObjectNames)
      end
+     self:preview_animation(true)
 end
 
 function SkinNotes:switch()

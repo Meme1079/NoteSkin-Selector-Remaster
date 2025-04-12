@@ -294,7 +294,7 @@ function onUpdate(elapsed)
      Notes:page_moved()
      Notes:selection()
      Notes:search()
-     Notes:preview_animation_selection()
+     Notes:preview_moved()
      Notes:preview_animation()
      
 
