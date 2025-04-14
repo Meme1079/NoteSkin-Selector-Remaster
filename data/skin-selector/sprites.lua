@@ -305,11 +305,7 @@ function onUpdate(elapsed)
      Notes:search()
      Notes:preview_moved()
      Notes:preview_animation()
-     Notes:preview_selection_byclick()
-     Notes:preview_selection_byhover()
-     Notes:preview_selection_bycursor()
-     
+     Notes:preview_selection()
 
-     hueChangeBG()
-     
+     hueChangeBG()     
 end

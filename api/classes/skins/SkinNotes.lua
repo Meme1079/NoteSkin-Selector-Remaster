@@ -636,7 +636,16 @@ function SkinNotes:preview_animation(loadAnim)
      end
 end
 
+--- Selection functionality; group of similair functions from 'preview_selection'.
+---@return nil
+function SkinNotes:preview_selection()
+     self:preview_selection_byclick()
+     self:preview_selection_byhover()
+     self:preview_selection_bycursor()
+end
 
+--- Selects the preview animation switch buttons, focuses on the click functionality.
+---@return nil
 function SkinNotes:preview_selection_byclick()
      local function previewSelectionButtonClick(index, direct, value)
           local previewSkinButton = 'previewSkinButton'..direct:upperAtStart()
@@ -667,6 +676,8 @@ function SkinNotes:preview_selection_byclick()
      end
 end
 
+--- Selects the preview animation switch buttons, focuses on the hovering functionality.
+---@return nil
 function SkinNotes:preview_selection_byhover()
      local function previewSelectionButtonHover(index, direct, value)
           local previewSkinButton = 'previewSkinButton'..direct:upperAtStart()
@@ -706,9 +717,10 @@ function SkinNotes:preview_selection_byhover()
      end
 end
 
-local e = {'left', 'right'}
+--- Cursor behavior when selecting preview animation switch buttons.
+---@return nil
 function SkinNotes:preview_selection_bycursor()
-     for i = 1, #e do
+     for i = 1, 2 do
           if self.previewAnimationObjectClicked[i] == true then
                playAnim('mouseTexture', 'handClick', true)
                return
@@ -719,7 +731,9 @@ function SkinNotes:preview_selection_bycursor()
           end
      end
 
-     if hoverObject('previewSkinButtonLeft', 'camHUD') or hoverObject('previewSkinButtonRight', 'camHUD') then
+     local conditionHoverLeft  = hoverObject('previewSkinButtonLeft', 'camHUD')
+     local conditionHoverRight = hoverObject('previewSkinButtonRight', 'camHUD')
+     if conditionHoverLeft or conditionHoverRight then
           if mouseClicked('left') or mousePressed('left') then 
                playAnim('mouseTexture', 'disabledClick', true)
           else
@@ -729,13 +743,6 @@ function SkinNotes:preview_selection_bycursor()
           if mouseClicked('left') then 
                playSound('cancel') 
           end
-          return
-     end
-     
-     if mouseClicked('left') or mousePressed('left') then 
-          playAnim('mouseTexture', 'idleClick', true)
-     else
-          playAnim('mouseTexture', 'idle', true)
      end
 end
 
