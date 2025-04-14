@@ -50,11 +50,15 @@ function SkinNotes:load()
      self.totalSkins     = states.getTotalSkins(self.stateClass, self.statePaths)
      self.totalSkinNames = states.getTotalSkinNames(self.stateClass)
 
+     -- Object Properties --
+
      self.totalSkinLimit         = states.getTotalSkinLimit(self.stateClass)
      self.totalSkinObjects       = states.getTotalSkinObjects(self.stateClass)
      self.totalSkinObjectID      = states.getTotalSkinObjects(self.stateClass, 'ids')
      self.totalSkinObjectNames   = states.getTotalSkinObjects(self.stateClass, 'names')
      self.totalSkinObjectIndexes = states.getTotalSkinObjectIndexes(self.stateClass)
+
+     -- Display Properties --
      
      self.totalSkinObjectHovered  = states.getTotalSkinObjects(self.stateClass, 'bools')
      self.totalSkinObjectClicked  = states.getTotalSkinObjects(self.stateClass, 'bools')
@@ -68,12 +72,16 @@ function SkinNotes:load()
      self.totalMetadataOrderedPreview = states.getMetadataSkinsOrdered(self.stateClass, 'preview', true)
      self.totalMetadataOrderedSkins   = states.getMetadataSkinsOrdered(self.stateClass, 'skins', true)
 
+     -- Slider Properties --
+
      self.sliderPageIndex          = 1
      self.sliderTrackPageIndex     = 1
      self.sliderTrackPressed       = false
      self.sliderTrackToggle        = false
      self.sliderTrackIntervals     = states.getPageSkinSliderPositions(self.stateClass).intervals
      self.sliderTrackSemiIntervals = states.getPageSkinSliderPositions(self.stateClass).semiIntervals
+
+     -- Selection Properties --
      
      self.selectSkinPagePositionIndex = 1     -- current page index
      self.selectSkinInitSelectedIndex = 0     -- current pressed selected skin
@@ -81,12 +89,19 @@ function SkinNotes:load()
      self.selectSkinCurSelectedIndex  = 0     -- current selected skin index
      self.selectSkinHasBeenClicked    = false -- whether the skin display has been clicked or not
 
+     -- Search Properties --
+
      self.searchSkinObjectIndex = table.new(16, 0)
      self.searchSkinObjectPage  = table.new(16, 0)
 
-     self.previewAnimationObjectList  = {'confirm', 'pressed', 'colored'}
+     -- Preview Animation Properties --
+
+     self.previewAnimationObjectHovered = {false, false}
+     self.previewAnimationObjectClicked = {false, false}
+
      self.previewAnimationObjectIndex = 1
      self.previewAnimationObjectInit  = true
+     self.previewAnimationObjectList  = {'confirm', 'pressed', 'colored'}
 
      self.metadataErrorExists = false
 end
@@ -508,18 +523,19 @@ function SkinNotes:preview_moved()
      local previewAnimationMaxIndex = self.previewAnimationObjectIndex < #self.previewAnimationObjectList
      local previewAnimationInverseMinIndex = self.previewAnimationObjectIndex <= 1
      local previewAnimationInverseMaxIndex = self.previewAnimationObjectIndex >= #self.previewAnimationObjectList
-
-     if conditionPressedRight and previewAnimationMaxIndex then
-          self.previewAnimationObjectIndex = self.previewAnimationObjectIndex + 1
-          self.previewAnimationObjectInit  = true
-          playSound('ding', 0.5)
-     end
      if conditionPressedLeft and previewAnimationMinIndex then
           self.previewAnimationObjectIndex = self.previewAnimationObjectIndex - 1
           self.previewAnimationObjectInit  = true
+
           playSound('ding', 0.5)
      end
+     if conditionPressedRight and previewAnimationMaxIndex then
+          self.previewAnimationObjectIndex = self.previewAnimationObjectIndex + 1
+          self.previewAnimationObjectInit  = true
 
+          playSound('ding', 0.5)
+     end
+     
      if self.previewAnimationObjectInit == true then --! DO NOT DELETE
           self.previewAnimationObjectInit = false
           return
@@ -554,7 +570,8 @@ function SkinNotes:preview_animation(loadAnim)
 
      local firstJustInputPressed  = (firstJustPressed ~= -1 and firstJustPressed ~= nil)
      local firstJustInputReleased = (firstJustReleased ~= -1 and firstJustReleased ~= nil)
-     if not (firstJustInputPressed or firstJustInputReleased) and loadAnim == false then
+     local firstJustInputs        = (firstJustInputPressed or firstJustInputReleased)
+     if not firstJustInputs and loadAnim == false then
           return
      end
 
@@ -586,35 +603,140 @@ function SkinNotes:preview_animation(loadAnim)
           end
 
           local previewMetadataObjectGroupData = {
-               confirm = previewMetadataObjectData('confirm'), pressed = previewMetadataObjectData('pressed'),
-               colored = previewMetadataObjectData('colored'), strums  = previewMetadataObjectData('strums')
+               confirm = previewMetadataObjectData('confirm'), 
+               pressed = previewMetadataObjectData('pressed'),
+               colored = previewMetadataObjectData('colored'), 
+               strums  = previewMetadataObjectData('strums')
           }
 
           if previewMetadataObjectAnims == 'colored' then
                playAnim(previewSkinGroup, previewMetadataObjectGroupData['colored']['name'], true)
-               goto previewAnimFunctionSkip
+               goto skipPreviewMetadataAnim
           end
-          if conditionPressedLeft or conditionPressedRight then
+
+          --[[ 
+               I've spent hours finding a solution to fix a stupid visual bug where switching to the 
+               preview colored animations for the strums, by using the buttons below will remain the same 
+               previous animations until pressing a button to play an animation and adding "mouseReleased('left')" 
+               to this if statement, literally solve this stupid issue
+
+               Welcome to programming where Occam's Razor is somehow the main solution to every problem
+                    ~ Meme1079
+          ]]
+          if (conditionPressedLeft or conditionPressedRight) or mouseReleased('left') then
                playAnim(previewSkinGroup, previewMetadataObjectGroupData['strums']['name'], true)
           end
-          
           if keyboardJustConditionPressed(getKeyBinds(strums), not getVar('skinSearchInputFocus')) then
                playAnim(previewSkinGroup, previewMetadataObjectGroupData[previewMetadataObjectAnims]['name'], true)
           end
           if keyboardJustConditionReleased(getKeyBinds(strums), not getVar('skinSearchInputFocus')) then
                playAnim(previewSkinGroup, previewMetadataObjectGroupData['strums']['name'], true)
           end
-          ::previewAnimFunctionSkip::
+          ::skipPreviewMetadataAnim::
      end
 end
 
+
 function SkinNotes:preview_selection_byclick()
+     local function previewSelectionButtonClick(index, direct, value)
+          local previewSkinButton = 'previewSkinButton'..direct:upperAtStart()
+
+          local byPreviewButtonClick   = clickObject(previewSkinButton, 'camHUD')
+          local byPreviewButtonRelease = mouseReleased('left')
+          if byPreviewButtonClick == true and self.previewAnimationObjectClicked[index] == false then
+               playAnim(previewSkinButton, 'hovered-pressed', true)
+               self.previewAnimationObjectClicked[index] = true
+          end
+          if byPreviewButtonRelease == true and self.previewAnimationObjectClicked[index] == true then
+               playAnim(previewSkinButton, 'static', true)
+               playSound('ding', 0.5)
+
+               self.previewAnimationObjectIndex          = self.previewAnimationObjectIndex + value
+               self.previewAnimationObjectClicked[index] = false
+               self:preview_animation(true)
+          end
+     end
+
+     local previewAnimationMinIndex = self.previewAnimationObjectIndex > 1
+     local previewAnimationMaxIndex = self.previewAnimationObjectIndex < #self.previewAnimationObjectList
+     if previewAnimationMinIndex == true then
+          previewSelectionButtonClick(1, 'left', -1)
+     end
+     if previewAnimationMaxIndex == true then
+          previewSelectionButtonClick(2, 'right', 1)
+     end
 end
 
 function SkinNotes:preview_selection_byhover()
+     local function previewSelectionButtonHover(index, direct, value)
+          local previewSkinButton = 'previewSkinButton'..direct:upperAtStart()
+          if self.previewAnimationObjectClicked[index] == true then
+               return
+          end
+
+          local previewSkinButton = 'previewSkinButton'..direct:upperAtStart()
+          if hoverObject(previewSkinButton, 'camHUD') == true then
+               self.previewAnimationObjectHovered[index] = true
+          end
+          if hoverObject(previewSkinButton, 'camHUD') == false then
+               self.previewAnimationObjectHovered[index] = false
+          end
+
+          if self.previewAnimationObjectHovered[index] == true then
+               playAnim(previewSkinButton, 'hovered-static', true)
+          end
+          if self.previewAnimationObjectHovered[index] == false then
+               playAnim(previewSkinButton, 'static', true)
+          end
+     end
+
+     local previewAnimationMinIndex = self.previewAnimationObjectIndex > 1
+     local previewAnimationMaxIndex = self.previewAnimationObjectIndex < #self.previewAnimationObjectList
+     if previewAnimationMinIndex == true then
+          previewSelectionButtonHover(1, 'left')
+     else
+          playAnim('previewSkinButtonLeft', 'hovered-blocked', true)
+          self.previewAnimationObjectHovered[1] = false
+     end
+     if previewAnimationMaxIndex == true then
+          previewSelectionButtonHover(2, 'right')
+     else
+          playAnim('previewSkinButtonRight', 'hovered-blocked', true)
+          self.previewAnimationObjectHovered[2] = false
+     end
 end
 
+local e = {'left', 'right'}
 function SkinNotes:preview_selection_bycursor()
+     for i = 1, #e do
+          if self.previewAnimationObjectClicked[i] == true then
+               playAnim('mouseTexture', 'handClick', true)
+               return
+          end
+          if self.previewAnimationObjectHovered[i] == true then
+               playAnim('mouseTexture', 'hand', true)
+               return
+          end
+     end
+
+     if hoverObject('previewSkinButtonLeft', 'camHUD') or hoverObject('previewSkinButtonRight', 'camHUD') then
+          if mouseClicked('left') or mousePressed('left') then 
+               playAnim('mouseTexture', 'disabledClick', true)
+          else
+               playAnim('mouseTexture', 'disabled', true)
+          end
+
+          if mouseClicked('left') then 
+               playSound('cancel') 
+          end
+          return
+     end
+     
+     if mouseClicked('left') or mousePressed('left') then 
+          playAnim('mouseTexture', 'idleClick', true)
+     else
+          playAnim('mouseTexture', 'idle', true)
+     end
 end
 
 --- Selection functionality; group of similair functions from 'selection'.

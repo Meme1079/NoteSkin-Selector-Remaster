@@ -96,7 +96,7 @@ addLuaText('previewSkinTitleText')
 
 makeAnimatedLuaSprite('previewSkinButtonLeft', 'ui/buttons/preview anim/previewAnimIcon_button', 775+12, 500)
 addAnimationByPrefix('previewSkinButtonLeft', 'static', 'skinanim-static', 24, false)
-addAnimationByPrefix('previewSkinButtonLeft', 'pressed', 'skinanim-pressed', 24, false)
+addAnimationByPrefix('previewSkinButtonLeft', 'hovered-blocked', 'skinanim-hovered-blocked', 24, false)
 addAnimationByPrefix('previewSkinButtonLeft', 'hovered-static', 'skinanim-hovered-static', 24, false)
 addAnimationByPrefix('previewSkinButtonLeft', 'hovered-pressed', 'skinanim-hovered-pressed', 24, false)
 playAnim('previewSkinButtonLeft', 'static', true)
@@ -117,7 +117,7 @@ addLuaSprite('previewSkinInfoIconLeft')
 
 makeAnimatedLuaSprite('previewSkinButtonRight', 'ui/buttons/preview anim/previewAnimIcon_button', 775+(12*7), 500)
 addAnimationByPrefix('previewSkinButtonRight', 'static', 'skinanim-static', 24, false)
-addAnimationByPrefix('previewSkinButtonRight', 'pressed', 'skinanim-pressed', 24, false)
+addAnimationByPrefix('previewSkinButtonRight', 'hovered-blocked', 'skinanim-hovered-blocked', 24, false)
 addAnimationByPrefix('previewSkinButtonRight', 'hovered-static', 'skinanim-hovered-static', 24, false)
 addAnimationByPrefix('previewSkinButtonRight', 'hovered-pressed', 'skinanim-hovered-pressed', 24, false)
 playAnim('previewSkinButtonRight', 'static', true)
@@ -305,7 +305,11 @@ function onUpdate(elapsed)
      Notes:search()
      Notes:preview_moved()
      Notes:preview_animation()
+     Notes:preview_selection_byclick()
+     Notes:preview_selection_byhover()
+     Notes:preview_selection_bycursor()
      
 
      hueChangeBG()
+     
 end

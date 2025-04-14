@@ -2,8 +2,8 @@
 <TextureAtlas imagePath="previewAnimIcon_button.png">
 	<!-- Created using the Spritesheet and XML generator -->
 	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
-	<SubTexture name="skinanim-hovered-pressed0000" x="236" y="0" width="118" height="124" frameX="2" frameY="2" frameWidth="114" frameHeight="120"/>
-	<SubTexture name="skinanim-hovered-static0000" x="0" y="124" width="118" height="124" frameX="2" frameY="2" frameWidth="114" frameHeight="120"/>
-	<SubTexture name="skinanim-pressed0000" x="118" y="0" width="118" height="124" frameX="2" frameY="2" frameWidth="114" frameHeight="120"/>
-	<SubTexture name="skinanim-static0000" x="0" y="0" width="118" height="124" frameX="2" frameY="2" frameWidth="114" frameHeight="120"/>
+	<SubTexture name="skinanim-hovered-blocked0000" x="236" y="0" width="118" height="124" frameX="2" frameY="2" frameWidth="114" frameHeight="120"/>
+	<SubTexture name="skinanim-hovered-pressed0000" x="0" y="0" width="118" height="124" frameX="2" frameY="2" frameWidth="114" frameHeight="120"/>
+	<SubTexture name="skinanim-hovered-static0000" x="118" y="0" width="118" height="124" frameX="2" frameY="2" frameWidth="114" frameHeight="120"/>
+	<SubTexture name="skinanim-static0000" x="0" y="124" width="118" height="124" frameX="2" frameY="2" frameWidth="114" frameHeight="120"/>
 </TextureAtlas>
