@@ -4,22 +4,22 @@
                "left_confirm": {
                     "prefix": "left confirm",
                     "name": "left_confirm",
-                    "offsets": [0,0]
+                    "offsets": [-27,28]
                },
                "down_confirm": {
                     "prefix": "down confirm",
                     "name": "down_confirm",
-                    "offsets": [0,0]
+                    "offsets": [-22.5,26]
                },
                "up_confirm": {
                     "prefix": "up confirm",
                     "name": "up_confirm",
-                    "offsets": [0,0]
+                    "offsets": [-24.5,24]
                },
                "right_confirm": {
                     "prefix": "right confirm",
                     "name": "right_confirm",
-                    "offsets": [0,0]
+                    "offsets": [-22,24]
                }
           },
           "pressed": {
