@@ -4,22 +4,22 @@
                "left_confirm": {
                     "prefix": "left confirm",
                     "name": "left_confirm",
-                    "offsets": [0,0]
+                    "offsets": [-25,14]
                },
                "down_confirm": {
                     "prefix": "down confirm",
                     "name": "down_confirm",
-                    "offsets": [0,0]
+                    "offsets": [-20,21]
                },
                "up_confirm": {
                     "prefix": "up confirm",
                     "name": "up_confirm",
-                    "offsets": [0,0]
+                    "offsets": [-21.5,24]
                },
                "right_confirm": {
                     "prefix": "right confirm",
                     "name": "right_confirm",
-                    "offsets": [0,0]
+                    "offsets": [-23,18]
                }
           },
           "pressed": {
@@ -70,7 +70,7 @@
                "left": {
                     "prefix": "arrowLEFT",
                     "name": "left",
-                    "offsets": [0,0]
+                    "offsets": [0,-4]
                },
                "down": {
                     "prefix": "arrowDOWN",
@@ -85,7 +85,7 @@
                "right": {
                     "prefix": "arrowRIGHT",
                     "name": "right",
-                    "offsets": [0,0]
+                    "offsets": [0,-4]
                }
           }
      },

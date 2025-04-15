@@ -9,7 +9,7 @@
                "down_confirm": {
                     "prefix": "down confirm",
                     "name": "down_confirm",
-                    "offsets": [-24,24]
+                    "offsets": [-24,26]
                },
                "up_confirm": {
                     "prefix": "up confirm",
