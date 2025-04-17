@@ -71,6 +71,11 @@ function SkinNotes:load()
      self.totalMetadataOrderedDisplay = states.getMetadataSkinsOrdered(self.stateClass, 'display', true)
      self.totalMetadataOrderedPreview = states.getMetadataSkinsOrdered(self.stateClass, 'preview', true)
      self.totalMetadataOrderedSkins   = states.getMetadataSkinsOrdered(self.stateClass, 'skins', true)
+     
+     -- Search Properties --
+
+     self.searchSkinObjectIndex = table.new(16, 0)
+     self.searchSkinObjectPage  = table.new(16, 0)
 
      -- Slider Properties --
 
@@ -81,7 +86,7 @@ function SkinNotes:load()
      self.sliderTrackIntervals     = states.getPageSkinSliderPositions(self.stateClass).intervals
      self.sliderTrackSemiIntervals = states.getPageSkinSliderPositions(self.stateClass).semiIntervals
 
-     -- Selection Properties --
+     -- Display Selection Properties --
      
      self.selectSkinPagePositionIndex = 1     -- current page index
      self.selectSkinInitSelectedIndex = 0     -- current pressed selected skin
@@ -89,19 +94,18 @@ function SkinNotes:load()
      self.selectSkinCurSelectedIndex  = 0     -- current selected skin index
      self.selectSkinHasBeenClicked    = false -- whether the skin display has been clicked or not
 
-     -- Search Properties --
-
-     self.searchSkinObjectIndex = table.new(16, 0)
-     self.searchSkinObjectPage  = table.new(16, 0)
-
      -- Preview Animation Properties --
 
      self.previewAnimationObjectHovered = {false, false}
      self.previewAnimationObjectClicked = {false, false}
 
-     self.previewAnimationObjectIndex = 1
+     self.previewAnimationObjectIndex = 2
      self.previewAnimationObjectInit  = true
      self.previewAnimationObjectList  = {'confirm', 'pressed', 'colored'}
+
+     -- Skin Selection Properties --
+
+     --- blah blah blah
 
      self.metadataErrorExists = false
 end
@@ -140,11 +144,11 @@ function SkinNotes:preventError()
           self.selectSkinCurSelectedIndex  = 0
 
           self:page_text()
-          self:selection_sync()
+          self:save_selection()
      end
 end
 
---- Creates a chunk to display the selected skins
+--- Creates a 16 chunk display of the selected skins.
 ---@param index? integer The specified page index for the given chunk to display.
 ---@return nil
 function SkinNotes:create(index)
@@ -227,10 +231,10 @@ function SkinNotes:create(index)
      end
 
      self:page_text()
-     self:selection_sync()
+     self:save_selection()
 end
 
---- Preloads multiple existing chunks by creating and deleting, improves optimization significantly.
+--- Preloads multiple existing chunks by creating and deleting, "improves optimization significantly".
 ---@return nil
 function SkinNotes:preload()
      for pages = self.totalSkinLimit, 1, -1 do
@@ -241,7 +245,7 @@ function SkinNotes:preload()
      end
 end
 
---- Precaches images from this class for optimization purposes.
+--- Precaches the total amount of skin images for optimization purposes.
 ---@return nil
 function SkinNotes:precache()
      for _, skins in pairs(states.getTotalSkins(self.stateClass, true)) do
@@ -250,8 +254,8 @@ function SkinNotes:precache()
      precacheImage('ui/buttons/display_button')
 end
 
---- Main functionlity of the slider for switching pages.
----@param snapToPage? boolean Whether to enable snap to page when scrolling through pages.
+--- Slider functionality for switching to multiple pages.
+---@param snapToPage? boolean Whether allow slider snapping to the nearest page.
 ---@return nil
 function SkinNotes:page_slider(snapToPage)
      local snapToPage = snapToPage == nil and true or false
@@ -346,9 +350,9 @@ function SkinNotes:page_slider(snapToPage)
      sliderTrackSnapPage()
 end
 
---- Creates the sliders interval marks for visual aid purposes.
+--- Creates a slider marks of each page intervals, for visual aid purposes.
 ---@return nil
-function SkinNotes:page_sliderMarks()
+function SkinNotes:page_slider_marks()
      local function sectionSliderMarks(tag, color, width, offsetTrackX, sliderTracks, sliderTrackIndex)
           local sectionSliderMarksTemplate = {tag = tag:upperAtStart(), index = sliderTrackIndex}
           local sectionSliderMarksTag = ('displaySliderMark${tag}${index}'):interpol(sectionSliderMarksTemplate)
@@ -371,7 +375,7 @@ function SkinNotes:page_sliderMarks()
      end
 end
 
---- Alternative functionlity of the slider for switching pages.
+--- Changes the page index by using keyboard keys.
 ---@return nil
 function SkinNotes:page_moved()
      if self.sliderTrackThumbPressed == true then return end
@@ -423,7 +427,7 @@ function SkinNotes:page_moved()
      end
 end
 
---- Setups the current page text, that's it.
+--- Updates the current page text, that is literally it.
 ---@return nil
 function SkinNotes:page_text()
      local currentPage = ('%.3d'):format(self.selectSkinPagePositionIndex)
@@ -431,7 +435,187 @@ function SkinNotes:page_text()
      setTextString('genInfoStatePage', (' Page ${cur} / ${max}'):interpol({cur = currentPage, max = maximumPage}))
 end
 
---- Displays a preview strum of the selected skin.
+--- Collection of similair methods of the selection function.
+---@return nil
+function SkinNotes:selection()
+     self:selection_byclick()
+     self:selection_byhover()
+     self:selection_bycursor()
+end
+
+--- Main click functionality when interacting any skins when selecting one.
+--- Allows the selection of skins alongs with its display skin button animations.
+---@return nil
+function SkinNotes:selection_byclick()
+     local skinObjectsPerIDs      = self.totalSkinObjectID[self.selectSkinPagePositionIndex]
+     local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.selectSkinPagePositionIndex]
+     local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.selectSkinPagePositionIndex]
+     local skinObjectsPerSelected = self.totalSkinObjectSelected[self.selectSkinPagePositionIndex]
+
+     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
+     if #skinSearchInput_textContent > 0 then
+          return
+     end
+
+     for pageSkins = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
+          local curPage = pageSkins - (16 * (self.selectSkinPagePositionIndex - 1))
+
+          local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = pageSkins}
+          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+          local function displaySkinSelect()
+               local byClick   = clickObject(displaySkinIconButton, 'camHUD')
+               local byRelease = mouseReleased('left') and self.selectSkinPreSelectedIndex == pageSkins
+
+               if byClick == true and skinObjectsPerClicked[curPage] == false then
+                    playAnim(displaySkinIconButton, 'pressed', true)
+
+                    self.selectSkinPreSelectedIndex = pageSkins
+                    self.selectSkinHasBeenClicked   = true
+
+                    skinObjectsPerClicked[curPage] = true
+               end
+
+               if byRelease == true and skinObjectsPerClicked[curPage] == true then
+                    playAnim(displaySkinIconButton, 'selected', true)
+     
+                    self.selectSkinInitSelectedIndex = self.selectSkinCurSelectedIndex
+                    self.selectSkinCurSelectedIndex  = pageSkins
+                    self.selectSkinPagePositionIndex = self.selectSkinPagePositionIndex
+                    self.selectSkinHasBeenClicked    = false
+                    
+                    self:preview()
+                    self:search_preview()
+                    skinObjectsPerSelected[curPage] = true
+                    skinObjectsPerClicked[curPage]  = false
+               end
+          end
+          local function displaySkinDeselect()
+               local byClick   = clickObject(displaySkinIconButton, 'camHUD')
+               local byRelease = mouseReleased('left') and self.selectSkinPreSelectedIndex == pageSkins
+               if byClick == true and skinObjectsPerClicked[curPage] == false then
+                    playAnim(displaySkinIconButton, 'pressed', true)
+
+                    self.selectSkinPreSelectedIndex = pageSkins
+                    self.selectSkinHasBeenClicked   = true
+
+                    skinObjectsPerClicked[curPage] = true
+               end
+
+               if byRelease == true and skinObjectsPerClicked[curPage] == true then
+                    playAnim(displaySkinIconButton, 'static', true)
+
+                    self.selectSkinCurSelectedIndex = 0
+                    self.selectSkinPreSelectedIndex = 0
+                    self.selectSkinHasBeenClicked   = false
+
+                    self:preview()
+                    self:search_preview()
+                    skinObjectsPerSelected[curPage] = false
+                    skinObjectsPerClicked[curPage]  = false
+                    skinObjectsPerHovered[curPage]  = false
+               end
+          end
+
+          if skinObjectsPerSelected[curPage] == false then
+               displaySkinSelect()
+          end
+          if skinObjectsPerSelected[curPage] == true then
+               displaySkinDeselect()
+          end
+
+          if pageSkins == self.selectSkinInitSelectedIndex then
+               if luaSpriteExists(displaySkinIconButton) == true and luaSpriteExists(displaySkinIconSkin) == true then
+                    playAnim(displaySkinIconButton, 'static', true)
+               end
+
+               self.selectSkinInitSelectedIndex = 0
+               skinObjectsPerSelected[curPage]  = false
+          end
+     end
+end
+
+--- Main hovering functionality when interacting any skins when selecting any.
+--- Allows the display skin button to have a hover animation.
+---@return nil
+function SkinNotes:selection_byhover()
+     local skinObjectsPerIDs      = self.totalSkinObjectID[self.selectSkinPagePositionIndex]
+     local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.selectSkinPagePositionIndex]
+     local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.selectSkinPagePositionIndex]
+
+     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
+     if #skinSearchInput_textContent > 0 then
+          return
+     end
+
+     for pageSkins = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
+          local curPage = pageSkins - (16 * (self.selectSkinPagePositionIndex - 1))
+
+          local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = pageSkins}
+          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+          if hoverObject(displaySkinIconButton, 'camHUD') == true then
+               skinObjectsPerHovered[curPage] = true
+          end
+          if hoverObject(displaySkinIconButton, 'camHUD') == false then
+               skinObjectsPerHovered[curPage] = false
+          end
+
+          local nonCurrentPreSelectedSkin = self.selectSkinPreSelectedIndex ~= pageSkins
+          local nonCurrentCurSelectedSkin = self.selectSkinCurSelectedIndex ~= pageSkins
+          if skinObjectsPerHovered[curPage] == true and nonCurrentPreSelectedSkin and nonCurrentCurSelectedSkin then
+               if luaSpriteExists(displaySkinIconButton) == false then return end
+               playAnim(displaySkinIconButton, 'hover', true)
+          end
+          if skinObjectsPerHovered[curPage] == false and nonCurrentPreSelectedSkin and nonCurrentCurSelectedSkin then
+               if luaSpriteExists(displaySkinIconButton) == false then return end
+               playAnim(displaySkinIconButton, 'static', true)
+          end
+     end
+end
+
+--- Main cursor functionality when interacting any skins when selecting any.
+--- Changes the cursor's texture depending on it interaction (i.e. selecting and hovering).
+---@return nil
+function SkinNotes:selection_bycursor()
+     local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.selectSkinPagePositionIndex]
+     local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.selectSkinPagePositionIndex]
+
+     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
+     if #skinSearchInput_textContent > 0 then
+          return
+     end
+
+     for pageSkins = 1, math.max(#skinObjectsPerClicked, #skinObjectsPerHovered) do
+          if skinObjectsPerClicked[pageSkins] == true then
+               playAnim('mouseTexture', 'handClick', true)
+               return
+          end
+          if skinObjectsPerHovered[pageSkins] == true then
+               playAnim('mouseTexture', 'hand', true)
+               return
+          end
+     end
+
+     if hoverObject('displaySliderIcon', 'camHUD') == true and self.totalSkinLimit == 1 then
+          if mouseClicked('left') or mousePressed('left') then 
+               playAnim('mouseTexture', 'disabledClick', true)
+          else
+               playAnim('mouseTexture', 'disabled', true)
+          end
+
+          if mouseClicked('left') then 
+               playSound('cancel') 
+          end
+          return
+     end
+
+     if mouseClicked('left') or mousePressed('left') then 
+          playAnim('mouseTexture', 'idleClick', true)
+     else
+          playAnim('mouseTexture', 'idle', true)
+     end
+end
+
+--- Creates the selected skin's preview strums.
 ---@return nil
 function SkinNotes:preview()
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
@@ -526,52 +710,6 @@ function SkinNotes:preview()
      self:preview_animation(true)
 end
 
---- Changes the skin's current preview animation, that's it.
----@return nil
-function SkinNotes:preview_moved()
-     local conditionPressedLeft  = keyboardJustConditionPressed('Z', not getVar('skinSearchInputFocus'))
-     local conditionPressedRight = keyboardJustConditionPressed('X', not getVar('skinSearchInputFocus'))
-
-     local previewAnimationMinIndex = self.previewAnimationObjectIndex > 1
-     local previewAnimationMaxIndex = self.previewAnimationObjectIndex < #self.previewAnimationObjectList
-     local previewAnimationInverseMinIndex = self.previewAnimationObjectIndex <= 1
-     local previewAnimationInverseMaxIndex = self.previewAnimationObjectIndex >= #self.previewAnimationObjectList
-     if conditionPressedLeft and previewAnimationMinIndex then
-          self.previewAnimationObjectIndex = self.previewAnimationObjectIndex - 1
-          self.previewAnimationObjectInit  = true
-
-          playSound('ding', 0.5)
-     end
-     if conditionPressedRight and previewAnimationMaxIndex then
-          self.previewAnimationObjectIndex = self.previewAnimationObjectIndex + 1
-          self.previewAnimationObjectInit  = true
-
-          playSound('ding', 0.5)
-     end
-     
-     if self.previewAnimationObjectInit == true then --! DO NOT DELETE
-          self.previewAnimationObjectInit = false
-          return
-     end
-
-     if previewAnimationInverseMinIndex then
-          playAnim('previewSkinInfoIconLeft', 'none', true)
-          playAnim('previewSkinInfoIconRight', 'right', true)
-     else
-          playAnim('previewSkinInfoIconLeft', 'left', true)
-     end
-
-     if previewAnimationInverseMaxIndex then
-          playAnim('previewSkinInfoIconLeft', 'left', true)
-          playAnim('previewSkinInfoIconRight', 'none', true)
-     else
-          playAnim('previewSkinInfoIconRight', 'right', true)
-     end
-
-     local previewMetadataObjectAnims = self.previewAnimationObjectList[self.previewAnimationObjectIndex]
-     setTextString('previewSkinButtonSelectionText', previewMetadataObjectAnims:upperAtStart())
-end
-
 --- Creates and loads the selected skin's preview animations.
 ---@param loadAnim? boolean Will only load the current skin's preview animations or not, bug fixing purposes.
 ---@return nil
@@ -649,15 +787,63 @@ function SkinNotes:preview_animation(loadAnim)
      end
 end
 
---- Selection functionality; group of similair functions from 'preview_selection'.
+--- Collection of similair methods of the preview selection function.
 ---@return nil
 function SkinNotes:preview_selection()
+     self:preview_selection_moved()
      self:preview_selection_byclick()
      self:preview_selection_byhover()
      self:preview_selection_bycursor()
 end
 
---- Selects the preview animation switch buttons, focuses on the click functionality.
+--- Changes the skin's preview animations by using keyboard keys.
+---@return nil
+function SkinNotes:preview_selection_moved()
+     local conditionPressedLeft  = keyboardJustConditionPressed('Z', not getVar('skinSearchInputFocus'))
+     local conditionPressedRight = keyboardJustConditionPressed('X', not getVar('skinSearchInputFocus'))
+
+     local previewAnimationMinIndex = self.previewAnimationObjectIndex > 1
+     local previewAnimationMaxIndex = self.previewAnimationObjectIndex < #self.previewAnimationObjectList
+     local previewAnimationInverseMinIndex = self.previewAnimationObjectIndex <= 1
+     local previewAnimationInverseMaxIndex = self.previewAnimationObjectIndex >= #self.previewAnimationObjectList
+     if conditionPressedLeft and previewAnimationMinIndex then
+          self.previewAnimationObjectIndex = self.previewAnimationObjectIndex - 1
+          self.previewAnimationObjectInit  = true
+
+          playSound('ding', 0.5)
+     end
+     if conditionPressedRight and previewAnimationMaxIndex then
+          self.previewAnimationObjectIndex = self.previewAnimationObjectIndex + 1
+          self.previewAnimationObjectInit  = true
+
+          playSound('ding', 0.5)
+     end
+     
+     if self.previewAnimationObjectInit == true then --! DO NOT DELETE
+          self.previewAnimationObjectInit = false
+          return
+     end
+
+     if previewAnimationInverseMinIndex then
+          playAnim('previewSkinInfoIconLeft', 'none', true)
+          playAnim('previewSkinInfoIconRight', 'right', true)
+     else
+          playAnim('previewSkinInfoIconLeft', 'left', true)
+     end
+
+     if previewAnimationInverseMaxIndex then
+          playAnim('previewSkinInfoIconLeft', 'left', true)
+          playAnim('previewSkinInfoIconRight', 'none', true)
+     else
+          playAnim('previewSkinInfoIconRight', 'right', true)
+     end
+
+     local previewMetadataObjectAnims = self.previewAnimationObjectList[self.previewAnimationObjectIndex]
+     setTextString('previewSkinButtonSelectionText', previewMetadataObjectAnims:upperAtStart())
+end
+
+--- Main click functionality when interacting any preview buttons when selecting one.
+--- Allows the skin's preview animations along with the preview buttons displaying its animations.
 ---@return nil
 function SkinNotes:preview_selection_byclick()
      local function previewSelectionButtonClick(index, direct, value)
@@ -689,7 +875,8 @@ function SkinNotes:preview_selection_byclick()
      end
 end
 
---- Selects the preview animation switch buttons, focuses on the hovering functionality.
+--- Main hovering functionality when interacting any preview buttons when selecting any.
+--- Allows the preview buttons to have a hover animation.
 ---@return nil
 function SkinNotes:preview_selection_byhover()
      local function previewSelectionButtonHover(index, direct, value)
@@ -730,15 +917,16 @@ function SkinNotes:preview_selection_byhover()
      end
 end
 
---- Cursor behavior when selecting preview animation switch buttons.
+--- Main cursor functionality when interacting any preview buttons when selecting any.
+--- Changes the cursor's texture depending on it interaction (i.e. selecting and hovering).
 ---@return nil
 function SkinNotes:preview_selection_bycursor()
-     for i = 1, 2 do
-          if self.previewAnimationObjectClicked[i] == true then
+     for previewObjects = 1, 2 do
+          if self.previewAnimationObjectClicked[previewObjects] == true then
                playAnim('mouseTexture', 'handClick', true)
                return
           end
-          if self.previewAnimationObjectHovered[i] == true then
+          if self.previewAnimationObjectHovered[previewObjects] == true then
                playAnim('mouseTexture', 'hand', true)
                return
           end
@@ -759,207 +947,36 @@ function SkinNotes:preview_selection_bycursor()
      end
 end
 
---- Selection functionality; group of similair functions from 'selection'.
----@return nil
-function SkinNotes:selection()
-     self:selection_byclick()
-     self:selection_byhover()
-     self:selection_cursor()
-end
+function SkinNotes:checkbox()
+     if keyboardJustConditionPressed('O', not getVar('skinSearchInputFocus')) then
+          playAnim('selectionSkinButton_player', 'checking')
+     end
+     if keyboardJustConditionPressed('P', not getVar('skinSearchInputFocus')) then
+          playAnim('selectionSkinButton_player', 'unchecking')
+     end
 
---- Selects the selected skin, focuses on the click functionality.
----@return nil
-function SkinNotes:selection_byclick()
-     local skinObjectsPerIDs      = self.totalSkinObjectID[self.selectSkinPagePositionIndex]
-     local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.selectSkinPagePositionIndex]
-     local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.selectSkinPagePositionIndex]
-     local skinObjectsPerSelected = self.totalSkinObjectSelected[self.selectSkinPagePositionIndex]
-
-     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
-     if #skinSearchInput_textContent > 0 then
+     local a = getProperty('selectionSkinButton_player.animation.finished')
+     local b = getProperty('selectionSkinButton_player.animation.curAnim.name')
+     if b == 'unchecking' and a == true then
+          playAnim('selectionSkinButton_player', 'uncheck')
           return
      end
-
-     for pageSkins = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
-          local curPage = pageSkins - (16 * (self.selectSkinPagePositionIndex - 1))
-
-          local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = pageSkins}
-          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
-          local function displaySkinSelect()
-               local byClick   = clickObject(displaySkinIconButton, 'camHUD')
-               local byRelease = mouseReleased('left') and self.selectSkinPreSelectedIndex == pageSkins
-
-               if byClick == true and skinObjectsPerClicked[curPage] == false then
-                    playAnim(displaySkinIconButton, 'pressed', true)
-
-                    self.selectSkinPreSelectedIndex = pageSkins
-                    self.selectSkinHasBeenClicked   = true
-
-                    skinObjectsPerClicked[curPage] = true
-               end
-
-               if byRelease == true and skinObjectsPerClicked[curPage] == true then
-                    playAnim(displaySkinIconButton, 'selected', true)
-     
-                    self.selectSkinInitSelectedIndex = self.selectSkinCurSelectedIndex
-                    self.selectSkinCurSelectedIndex  = pageSkins
-                    self.selectSkinPagePositionIndex = self.selectSkinPagePositionIndex
-                    self.selectSkinHasBeenClicked    = false
-                    
-                    self:preview()
-                    self:search_preview()
-                    skinObjectsPerSelected[curPage] = true
-                    skinObjectsPerClicked[curPage]  = false
-               end
-          end
-          local function displaySkinDeselect()
-               local byClick   = clickObject(displaySkinIconButton, 'camHUD')
-               local byRelease = mouseReleased('left') and self.selectSkinPreSelectedIndex == pageSkins
-               if byClick == true and skinObjectsPerClicked[curPage] == false then
-                    playAnim(displaySkinIconButton, 'pressed', true)
-
-                    self.selectSkinPreSelectedIndex = pageSkins
-                    self.selectSkinHasBeenClicked   = true
-
-                    skinObjectsPerClicked[curPage] = true
-               end
-
-               if byRelease == true and skinObjectsPerClicked[curPage] == true then
-                    playAnim(displaySkinIconButton, 'static', true)
-
-                    self.selectSkinCurSelectedIndex = 0
-                    self.selectSkinPreSelectedIndex = 0
-                    self.selectSkinHasBeenClicked   = false
-
-                    self:preview()
-                    self:search_preview()
-                    skinObjectsPerSelected[curPage] = false
-                    skinObjectsPerClicked[curPage]  = false
-                    skinObjectsPerHovered[curPage]  = false
-               end
-          end
-
-          if skinObjectsPerSelected[curPage] == false then
-               displaySkinSelect()
-          end
-          if skinObjectsPerSelected[curPage] == true then
-               displaySkinDeselect()
-          end
-
-          if pageSkins == self.selectSkinInitSelectedIndex then
-               if luaSpriteExists(displaySkinIconButton) == true and luaSpriteExists(displaySkinIconSkin) == true then
-                    playAnim(displaySkinIconButton, 'static', true)
-               end
-
-               self.selectSkinInitSelectedIndex = 0
-               skinObjectsPerSelected[curPage]  = false
-          end
-     end
-end
-
---- Selects the selected skin, focuses on the hovering functionality.
----@return nil
-function SkinNotes:selection_byhover()
-     local skinObjectsPerIDs      = self.totalSkinObjectID[self.selectSkinPagePositionIndex]
-     local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.selectSkinPagePositionIndex]
-     local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.selectSkinPagePositionIndex]
-
-     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
-     if #skinSearchInput_textContent > 0 then
+     if b == 'checking' and a == true then
+          playAnim('selectionSkinButton_player', 'check')
           return
      end
-
-     for pageSkins = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
-          local curPage = pageSkins - (16 * (self.selectSkinPagePositionIndex - 1))
-
-          local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = pageSkins}
-          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
-          if hoverObject(displaySkinIconButton, 'camHUD') == true then
-               skinObjectsPerHovered[curPage] = true
-          end
-          if hoverObject(displaySkinIconButton, 'camHUD') == false then
-               skinObjectsPerHovered[curPage] = false
-          end
-
-          local nonCurrentPreSelectedSkin = self.selectSkinPreSelectedIndex ~= pageSkins
-          local nonCurrentCurSelectedSkin = self.selectSkinCurSelectedIndex ~= pageSkins
-          if skinObjectsPerHovered[curPage] == true and nonCurrentPreSelectedSkin and nonCurrentCurSelectedSkin then
-               if luaSpriteExists(displaySkinIconButton) == false then return end
-               playAnim(displaySkinIconButton, 'hover', true)
-          end
-          if skinObjectsPerHovered[curPage] == false and nonCurrentPreSelectedSkin and nonCurrentCurSelectedSkin then
-               if luaSpriteExists(displaySkinIconButton) == false then return end
-               playAnim(displaySkinIconButton, 'static', true)
-          end
-     end
 end
 
---- Cursor behavior when selecting certain skins.
----@return nil
-function SkinNotes:selection_cursor()
-     local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.selectSkinPagePositionIndex]
-     local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.selectSkinPagePositionIndex]
 
-     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
-     if #skinSearchInput_textContent > 0 then
-          return
-     end
-
-     for pageSkins = 1, math.max(#skinObjectsPerClicked, #skinObjectsPerHovered) do
-          if skinObjectsPerClicked[pageSkins] == true then
-               playAnim('mouseTexture', 'handClick', true)
-               return
-          end
-          if skinObjectsPerHovered[pageSkins] == true then
-               playAnim('mouseTexture', 'hand', true)
-               return
-          end
-     end
-
-     if hoverObject('displaySliderIcon', 'camHUD') == true and self.totalSkinLimit == 1 then
-          if mouseClicked('left') or mousePressed('left') then 
-               playAnim('mouseTexture', 'disabledClick', true)
-          else
-               playAnim('mouseTexture', 'disabled', true)
-          end
-
-          if mouseClicked('left') then 
-               playSound('cancel') 
-          end
-          return
-     end
-
-     if mouseClicked('left') or mousePressed('left') then 
-          playAnim('mouseTexture', 'idleClick', true)
-     else
-          playAnim('mouseTexture', 'idle', true)
-     end
-end
-
---- Syncs the saved selection of the certain skin.
----@return nil
-function SkinNotes:selection_sync()
-     if self.selectSkinPreSelectedIndex ~= 0 then
-          local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = self.selectSkinPreSelectedIndex}
-          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
-
-          if luaSpriteExists(displaySkinIconButton) == true then
-               playAnim(displaySkinIconButton, 'selected', true)
-          end
-     end
-end
-
---- Search functionality; group of (almost) similair functions from 'search'.
+--- Collection of similair methods of the search functions.
 ---@return nil
 function SkinNotes:search()
      self:search_create()
      self:search_skins()
-     self:search_byclick()
-     self:search_byhover()
-     self:search_cursor()
+     self:search_selection()
 end
 
---- Creates a chunk to display the selected skins when searching.
+--- Creates a 16 chunk display of the selected search skins.
 ---@return nil
 function SkinNotes:search_create()
      local justReleased = callMethodFromClass('flixel.FlxG', 'keys.firstJustReleased', {''})
@@ -971,7 +988,7 @@ function SkinNotes:search_create()
      if skinSearchInput_textContent == '' and getVar('skinSearchInputFocus') == true then
           self:create(self.selectSkinPagePositionIndex)
           self:page_text()
-          self:selection_sync()
+          self:save_selection()
           return
      end
 
@@ -1126,11 +1143,11 @@ function SkinNotes:search_create()
                     return 
                end
           end
-          self:selection_sync()
+          self:save_selection()
      end
 end
 
---- Calculates the total amount skins present when searching
+--- Calculates and loads the nearest total amount of searched skins.
 ---@return nil
 function SkinNotes:search_skins()
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
@@ -1197,189 +1214,7 @@ function SkinNotes:search_skins()
      end
 end
 
---- Selects the selected skin, focuses on the click functionality.
---- Only applies when searching for skins.
----@return nil
-function SkinNotes:search_byclick()
-     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
-     if #skinSearchInput_textContent == 0 then
-          return
-     end
-
-     for searchIndex = 1, math.max(#self.searchSkinObjectIndex, #self.searchSkinObjectPage) do
-          local searchSkinIndex = tonumber( self.searchSkinObjectIndex[searchIndex] )
-          local searchSkinPage  = tonumber( self.searchSkinObjectPage[searchIndex]  )
-          local searchSkinPresentIndex = table.find(self.totalSkinObjectID[searchSkinPage], searchSkinIndex)
-
-          local skinObjectsPerIDs      = self.totalSkinObjectID[searchSkinPage]
-          local skinObjectsPerHovered  = self.totalSkinObjectHovered[searchSkinPage]
-          local skinObjectsPerClicked  = self.totalSkinObjectClicked[searchSkinPage]
-          local skinObjectsPerSelected = self.totalSkinObjectSelected[searchSkinPage]
-
-          local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = searchSkinIndex}
-          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
-          local displaySkinIconSkin     = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplate)
-          local function displaySkinSelect()
-               local byClick   = clickObject(displaySkinIconButton, 'camHUD')
-               local byRelease = mouseReleased('left') and self.selectSkinPreSelectedIndex == searchSkinIndex
-
-               if byClick == true and skinObjectsPerClicked[searchSkinPresentIndex] == false then
-                    playAnim(displaySkinIconButton, 'pressed', true)
-
-                    self.selectSkinPreSelectedIndex = skinObjectsPerIDs[searchSkinPresentIndex]
-                    self.selectSkinHasBeenClicked   = true
-
-                    skinObjectsPerClicked[searchSkinPresentIndex] = true
-               end
-
-               if byRelease == true and skinObjectsPerClicked[searchSkinPresentIndex] == true then
-                    playAnim(displaySkinIconButton, 'selected', true)
-     
-                    self.selectSkinInitSelectedIndex = self.selectSkinCurSelectedIndex
-                    self.selectSkinCurSelectedIndex  = skinObjectsPerIDs[searchSkinPresentIndex]
-                    self.selectSkinPagePositionIndex = self.selectSkinPagePositionIndex
-                    self.selectSkinHasBeenClicked    = false
-                    
-                    self:search_preview()
-                    skinObjectsPerSelected[searchSkinPresentIndex] = true
-                    skinObjectsPerClicked[searchSkinPresentIndex]  = false
-               end
-          end
-          local function displaySkinDeselect()
-               local byClick   = clickObject(displaySkinIconButton, 'camHUD')
-               local byRelease = mouseReleased('left') and self.selectSkinPreSelectedIndex == searchSkinIndex
-               if byClick == true and skinObjectsPerClicked[searchSkinPresentIndex] == false then
-                    playAnim(displaySkinIconButton, 'pressed', true)
-
-                    self.selectSkinPreSelectedIndex = skinObjectsPerIDs[searchSkinPresentIndex]
-                    self.selectSkinHasBeenClicked   = true
-
-                    skinObjectsPerClicked[searchSkinPresentIndex] = true
-               end
-
-               if byRelease == true and skinObjectsPerClicked[searchSkinPresentIndex] == true then
-                    playAnim(displaySkinIconButton, 'static', true)
-
-                    self.selectSkinCurSelectedIndex = 0
-                    self.selectSkinPreSelectedIndex = 0
-                    self.selectSkinHasBeenClicked   = false
-
-                    self:search_preview()
-                    skinObjectsPerSelected[searchSkinPresentIndex] = false
-                    skinObjectsPerClicked[searchSkinPresentIndex]  = false
-                    skinObjectsPerHovered[searchSkinPresentIndex]  = false
-               end
-          end
-
-          if skinObjectsPerSelected[searchSkinPresentIndex] == false then
-               displaySkinSelect()
-          end
-          if skinObjectsPerSelected[searchSkinPresentIndex] == true then
-               displaySkinDeselect()
-          end
-
-          if searchSkinIndex == self.selectSkinInitSelectedIndex then
-               if luaSpriteExists(displaySkinIconButton) == true and luaSpriteExists(displaySkinIconSkin) == true then
-                    playAnim(displaySkinIconButton, 'static', true)
-               end
-
-               self.selectSkinInitSelectedIndex = 0
-               skinObjectsPerSelected[searchSkinPresentIndex]  = false
-          end
-     end
-end
-
---- Selects the selected skin, focuses on the hovering functionality.
---- Only applies when searching for skins.
----@return nil
-function SkinNotes:search_byhover()
-     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
-     if #skinSearchInput_textContent == 0 then
-          return
-     end
-
-     for searchIndex = 1, math.max(#self.searchSkinObjectIndex, #self.searchSkinObjectPage) do
-          local searchSkinIndex = tonumber( self.searchSkinObjectIndex[searchIndex] )
-          local searchSkinPage  = tonumber( self.searchSkinObjectPage[searchIndex]  )
-          local searchSkinPresentIndex = table.find(self.totalSkinObjectID[searchSkinPage], searchSkinIndex)
-
-          local skinObjectsPerIDs      = self.totalSkinObjectID[searchSkinPage]
-          local skinObjectsPerHovered  = self.totalSkinObjectHovered[searchSkinPage]
-          local skinObjectsPerClicked  = self.totalSkinObjectClicked[searchSkinPage]
-          local skinObjectsPerSelected = self.totalSkinObjectSelected[searchSkinPage]
-
-          local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = searchSkinIndex}
-          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
-          if hoverObject(displaySkinIconButton, 'camHUD') == true then
-               skinObjectsPerHovered[searchSkinPresentIndex] = true
-          end
-          if hoverObject(displaySkinIconButton, 'camHUD') == false then
-               skinObjectsPerHovered[searchSkinPresentIndex] = false
-          end
-
-          local nonCurrentPreSelectedSkin = self.selectSkinPreSelectedIndex ~= searchSkinIndex
-          local nonCurrentCurSelectedSkin = self.selectSkinCurSelectedIndex ~= searchSkinIndex
-          if skinObjectsPerHovered[searchSkinPresentIndex] == true and nonCurrentPreSelectedSkin and nonCurrentCurSelectedSkin then
-               if luaSpriteExists(displaySkinIconButton) == false then return end
-               playAnim(displaySkinIconButton, 'hover', true)
-          end
-          if skinObjectsPerHovered[searchSkinPresentIndex] == false and nonCurrentPreSelectedSkin and nonCurrentCurSelectedSkin then
-               if luaSpriteExists(displaySkinIconButton) == false then return end
-               playAnim(displaySkinIconButton, 'static', true)
-          end
-     end
-end
-
---- Cursor behavior when selecting certain skins.
---- Only applies when searching for skins.
----@return nil
-function SkinNotes:search_cursor()
-     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
-     if #skinSearchInput_textContent == 0 then
-          return
-     end
-
-     for searchIndex = 1, math.max(#self.searchSkinObjectIndex, #self.searchSkinObjectPage) do
-          local searchSkinIndex = tonumber( self.searchSkinObjectIndex[searchIndex] )
-          local searchSkinPage  = tonumber( self.searchSkinObjectPage[searchIndex]  )
-          local searchSkinPresentIndex = table.find(self.totalSkinObjectID[searchSkinPage], searchSkinIndex)
-
-          local skinObjectsPerHovered  = self.totalSkinObjectHovered[searchSkinPage]
-          local skinObjectsPerClicked  = self.totalSkinObjectClicked[searchSkinPage]
-
-          local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = searchSkinIndex}
-          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
-          if skinObjectsPerClicked[searchSkinPresentIndex] == true and luaSpriteExists(displaySkinIconButton) == true then
-               playAnim('mouseTexture', 'handClick', true)
-               return
-          end
-          if skinObjectsPerHovered[searchSkinPresentIndex] == true and luaSpriteExists(displaySkinIconButton) == true then
-               playAnim('mouseTexture', 'hand', true)
-               return
-          end
-     end
-     
-     if hoverObject('displaySliderIcon', 'camHUD') == true and self.totalSkinLimit == 1 then
-          if mouseClicked('left') or mousePressed('left') then 
-               playAnim('mouseTexture', 'disabledClick', true)
-          else
-               playAnim('mouseTexture', 'disabled', true)
-          end
-
-          if mouseClicked('left') then 
-               playSound('cancel') 
-          end
-          return
-     end
-
-     if mouseClicked('left') or mousePressed('left') then 
-          playAnim('mouseTexture', 'idleClick', true)
-     else
-          playAnim('mouseTexture', 'idle', true)
-     end
-end
-
---- Displays a preview strum of the selected skin when searching skins.
+--- Creates and loads the selected search skin's preview strums.
 ---@return nil
 function SkinNotes:search_preview()
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
@@ -1476,7 +1311,194 @@ function SkinNotes:search_preview()
      self:preview_animation(true)
 end
 
-function SkinNotes:switch()
+--- Collection of similair methods of the search selection functions.
+---@return nil
+function SkinNotes:search_selection()
+     self:search_selection_byclick()
+     self:search_selection_byhover()
+     self:search_selection_cursor()
+end
+
+--- Main click functionality when interacting any searched skins when selecting one.
+--- Allows the selection of the searched skins alongs with its display skin button animations.
+---@return nil
+function SkinNotes:search_selection_byclick()
+     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
+     if #skinSearchInput_textContent == 0 then
+          return
+     end
+
+     for searchIndex = 1, math.max(#self.searchSkinObjectIndex, #self.searchSkinObjectPage) do
+          local searchSkinIndex = tonumber( self.searchSkinObjectIndex[searchIndex] )
+          local searchSkinPage  = tonumber( self.searchSkinObjectPage[searchIndex]  )
+          local searchSkinPresentIndex = table.find(self.totalSkinObjectID[searchSkinPage], searchSkinIndex)
+
+          local skinObjectsPerIDs      = self.totalSkinObjectID[searchSkinPage]
+          local skinObjectsPerHovered  = self.totalSkinObjectHovered[searchSkinPage]
+          local skinObjectsPerClicked  = self.totalSkinObjectClicked[searchSkinPage]
+          local skinObjectsPerSelected = self.totalSkinObjectSelected[searchSkinPage]
+
+          local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = searchSkinIndex}
+          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+          local displaySkinIconSkin     = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplate)
+          local function displaySkinSelect()
+               local byClick   = clickObject(displaySkinIconButton, 'camHUD')
+               local byRelease = mouseReleased('left') and self.selectSkinPreSelectedIndex == searchSkinIndex
+
+               if byClick == true and skinObjectsPerClicked[searchSkinPresentIndex] == false then
+                    playAnim(displaySkinIconButton, 'pressed', true)
+
+                    self.selectSkinPreSelectedIndex = skinObjectsPerIDs[searchSkinPresentIndex]
+                    self.selectSkinHasBeenClicked   = true
+
+                    skinObjectsPerClicked[searchSkinPresentIndex] = true
+               end
+
+               if byRelease == true and skinObjectsPerClicked[searchSkinPresentIndex] == true then
+                    playAnim(displaySkinIconButton, 'selected', true)
+     
+                    self.selectSkinInitSelectedIndex = self.selectSkinCurSelectedIndex
+                    self.selectSkinCurSelectedIndex  = skinObjectsPerIDs[searchSkinPresentIndex]
+                    self.selectSkinPagePositionIndex = self.selectSkinPagePositionIndex
+                    self.selectSkinHasBeenClicked    = false
+                    
+                    self:search_preview()
+                    skinObjectsPerSelected[searchSkinPresentIndex] = true
+                    skinObjectsPerClicked[searchSkinPresentIndex]  = false
+               end
+          end
+          local function displaySkinDeselect()
+               local byClick   = clickObject(displaySkinIconButton, 'camHUD')
+               local byRelease = mouseReleased('left') and self.selectSkinPreSelectedIndex == searchSkinIndex
+               if byClick == true and skinObjectsPerClicked[searchSkinPresentIndex] == false then
+                    playAnim(displaySkinIconButton, 'pressed', true)
+
+                    self.selectSkinPreSelectedIndex = skinObjectsPerIDs[searchSkinPresentIndex]
+                    self.selectSkinHasBeenClicked   = true
+
+                    skinObjectsPerClicked[searchSkinPresentIndex] = true
+               end
+
+               if byRelease == true and skinObjectsPerClicked[searchSkinPresentIndex] == true then
+                    playAnim(displaySkinIconButton, 'static', true)
+
+                    self.selectSkinCurSelectedIndex = 0
+                    self.selectSkinPreSelectedIndex = 0
+                    self.selectSkinHasBeenClicked   = false
+
+                    self:search_preview()
+                    skinObjectsPerSelected[searchSkinPresentIndex] = false
+                    skinObjectsPerClicked[searchSkinPresentIndex]  = false
+                    skinObjectsPerHovered[searchSkinPresentIndex]  = false
+               end
+          end
+
+          if skinObjectsPerSelected[searchSkinPresentIndex] == false then
+               displaySkinSelect()
+          end
+          if skinObjectsPerSelected[searchSkinPresentIndex] == true then
+               displaySkinDeselect()
+          end
+
+          if searchSkinIndex == self.selectSkinInitSelectedIndex then
+               if luaSpriteExists(displaySkinIconButton) == true and luaSpriteExists(displaySkinIconSkin) == true then
+                    playAnim(displaySkinIconButton, 'static', true)
+               end
+
+               self.selectSkinInitSelectedIndex = 0
+               skinObjectsPerSelected[searchSkinPresentIndex]  = false
+          end
+     end
+end
+
+--- Main hovering functionality when interacting any searched skins when selecting any.
+--- Allows the display button to have a hover animation.
+---@return nil
+function SkinNotes:search_selection_byhover()
+     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
+     if #skinSearchInput_textContent == 0 then
+          return
+     end
+
+     for searchIndex = 1, math.max(#self.searchSkinObjectIndex, #self.searchSkinObjectPage) do
+          local searchSkinIndex = tonumber( self.searchSkinObjectIndex[searchIndex] )
+          local searchSkinPage  = tonumber( self.searchSkinObjectPage[searchIndex]  )
+          local searchSkinPresentIndex = table.find(self.totalSkinObjectID[searchSkinPage], searchSkinIndex)
+
+          local skinObjectsPerIDs      = self.totalSkinObjectID[searchSkinPage]
+          local skinObjectsPerHovered  = self.totalSkinObjectHovered[searchSkinPage]
+          local skinObjectsPerClicked  = self.totalSkinObjectClicked[searchSkinPage]
+          local skinObjectsPerSelected = self.totalSkinObjectSelected[searchSkinPage]
+
+          local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = searchSkinIndex}
+          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+          if hoverObject(displaySkinIconButton, 'camHUD') == true then
+               skinObjectsPerHovered[searchSkinPresentIndex] = true
+          end
+          if hoverObject(displaySkinIconButton, 'camHUD') == false then
+               skinObjectsPerHovered[searchSkinPresentIndex] = false
+          end
+
+          local nonCurrentPreSelectedSkin = self.selectSkinPreSelectedIndex ~= searchSkinIndex
+          local nonCurrentCurSelectedSkin = self.selectSkinCurSelectedIndex ~= searchSkinIndex
+          if skinObjectsPerHovered[searchSkinPresentIndex] == true and nonCurrentPreSelectedSkin and nonCurrentCurSelectedSkin then
+               if luaSpriteExists(displaySkinIconButton) == false then return end
+               playAnim(displaySkinIconButton, 'hover', true)
+          end
+          if skinObjectsPerHovered[searchSkinPresentIndex] == false and nonCurrentPreSelectedSkin and nonCurrentCurSelectedSkin then
+               if luaSpriteExists(displaySkinIconButton) == false then return end
+               playAnim(displaySkinIconButton, 'static', true)
+          end
+     end
+end
+
+--- Main cursor functionality when interacting any searched skins when selecting any.
+--- Changes the cursor's texture depending on it interaction (i.e. selecting and hovering).
+---@return nil
+function SkinNotes:search_selection_cursor()
+     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
+     if #skinSearchInput_textContent == 0 then
+          return
+     end
+
+     for searchIndex = 1, math.max(#self.searchSkinObjectIndex, #self.searchSkinObjectPage) do
+          local searchSkinIndex = tonumber( self.searchSkinObjectIndex[searchIndex] )
+          local searchSkinPage  = tonumber( self.searchSkinObjectPage[searchIndex]  )
+          local searchSkinPresentIndex = table.find(self.totalSkinObjectID[searchSkinPage], searchSkinIndex)
+
+          local skinObjectsPerHovered  = self.totalSkinObjectHovered[searchSkinPage]
+          local skinObjectsPerClicked  = self.totalSkinObjectClicked[searchSkinPage]
+
+          local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = searchSkinIndex}
+          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+          if skinObjectsPerClicked[searchSkinPresentIndex] == true and luaSpriteExists(displaySkinIconButton) == true then
+               playAnim('mouseTexture', 'handClick', true)
+               return
+          end
+          if skinObjectsPerHovered[searchSkinPresentIndex] == true and luaSpriteExists(displaySkinIconButton) == true then
+               playAnim('mouseTexture', 'hand', true)
+               return
+          end
+     end
+     
+     if hoverObject('displaySliderIcon', 'camHUD') == true and self.totalSkinLimit == 1 then
+          if mouseClicked('left') or mousePressed('left') then 
+               playAnim('mouseTexture', 'disabledClick', true)
+          else
+               playAnim('mouseTexture', 'disabled', true)
+          end
+
+          if mouseClicked('left') then 
+               playSound('cancel') 
+          end
+          return
+     end
+
+     if mouseClicked('left') or mousePressed('left') then 
+          playAnim('mouseTexture', 'idleClick', true)
+     else
+          playAnim('mouseTexture', 'idle', true)
+     end
 end
 
 --- Loads the save data from the current class state.
@@ -1486,6 +1508,19 @@ function SkinNotes:save_load()
 
      if math.isReal(self.sliderTrackIntervals[self.selectSkinPagePositionIndex]) == true then
           setProperty('displaySliderIcon.y', self.sliderTrackIntervals[self.selectSkinPagePositionIndex])
+     end
+end
+
+--- Loads and syncs the saved selected skin.
+---@return nil
+function SkinNotes:save_selection()
+     if self.selectSkinPreSelectedIndex ~= 0 then
+          local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = self.selectSkinPreSelectedIndex}
+          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+
+          if luaSpriteExists(displaySkinIconButton) == true then
+               playAnim(displaySkinIconButton, 'selected', true)
+          end
      end
 end
 
