@@ -99,7 +99,7 @@ function SkinNotes:load()
      self.previewAnimationObjectHovered = {false, false}
      self.previewAnimationObjectClicked = {false, false}
 
-     self.previewAnimationObjectIndex = 2
+     self.previewAnimationObjectIndex = 3
      self.previewAnimationObjectInit  = true
      self.previewAnimationObjectList  = {'confirm', 'pressed', 'colored'}
 
