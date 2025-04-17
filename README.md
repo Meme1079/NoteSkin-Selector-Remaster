@@ -17,15 +17,15 @@ NoteSkin Selector Remastered © 2024 by Meme0179 is licensed under CC BY-NC-ND 4
           - 0.7.3
 
 ## Features
-- A new user-friendly graphical user interface (GUI)
-     - A 4x4 grid to select multiple skins
-     - A scroll bar to change skin pages
-     - A search bar to search and select certain skins.
-- A new user-friendly implementation of skins
-- A preview of every animation of the skins
-- ~~A preview-editor for offsetings the skin's animation preview~~
-- Support for data saving
-- Customizable background Music
+- A brand new user-friendly graphical user interface (GUI)
+     - A `4x4` display grid to select multiple skins
+     - A scroll bar to scroll through multiple pages of skin
+     - A search bar to easily find the certain skin you want to select
+- A brand new user-friendly implementation of skins
+- Previews of the skins and its animations associated with it
+- ~~Preview-editor for offsetings the skin's animation preview~~
+- Customizable background music
+- Saves the data
 
 ***
 
@@ -33,8 +33,8 @@ NoteSkin Selector Remastered © 2024 by Meme0179 is licensed under CC BY-NC-ND 4
 ### Additions/Changes
 - Overhual the main GUI with a new redesign, cuz it looks cool. _(inspired by OreUI from Minecraft)_
 - Overhual the main source-code of the mod for organization and an ability to soft-code new skin states.
-     - Loads separated chunks of object sprites for skins when switching pages.
      - Classes to create custom states for different skins by using inheritance and polymorphism stuff.
+     - Loads separated chunks of object sprites of the skins when switching pages.
 - Additions/Changes on the NoteSkin Selector State.
      - Added a functional slider for switching skin pages.
           - It automatically snaps to its nearest page index.
@@ -46,6 +46,9 @@ NoteSkin Selector Remastered © 2024 by Meme0179 is licensed under CC BY-NC-ND 4
           - Automatically filters to the closest skin it can find.
      - Added an `inOutExpo` easing tween to the color changing background.
      - Increase the skin grid selections from `3x4` to `4x4`, cuz it's better.
+- Additions/Changes on the preview animation selection.
+     - Added a new GUI for the preview animation selection.
+          - Allowing for selecting other preview animations by clicking a button
 - Organized file locations.
      - Added an `api` folder to group: `classes`, `libraries`, and `modules` for convenient sake.
      

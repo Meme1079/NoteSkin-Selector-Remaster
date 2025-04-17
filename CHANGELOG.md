@@ -15,6 +15,9 @@
           - Automatically filters to the closest skin it can find.
      - Added an `inOutExpo` easing tween to the color changing background.
      - Increase the skin grid selections from `3x4` to `4x4`, cuz it's better.
+- Additions/Changes on the preview animation selection.
+     - Added a new GUI for the preview animation selection.
+          - Allowing for selecting other preview animations by clicking a button
 - Organized file locations.
      - Added an `api` folder to group: `classes`, `libraries`, and `modules` for convenient sake.
      
