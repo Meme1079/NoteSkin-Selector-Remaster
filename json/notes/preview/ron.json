@@ -58,12 +58,12 @@
                "up_colored": {
                     "prefix": "green0",
                     "name": "up_colored",
-                    "offsets": [0,0]
+                    "offsets": [-1,1]
                },
                "right_colored": {
                     "prefix": "red0",
                     "name": "right_colored",
-                    "offsets": [0,0]
+                    "offsets": [0.5,-1]
                }
           },
           "strums": {

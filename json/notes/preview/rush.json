@@ -48,22 +48,22 @@
                "left_colored": {
                     "prefix": "purple0",
                     "name": "left_colored",
-                    "offsets": [0,0]
+                    "offsets": [0.5,-2.5]
                },
                "down_colored": {
                     "prefix": "blue0",
                     "name": "down_colored",
-                    "offsets": [0,0]
+                    "offsets": [-0.2,-6]
                },
                "up_colored": {
                     "prefix": "green0",
                     "name": "up_colored",
-                    "offsets": [0,0]
+                    "offsets": [-0.2,-3.4]
                },
                "right_colored": {
                     "prefix": "red0",
                     "name": "right_colored",
-                    "offsets": [0,0]
+                    "offsets": [-1.4,-4]
                }
           },
           "strums": {
