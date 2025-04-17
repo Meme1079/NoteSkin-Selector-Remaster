@@ -26,22 +26,22 @@
                "left_pressed": {
                     "prefix": "left press",
                     "name": "left_pressed",
-                    "offsets": [0,0]
+                    "offsets": [2.5,-5.5]
                },
                "down_pressed": {
                     "prefix": "down press",
                     "name": "down_pressed",
-                    "offsets": [0,0]
+                    "offsets": [9.5,-1.5]
                },
                "up_pressed": {
                     "prefix": "up press",
                     "name": "up_pressed",
-                    "offsets": [0,0]
+                    "offsets": [9.5,-1.5]
                },
                "right_pressed": {
                     "prefix": "right press",
                     "name": "right_pressed",
-                    "offsets": [0,0]
+                    "offsets": [2.5,-5.5]
                }
           },
           "colored": {
