@@ -1,7 +1,7 @@
 ## Version 2.0.0
 - [x] Search Bar Functionality
 - [x] Preview Skins & its Animation Options
-- [ ] Checkboxes
+- [x] Checkboxes
 - [ ] Data Saving
 - [ ] State Switching
 

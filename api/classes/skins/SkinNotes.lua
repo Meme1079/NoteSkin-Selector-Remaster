@@ -99,13 +99,20 @@ function SkinNotes:load()
      self.previewAnimationObjectHovered = {false, false}
      self.previewAnimationObjectClicked = {false, false}
 
-     self.previewAnimationObjectIndex = 1
-     self.previewAnimationObjectInit  = true
-     self.previewAnimationObjectList  = {'confirm', 'pressed', 'colored'}
+     self.previewAnimationObjectIndex     = 1
+     self.previewAnimationObjectPrevAnims = {'confirm', 'pressed', 'colored'}
 
-     -- Skin Selection Properties --
+     -- Checkbox Skin Properties --
 
-     --- blah blah blah
+     self.checkboxSkinObjectHovered = {false, false}
+     self.checkboxSkinObjectClicked = {false, false}
+
+     self.checkboxSkinObjectIndex      = {player = 0, opponent = 0}
+     self.checkboxSkinObjectIndexKeys  = table.keys(self.checkboxSkinObjectIndex)
+     self.checkboxSkinObjectCheckIndex = 1
+     self.checkboxSkinObjectCheckAnims = {'unchecking', 'checking'}
+
+     
 
      self.metadataErrorExists = false
 end
@@ -573,7 +580,7 @@ function SkinNotes:selection_byhover()
 end
 
 --- Main cursor functionality when interacting any skins when selecting any.
---- Changes the cursor's texture depending on it interaction (i.e. selecting and hovering).
+--- Changes the cursor's texture depending on its interaction (i.e. selecting and hovering).
 ---@return nil
 function SkinNotes:selection_bycursor()
      local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.selectSkinPagePositionIndex]
@@ -747,7 +754,7 @@ function SkinNotes:preview_animation(loadAnim)
           local previewSkinTemplate = {state = (self.stateClass):upperAtStart(), groupID = strums}
           local previewSkinGroup    = ('previewSkinGroup${state}-${groupID}'):interpol(previewSkinTemplate)
 
-          local previewMetadataObjectAnims = self.previewAnimationObjectList[self.previewAnimationObjectIndex]
+          local previewMetadataObjectAnims = self.previewAnimationObjectPrevAnims[self.previewAnimationObjectIndex]
           local previewMetadataObjectData  = function(skinAnim)
                local previewMetadataObjecNames = getCurrentPreviewSkinObjectPreview['names'][skinAnim][strums]
                return getCurrentPreviewSkinObjectPreview['animations'][skinAnim][previewMetadataObjecNames]
@@ -796,6 +803,7 @@ function SkinNotes:preview_selection()
      self:preview_selection_bycursor()
 end
 
+local previewSelectionToggle = false -- * ok who gaf
 --- Changes the skin's preview animations by using keyboard keys.
 ---@return nil
 function SkinNotes:preview_selection_moved()
@@ -803,24 +811,24 @@ function SkinNotes:preview_selection_moved()
      local conditionPressedRight = keyboardJustConditionPressed('X', not getVar('skinSearchInputFocus'))
 
      local previewAnimationMinIndex = self.previewAnimationObjectIndex > 1
-     local previewAnimationMaxIndex = self.previewAnimationObjectIndex < #self.previewAnimationObjectList
+     local previewAnimationMaxIndex = self.previewAnimationObjectIndex < #self.previewAnimationObjectPrevAnims
      local previewAnimationInverseMinIndex = self.previewAnimationObjectIndex <= 1
-     local previewAnimationInverseMaxIndex = self.previewAnimationObjectIndex >= #self.previewAnimationObjectList
+     local previewAnimationInverseMaxIndex = self.previewAnimationObjectIndex >= #self.previewAnimationObjectPrevAnims
      if conditionPressedLeft and previewAnimationMinIndex then
           self.previewAnimationObjectIndex = self.previewAnimationObjectIndex - 1
-          self.previewAnimationObjectInit  = true
+          previewSelectionToggle  = true
 
           playSound('ding', 0.5)
      end
      if conditionPressedRight and previewAnimationMaxIndex then
           self.previewAnimationObjectIndex = self.previewAnimationObjectIndex + 1
-          self.previewAnimationObjectInit  = true
+          previewSelectionToggle  = true
 
           playSound('ding', 0.5)
      end
      
-     if self.previewAnimationObjectInit == true then --! DO NOT DELETE
-          self.previewAnimationObjectInit = false
+     if previewSelectionToggle == true then --! DO NOT DELETE
+          previewSelectionToggle = false
           return
      end
 
@@ -838,7 +846,7 @@ function SkinNotes:preview_selection_moved()
           playAnim('previewSkinInfoIconRight', 'right', true)
      end
 
-     local previewMetadataObjectAnims = self.previewAnimationObjectList[self.previewAnimationObjectIndex]
+     local previewMetadataObjectAnims = self.previewAnimationObjectPrevAnims[self.previewAnimationObjectIndex]
      setTextString('previewSkinButtonSelectionText', previewMetadataObjectAnims:upperAtStart())
 end
 
@@ -866,7 +874,7 @@ function SkinNotes:preview_selection_byclick()
      end
 
      local previewAnimationMinIndex = self.previewAnimationObjectIndex > 1
-     local previewAnimationMaxIndex = self.previewAnimationObjectIndex < #self.previewAnimationObjectList
+     local previewAnimationMaxIndex = self.previewAnimationObjectIndex < #self.previewAnimationObjectPrevAnims
      if previewAnimationMinIndex == true then
           previewSelectionButtonClick(1, 'left', -1)
      end
@@ -885,7 +893,6 @@ function SkinNotes:preview_selection_byhover()
                return
           end
 
-          local previewSkinButton = 'previewSkinButton'..direct:upperAtStart()
           if hoverObject(previewSkinButton, 'camHUD') == true then
                self.previewAnimationObjectHovered[index] = true
           end
@@ -902,7 +909,7 @@ function SkinNotes:preview_selection_byhover()
      end
 
      local previewAnimationMinIndex = self.previewAnimationObjectIndex > 1
-     local previewAnimationMaxIndex = self.previewAnimationObjectIndex < #self.previewAnimationObjectList
+     local previewAnimationMaxIndex = self.previewAnimationObjectIndex < #self.previewAnimationObjectPrevAnims
      if previewAnimationMinIndex == true then
           previewSelectionButtonHover(1, 'left')
      else
@@ -918,7 +925,7 @@ function SkinNotes:preview_selection_byhover()
 end
 
 --- Main cursor functionality when interacting any preview buttons when selecting any.
---- Changes the cursor's texture depending on it interaction (i.e. selecting and hovering).
+--- Changes the cursor's texture depending on its interaction (i.e. selecting and hovering).
 ---@return nil
 function SkinNotes:preview_selection_bycursor()
      for previewObjects = 1, 2 do
@@ -947,26 +954,96 @@ function SkinNotes:preview_selection_bycursor()
      end
 end
 
+--- Collection of similair methods of the checkbox functions.
+---@return nil
 function SkinNotes:checkbox()
-     if keyboardJustConditionPressed('O', not getVar('skinSearchInputFocus')) then
-          playAnim('selectionSkinButton_player', 'checking')
-     end
-     if keyboardJustConditionPressed('P', not getVar('skinSearchInputFocus')) then
-          playAnim('selectionSkinButton_player', 'unchecking')
+     self:checkbox_selection_byclick()
+     self:checkbox_selection_byhover()
+     self:checkbox_selection_bycursor()
+end
+
+--- Main click functionality when interacting any checkbox buttons when selecting one.
+--- Allows to select the skin to either the player or opponent along side displaying its animations.
+---@return nil
+function SkinNotes:checkbox_selection_byclick()
+     local function checkboxSelectionButtonClick(index, skin)
+          local selectionSkinButton = 'selectionSkinButton'..skin:upperAtStart()
+          local selectionSkinButtonCheckAnim = function()
+               if self.checkboxSkinObjectCheckIndex >= #self.checkboxSkinObjectIndexKeys then
+                    self.checkboxSkinObjectCheckIndex = 1
+                    goto checkboxSkipIncrement
+               end
+               self.checkboxSkinObjectCheckIndex = self.checkboxSkinObjectCheckIndex + 1
+
+               ::checkboxSkipIncrement::
+               return self.checkboxSkinObjectCheckAnims[self.checkboxSkinObjectCheckIndex]
+          end
+
+          local selectionSkinButtonClick    = clickObject(selectionSkinButton, 'camHUD')
+          local selectionSkinButtonReleased = mouseReleased('left')
+          if selectionSkinButtonClick == true and self.checkboxSkinObjectClicked[index] == false then
+               self.checkboxSkinObjectClicked[index] = true
+          end
+          if selectionSkinButtonReleased == true and self.checkboxSkinObjectClicked[index] == true then
+               playAnim(selectionSkinButton, selectionSkinButtonCheckAnim())
+               self.checkboxSkinObjectClicked[index] = false
+          end
+          
+          local selectionSkinButtonAnimFinish = getProperty(selectionSkinButton..'.animation.finished')
+          local selectionSkinButtonAnimName   = getProperty(selectionSkinButton..'.animation.curAnim.name')
+          if selectionSkinButtonAnimName == 'unchecking' and selectionSkinButtonAnimFinish == true then
+               playAnim(selectionSkinButton, 'uncheck')
+               return
+          end
+          if selectionSkinButtonAnimName == 'checking' and selectionSkinButtonAnimFinish == true then
+               playAnim(selectionSkinButton, 'check')
+               return
+          end
      end
 
-     local a = getProperty('selectionSkinButton_player.animation.finished')
-     local b = getProperty('selectionSkinButton_player.animation.curAnim.name')
-     if b == 'unchecking' and a == true then
-          playAnim('selectionSkinButton_player', 'uncheck')
-          return
-     end
-     if b == 'checking' and a == true then
-          playAnim('selectionSkinButton_player', 'check')
-          return
+     for checkboxIndex = 1, #self.checkboxSkinObjectIndexKeys do
+          checkboxSelectionButtonClick(checkboxIndex, tostring(self.checkboxSkinObjectIndexKeys[checkboxIndex]))
      end
 end
 
+--- Main hovering functionality when interacting any checkbox buttons when selecting any.
+--- Allows the support of the cursor's sprite changing when hovering any checkbox buttons.
+---@return nil
+function SkinNotes:checkbox_selection_byhover()
+     local function checkboxSelectionButtonHover(index, skin)
+          local selectionSkinButton = 'selectionSkinButton'..skin:upperAtStart()
+          if self.checkboxSkinObjectClicked[index] == true then
+               return
+          end
+
+          if hoverObject(selectionSkinButton, 'camHUD') == true then
+               self.checkboxSkinObjectHovered[index] = true
+          end
+          if hoverObject(selectionSkinButton, 'camHUD') == false then
+               self.checkboxSkinObjectHovered[index] = false
+          end
+     end
+
+     for checkboxIndex = 1, #self.checkboxSkinObjectIndexKeys do
+          checkboxSelectionButtonHover(checkboxIndex, tostring(self.checkboxSkinObjectIndexKeys[checkboxIndex]))
+     end
+end
+
+--- Main cursor functionality when interacting any checkbox buttons when selecting any.
+--- Changes the cursor's texture depending on its interaction (i.e. selecting and hovering).
+---@return nil
+function SkinNotes:checkbox_selection_bycursor()
+     for checkboxObjects = 1, 2 do
+          if self.checkboxSkinObjectClicked[checkboxObjects] == true then
+               playAnim('mouseTexture', 'handClick', true)
+               return
+          end
+          if self.checkboxSkinObjectHovered[checkboxObjects] == true then
+               playAnim('mouseTexture', 'hand', true)
+               return
+          end
+     end
+end
 
 --- Collection of similair methods of the search functions.
 ---@return nil
@@ -1522,6 +1599,9 @@ function SkinNotes:save_selection()
                playAnim(displaySkinIconButton, 'selected', true)
           end
      end
+end
+
+function SkinNotes:save_checkbox_selection()
 end
 
 return SkinNotes
