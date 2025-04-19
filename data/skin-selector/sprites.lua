@@ -315,5 +315,7 @@ function onUpdate(elapsed)
      Notes:preview_selection()
      Notes:preview_animation()
 
+     Notes:weiofh()
+
      hueChangeBG()
 end

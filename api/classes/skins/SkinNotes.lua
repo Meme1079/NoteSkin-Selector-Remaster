@@ -107,12 +107,9 @@ function SkinNotes:load()
      self.checkboxSkinObjectHovered = {false, false}
      self.checkboxSkinObjectClicked = {false, false}
 
-     self.checkboxSkinObjectIndex      = {player = 0, opponent = 0}
-     self.checkboxSkinObjectIndexKeys  = table.keys(self.checkboxSkinObjectIndex)
-     self.checkboxSkinObjectCheckIndex = 1
-     self.checkboxSkinObjectCheckAnims = {'unchecking', 'checking'}
-
-     
+     self.checkboxSkinObjectIndex  = {player = 0,     opponent = 0}
+     self.checkboxSkinObjectToggle = {player = false, opponent = false}
+     self.checkboxSkinObjectType   = table.keys(self.checkboxSkinObjectIndex)
 
      self.metadataErrorExists = false
 end
@@ -968,27 +965,27 @@ end
 function SkinNotes:checkbox_selection_byclick()
      local function checkboxSelectionButtonClick(index, skin)
           local selectionSkinButton = 'selectionSkinButton'..skin:upperAtStart()
-          local selectionSkinButtonCheckAnim = function()
-               if self.checkboxSkinObjectCheckIndex >= #self.checkboxSkinObjectIndexKeys then
-                    self.checkboxSkinObjectCheckIndex = 1
-                    goto checkboxSkipIncrement
-               end
-               self.checkboxSkinObjectCheckIndex = self.checkboxSkinObjectCheckIndex + 1
-
-               ::checkboxSkipIncrement::
-               return self.checkboxSkinObjectCheckAnims[self.checkboxSkinObjectCheckIndex]
-          end
-
           local selectionSkinButtonClick    = clickObject(selectionSkinButton, 'camHUD')
           local selectionSkinButtonReleased = mouseReleased('left')
           if selectionSkinButtonClick == true and self.checkboxSkinObjectClicked[index] == false then
                self.checkboxSkinObjectClicked[index] = true
           end
           if selectionSkinButtonReleased == true and self.checkboxSkinObjectClicked[index] == true then
-               playAnim(selectionSkinButton, selectionSkinButtonCheckAnim())
-               self.checkboxSkinObjectClicked[index] = false
+               playSound('remote_click')
+
+               self.checkboxSkinObjectToggle[skin:lower()] = not self.checkboxSkinObjectToggle[skin:lower()]
+               self.checkboxSkinObjectClicked[index]       = false
           end
-          
+
+          if self.checkboxSkinObjectToggle[skin:lower()] == false and self.checkboxSkinObjectClicked[index] == true then
+               self.checkboxSkinObjectIndex[skin:lower()] = self.selectSkinCurSelectedIndex
+               playAnim(selectionSkinButton, 'checking')
+          end
+          if self.checkboxSkinObjectToggle[skin:lower()] == true and self.checkboxSkinObjectClicked[index] == true then
+               self.checkboxSkinObjectIndex[skin:lower()] = 0
+               playAnim(selectionSkinButton, 'unchecking')
+          end
+
           local selectionSkinButtonAnimFinish = getProperty(selectionSkinButton..'.animation.finished')
           local selectionSkinButtonAnimName   = getProperty(selectionSkinButton..'.animation.curAnim.name')
           if selectionSkinButtonAnimName == 'unchecking' and selectionSkinButtonAnimFinish == true then
@@ -1001,8 +998,8 @@ function SkinNotes:checkbox_selection_byclick()
           end
      end
 
-     for checkboxIndex = 1, #self.checkboxSkinObjectIndexKeys do
-          checkboxSelectionButtonClick(checkboxIndex, tostring(self.checkboxSkinObjectIndexKeys[checkboxIndex]))
+     for checkboxIndex = 1, #self.checkboxSkinObjectType do
+          checkboxSelectionButtonClick(checkboxIndex, tostring(self.checkboxSkinObjectType[checkboxIndex]))
      end
 end
 
@@ -1024,8 +1021,8 @@ function SkinNotes:checkbox_selection_byhover()
           end
      end
 
-     for checkboxIndex = 1, #self.checkboxSkinObjectIndexKeys do
-          checkboxSelectionButtonHover(checkboxIndex, tostring(self.checkboxSkinObjectIndexKeys[checkboxIndex]))
+     for checkboxIndex = 1, #self.checkboxSkinObjectType do
+          checkboxSelectionButtonHover(checkboxIndex, tostring(self.checkboxSkinObjectType[checkboxIndex]))
      end
 end
 
@@ -1602,6 +1599,13 @@ function SkinNotes:save_selection()
 end
 
 function SkinNotes:save_checkbox_selection()
+end
+
+function SkinNotes:weiofh()
+     debugPrint({
+          self.checkboxSkinObjectIndex['player'],
+          self.checkboxSkinObjectIndex['opponent']
+     })
 end
 
 return SkinNotes
