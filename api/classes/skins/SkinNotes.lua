@@ -995,6 +995,20 @@ function SkinNotes:checkbox_selection_byclick()
 
           local selectionSkinButtonAnimFinish = getProperty(selectionSkinButton..'.animation.finished')
           local selectionSkinButtonAnimName   = getProperty(selectionSkinButton..'.animation.curAnim.name')
+
+          local checkboxSkinCurrent    = self.checkboxSkinObjectIndex[skin:lower()] == self.selectSkinCurSelectedIndex
+          local checkboxSkinNonCurrent = self.checkboxSkinObjectIndex[skin:lower()] ~= self.selectSkinCurSelectedIndex
+          if checkboxSkinCurrent == true and selectionSkinButtonAnimFinish == true then
+               playAnim(selectionSkinButton, 'check')
+               self.checkboxSkinObjectToggle[skin:lower()] = true
+               return
+          end
+          if checkboxSkinNonCurrent == true and selectionSkinButtonAnimFinish == true then
+               playAnim(selectionSkinButton, 'uncheck')
+               self.checkboxSkinObjectToggle[skin:lower()] = false
+               return
+          end
+
           if selectionSkinButtonAnimName == 'unchecking' and selectionSkinButtonAnimFinish == true then
                playAnim(selectionSkinButton, 'uncheck')
                return
@@ -1611,14 +1625,8 @@ function SkinNotes:save_selection()
      end
 end
 
-function SkinNotes:save_checkbox_selection()
-end
-
 function SkinNotes:weiofh()
-     debugPrint({
-          self.checkboxSkinObjectIndex['player'],
-          self.checkboxSkinObjectIndex['opponent']
-     })
+
 end
 
 return SkinNotes
