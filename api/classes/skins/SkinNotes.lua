@@ -89,9 +89,9 @@ function SkinNotes:load()
      -- Display Selection Properties --
      
      self.selectSkinPagePositionIndex = 1     -- current page index
-     self.selectSkinInitSelectedIndex = 0     -- current pressed selected skin
-     self.selectSkinPreSelectedIndex  = 0     -- highlighting the current selected skin
-     self.selectSkinCurSelectedIndex  = 0     -- current selected skin index
+     self.selectSkinInitSelectedIndex = 1     -- current pressed selected skin
+     self.selectSkinPreSelectedIndex  = 1     -- highlighting the current selected skin
+     self.selectSkinCurSelectedIndex  = 1     -- current selected skin index
      self.selectSkinHasBeenClicked    = false -- whether the skin display has been clicked or not
 
      -- Preview Animation Properties --
@@ -520,11 +520,11 @@ function SkinNotes:selection_byclick()
                end
           end
 
-          if skinObjectsPerSelected[curPage] == false then
+          if skinObjectsPerSelected[curPage] == false and pageSkins ~= self.selectSkinCurSelectedIndex then
                displaySkinSelect()
           end
           if skinObjectsPerSelected[curPage] == true then
-               displaySkinDeselect()
+               --displaySkinDeselect()
           end
 
           if pageSkins == self.selectSkinInitSelectedIndex then
@@ -588,15 +588,22 @@ function SkinNotes:selection_bycursor()
           return
      end
 
-     for pageSkins = 1, math.max(#skinObjectsPerClicked, #skinObjectsPerHovered) do
-          if skinObjectsPerClicked[pageSkins] == true then
+     local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = self.selectSkinCurSelectedIndex}
+     local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+     for skinIndex = 1, math.max(#skinObjectsPerClicked, #skinObjectsPerHovered) do
+          if hoverObject(displaySkinIconButton, 'camHUD') == true then
+               goto skipSelectedSkin -- disabled deselecting
+          end
+
+          if skinObjectsPerClicked[skinIndex] == true then
                playAnim('mouseTexture', 'handClick', true)
                return
           end
-          if skinObjectsPerHovered[pageSkins] == true then
+          if skinObjectsPerHovered[skinIndex] == true then
                playAnim('mouseTexture', 'hand', true)
                return
           end
+          ::skipSelectedSkin::
      end
 
      if hoverObject('displaySliderIcon', 'camHUD') == true and self.totalSkinLimit == 1 then
@@ -1467,11 +1474,11 @@ function SkinNotes:search_selection_byclick()
                end
           end
 
-          if skinObjectsPerSelected[searchSkinPresentIndex] == false then
+          if skinObjectsPerSelected[searchSkinPresentIndex] == false and searchSkinIndex ~= self.selectSkinCurSelectedIndex then
                displaySkinSelect()
           end
           if skinObjectsPerSelected[searchSkinPresentIndex] == true then
-               displaySkinDeselect()
+               --displaySkinDeselect()
           end
 
           if searchSkinIndex == self.selectSkinInitSelectedIndex then
@@ -1545,6 +1552,10 @@ function SkinNotes:search_selection_cursor()
 
           local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = searchSkinIndex}
           local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+          if hoverObject(displaySkinIconButton:gsub('%d+', tostring(self.selectSkinCurSelectedIndex)), 'camHUD') == true then
+               goto skipSelectedSearchSkin -- disabled deselecting
+          end
+
           if skinObjectsPerClicked[searchSkinPresentIndex] == true and luaSpriteExists(displaySkinIconButton) == true then
                playAnim('mouseTexture', 'handClick', true)
                return
@@ -1553,6 +1564,7 @@ function SkinNotes:search_selection_cursor()
                playAnim('mouseTexture', 'hand', true)
                return
           end
+          ::skipSelectedSearchSkin::
      end
      
      if hoverObject('displaySliderIcon', 'camHUD') == true and self.totalSkinLimit == 1 then
@@ -1588,13 +1600,14 @@ end
 --- Loads and syncs the saved selected skin.
 ---@return nil
 function SkinNotes:save_selection()
-     if self.selectSkinPreSelectedIndex ~= 0 then
-          local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = self.selectSkinPreSelectedIndex}
-          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+     if self.selectSkinPreSelectedIndex == 0 then
+          return
+     end
 
-          if luaSpriteExists(displaySkinIconButton) == true then
-               playAnim(displaySkinIconButton, 'selected', true)
-          end
+     local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = self.selectSkinPreSelectedIndex}
+     local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+     if luaSpriteExists(displaySkinIconButton) == true then
+          playAnim(displaySkinIconButton, 'selected', true)
      end
 end
 
