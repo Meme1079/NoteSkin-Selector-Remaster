@@ -1,6 +1,8 @@
 # NoteSkin Selector Remastered
 NoteSkin Selector Remastered; new layout, new code, and more customizability.
 
+<img width="1440" alt="Screen Shot 2025-04-21 at 9 38 58 PM" src="https://github.com/user-attachments/assets/ce90c42f-c74a-47bc-a90f-babb2d3bc6db" />
+
 ## About
 This is a completely remastered one of my old mods "NoteSkin Selector", created in 2022. This mod heavily improves and enhances everything from the old mod. It includes a new friendlier GUI layout for selecting skins more easily, a better optimized and organized code. Basically, a more improved version of the current built-in noteskin system in the engine, because that one sucks ass ngl.
 
