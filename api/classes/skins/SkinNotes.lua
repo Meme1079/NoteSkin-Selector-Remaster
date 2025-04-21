@@ -107,7 +107,7 @@ function SkinNotes:load()
      self.checkboxSkinObjectHovered = {false, false}
      self.checkboxSkinObjectClicked = {false, false}
 
-     self.checkboxSkinObjectIndex  = {player = 0,     opponent = 0}
+     self.checkboxSkinObjectIndex  = {player = 0,     opponent = 18}
      self.checkboxSkinObjectToggle = {player = false, opponent = false}
      self.checkboxSkinObjectType   = table.keys(self.checkboxSkinObjectIndex)
 
@@ -983,6 +983,8 @@ function SkinNotes:checkbox()
      end
 end
 
+--- Syncs the display highlights for visual purposes.
+---@return nil
 function SkinNotes:checkbox_sync()
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
      if #skinSearchInput_textContent > 0 then
@@ -1009,42 +1011,6 @@ function SkinNotes:checkbox_sync()
                removeLuaSprite('displaySelection'..checkboxObjectTypeTag, false)
           else
                addLuaSprite('displaySelection'..checkboxObjectTypeTag, false)
-          end
-     end
-end
-
-function SkinNotes:checkbox_search_sync()
-     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
-     if #skinSearchInput_textContent == 0 then
-          return
-     end
-
-     for searchIndex = 1, math.max(#self.searchSkinObjectIndex, #self.searchSkinObjectPage) do
-          local searchSkinIndex = tonumber( self.searchSkinObjectIndex[searchIndex] )
-          local searchSkinPage  = tonumber( self.searchSkinObjectPage[searchIndex]  )
-          local searchSkinPresentIndex = table.find(self.totalSkinObjectID[searchSkinPage], searchSkinIndex)
-
-          local skinObjectsPerIDs = self.totalSkinObjectID[searchSkinPage]
-          for checkboxIndex = 1, #self.checkboxSkinObjectType do
-               local checkboxObjectTypes      = self.checkboxSkinObjectType[checkboxIndex]
-               local checkboxObjectTypeTag    = self.checkboxSkinObjectType[checkboxIndex]:upperAtStart()
-               local checkboxSkinIndex        = self.checkboxSkinObjectIndex[checkboxObjectTypes:lower()]
-               local checkboxSkinIndexPresent = table.find(skinObjectsPerIDs, checkboxSkinIndex)
-     
-               local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = checkboxSkinIndex}
-               local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
-               if checkboxSkinIndex == self.selectSkinCurSelectedIndex or checkboxSkinIndex == checkboxSkinIndexPresent or luaSpriteExists(displaySkinIconButton) == true then
-                    local displaySelectionHighlightX = ('displaySelection${select}.x'):interpol({select = checkboxObjectTypeTag})
-                    local displaySelectionHighlightY = ('displaySelection${select}.y'):interpol({select = checkboxObjectTypeTag})
-                    setProperty(displaySelectionHighlightX, getProperty(displaySkinIconButton..'.x'))
-                    setProperty(displaySelectionHighlightY, getProperty(displaySkinIconButton..'.y'))
-               end
-
-               if checkboxSkinIndex == 0 or luaSpriteExists(displaySkinIconButton) == false then
-                    removeLuaSprite('displaySelection'..checkboxObjectTypeTag, false)
-               else
-                    addLuaSprite('displaySelection'..checkboxObjectTypeTag, false)
-               end
           end
      end
 end
@@ -1146,6 +1112,7 @@ function SkinNotes:search()
      self:search_create()
      self:search_skins()
      self:search_selection()
+     self:search_checkbox_sync()
 end
 
 --- Creates a 16 chunk display of the selected search skins.
@@ -1483,6 +1450,44 @@ function SkinNotes:search_preview()
      self:preview_animation(true)
 end
 
+--- Syncs the display highlights when searching for skins, obviously for visual purposes.
+---@return nil
+function SkinNotes:search_checkbox_sync()
+     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
+     if #skinSearchInput_textContent == 0 then
+          return
+     end
+
+     for searchIndex = 1, math.max(#self.searchSkinObjectIndex, #self.searchSkinObjectPage) do
+          local searchSkinIndex = tonumber( self.searchSkinObjectIndex[searchIndex] )
+          local searchSkinPage  = tonumber( self.searchSkinObjectPage[searchIndex]  )
+          local searchSkinPresentIndex = table.find(self.totalSkinObjectID[searchSkinPage], searchSkinIndex)
+
+          local skinObjectsPerIDs = self.totalSkinObjectID[searchSkinPage]
+          for checkboxIndex = 1, #self.checkboxSkinObjectType do
+               local checkboxObjectTypes      = self.checkboxSkinObjectType[checkboxIndex]
+               local checkboxObjectTypeTag    = self.checkboxSkinObjectType[checkboxIndex]:upperAtStart()
+               local checkboxSkinIndex        = self.checkboxSkinObjectIndex[checkboxObjectTypes:lower()]
+               local checkboxSkinIndexPresent = table.find(skinObjectsPerIDs, checkboxSkinIndex)
+     
+               local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = checkboxSkinIndex}
+               local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+               if checkboxSkinIndex == self.selectSkinCurSelectedIndex or checkboxSkinIndex == checkboxSkinIndexPresent or luaSpriteExists(displaySkinIconButton) == true then
+                    local displaySelectionHighlightX = ('displaySelection${select}.x'):interpol({select = checkboxObjectTypeTag})
+                    local displaySelectionHighlightY = ('displaySelection${select}.y'):interpol({select = checkboxObjectTypeTag})
+                    setProperty(displaySelectionHighlightX, getProperty(displaySkinIconButton..'.x'))
+                    setProperty(displaySelectionHighlightY, getProperty(displaySkinIconButton..'.y'))
+               end
+
+               if checkboxSkinIndex == 0 or luaSpriteExists(displaySkinIconButton) == false then
+                    removeLuaSprite('displaySelection'..checkboxObjectTypeTag, false)
+               else
+                    addLuaSprite('displaySelection'..checkboxObjectTypeTag, false)
+               end
+          end
+     end
+end
+
 --- Collection of similair methods of the search selection functions.
 ---@return nil
 function SkinNotes:search_selection()
@@ -1682,6 +1687,7 @@ end
 ---@return nil
 function SkinNotes:save_load()
      self:create(self.selectSkinPagePositionIndex)
+     self:checkbox_sync()
 
      if math.isReal(self.sliderTrackIntervals[self.selectSkinPagePositionIndex]) == true then
           setProperty('displaySliderIcon.y', self.sliderTrackIntervals[self.selectSkinPagePositionIndex])
@@ -1700,10 +1706,6 @@ function SkinNotes:save_selection()
      if luaSpriteExists(displaySkinIconButton) == true then
           playAnim(displaySkinIconButton, 'selected', true)
      end
-end
-
-function SkinNotes:weiofh()
-
 end
 
 return SkinNotes

@@ -346,11 +346,8 @@ function onUpdate(elapsed)
      Notes:checkbox()
      Notes:checkbox_selection()
      Notes:checkbox_sync()
-     Notes:checkbox_search_sync()
      Notes:preview_selection()
      Notes:preview_animation()
-
-     Notes:weiofh()
 
      hueChangeBG()
 end
