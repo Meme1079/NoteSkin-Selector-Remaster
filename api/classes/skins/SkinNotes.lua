@@ -991,25 +991,21 @@ function SkinNotes:checkbox_sync()
 
      local skinObjectsPerIDs = self.totalSkinObjectID[self.selectSkinPagePositionIndex]
      for checkboxIndex = 1, #self.checkboxSkinObjectType do
-          local checkboxObjectTypes   = self.checkboxSkinObjectType[checkboxIndex]
-          local checkboxObjectTypeTag = self.checkboxSkinObjectType[checkboxIndex]:upperAtStart()
-          local checkboxSkinIndex     = self.checkboxSkinObjectIndex[checkboxObjectTypes:lower()]
+          local checkboxObjectTypes      = self.checkboxSkinObjectType[checkboxIndex]
+          local checkboxObjectTypeTag    = self.checkboxSkinObjectType[checkboxIndex]:upperAtStart()
+          local checkboxSkinIndex        = self.checkboxSkinObjectIndex[checkboxObjectTypes:lower()]
+          local checkboxSkinIndexPresent = table.find(skinObjectsPerIDs, checkboxSkinIndex)
 
           local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = checkboxSkinIndex}
           local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
-          if checkboxSkinIndex == self.selectSkinCurSelectedIndex then
-               local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = checkboxSkinIndex}
-               local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
-
+          if checkboxSkinIndex == self.selectSkinCurSelectedIndex or checkboxSkinIndex == checkboxSkinIndexPresent or luaSpriteExists(displaySkinIconButton) == true then
                local displaySelectionHighlightX = ('displaySelection${select}.x'):interpol({select = checkboxObjectTypeTag})
                local displaySelectionHighlightY = ('displaySelection${select}.y'):interpol({select = checkboxObjectTypeTag})
                setProperty(displaySelectionHighlightX, getProperty(displaySkinIconButton..'.x'))
                setProperty(displaySelectionHighlightY, getProperty(displaySkinIconButton..'.y'))
           end
 
-          local checkboxCondition_SpriteExist = luaSpriteExists(displaySkinIconButton)
-          local checkboxCondition_FindID      = table.find(skinObjectsPerIDs, checkboxSkinIndex)
-          if checkboxSkinIndex == 0 or checkboxCondition_SpriteExist == false or checkboxCondition_FindID == nil then
+          if checkboxSkinIndex == 0 or luaSpriteExists(displaySkinIconButton) == false then
                removeLuaSprite('displaySelection'..checkboxObjectTypeTag, false)
           else
                addLuaSprite('displaySelection'..checkboxObjectTypeTag, false)
@@ -1030,25 +1026,21 @@ function SkinNotes:checkbox_search_sync()
 
           local skinObjectsPerIDs = self.totalSkinObjectID[searchSkinPage]
           for checkboxIndex = 1, #self.checkboxSkinObjectType do
-               local checkboxObjectTypes   = self.checkboxSkinObjectType[checkboxIndex]
-               local checkboxObjectTypeTag = self.checkboxSkinObjectType[checkboxIndex]:upperAtStart()
-               local checkboxSkinIndex     = self.checkboxSkinObjectIndex[checkboxObjectTypes:lower()]
+               local checkboxObjectTypes      = self.checkboxSkinObjectType[checkboxIndex]
+               local checkboxObjectTypeTag    = self.checkboxSkinObjectType[checkboxIndex]:upperAtStart()
+               local checkboxSkinIndex        = self.checkboxSkinObjectIndex[checkboxObjectTypes:lower()]
+               local checkboxSkinIndexPresent = table.find(skinObjectsPerIDs, checkboxSkinIndex)
      
                local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = checkboxSkinIndex}
                local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
-               if checkboxSkinIndex == self.selectSkinCurSelectedIndex then
-                    local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = checkboxSkinIndex}
-                    local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
-     
+               if checkboxSkinIndex == self.selectSkinCurSelectedIndex or checkboxSkinIndex == checkboxSkinIndexPresent or luaSpriteExists(displaySkinIconButton) == true then
                     local displaySelectionHighlightX = ('displaySelection${select}.x'):interpol({select = checkboxObjectTypeTag})
                     local displaySelectionHighlightY = ('displaySelection${select}.y'):interpol({select = checkboxObjectTypeTag})
                     setProperty(displaySelectionHighlightX, getProperty(displaySkinIconButton..'.x'))
                     setProperty(displaySelectionHighlightY, getProperty(displaySkinIconButton..'.y'))
                end
-     
-               local checkboxCondition_SpriteExist = luaSpriteExists(displaySkinIconButton)
-               local checkboxCondition_FindID      = table.find(skinObjectsPerIDs, checkboxSkinIndex)
-               if checkboxSkinIndex == 0 or checkboxCondition_SpriteExist == false or checkboxCondition_FindID == nil then
+
+               if checkboxSkinIndex == 0 or luaSpriteExists(displaySkinIconButton) == false then
                     removeLuaSprite('displaySelection'..checkboxObjectTypeTag, false)
                else
                     addLuaSprite('displaySelection'..checkboxObjectTypeTag, false)
