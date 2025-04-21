@@ -162,6 +162,38 @@ setObjectCamera('previewSkinButtonSelectionText', 'camHUD')
 setProperty('previewSkinButtonSelectionText.antialiasing', false)
 addLuaText('previewSkinButtonSelectionText')
 
+-- Display Selected Highlights --
+
+precacheImage('ui/display_selected')
+
+makeAnimatedLuaSprite('displaySelectionPlayer', 'ui/display_selected', 0, 0)
+scaleObject('displaySelectionPlayer', 0.8, 0.8)
+addAnimationByPrefix('displaySelectionPlayer', 'player', 'selected-player', 24, false)
+addAnimationByPrefix('displaySelectionPlayer', 'opponent', 'selected-opponent', 24, false)
+
+local displaySelectionPlayerOffsetX = getProperty('displaySelectionPlayer.offset.x')
+local displaySelectionPlayerOffsetY = getProperty('displaySelectionPlayer.offset.y')
+addOffset('displaySelectionPlayer', 'player', displaySelectionPlayerOffsetX + 5, displaySelectionPlayerOffsetY + 5)
+addOffset('displaySelectionPlayer', 'opponent', displaySelectionPlayerOffsetX + 5, displaySelectionPlayerOffsetY + 5)
+playAnim('displaySelectionPlayer', 'player')
+setObjectCamera('displaySelectionPlayer', 'camHUD')
+setProperty('displaySelectionPlayer.antialiasing', false)
+addLuaSprite('displaySelectionPlayer')
+
+makeAnimatedLuaSprite('displaySelectionOpponent', 'ui/display_selected', 0, 0)
+scaleObject('displaySelectionOpponent', 0.8, 0.8)
+addAnimationByPrefix('displaySelectionOpponent', 'player', 'selected-player', 24, false)
+addAnimationByPrefix('displaySelectionOpponent', 'opponent', 'selected-opponent', 24, false)
+
+local displaySelectionOpponentOffsetX = getProperty('displaySelectionOpponent.offset.x')
+local displaySelectionOpponentOffsetY = getProperty('displaySelectionOpponent.offset.y')
+addOffset('displaySelectionOpponent', 'player', displaySelectionOpponentOffsetX + 5, displaySelectionOpponentOffsetY + 5)
+addOffset('displaySelectionOpponent', 'opponent', displaySelectionOpponentOffsetX + 5, displaySelectionOpponentOffsetY + 5)
+playAnim('displaySelectionOpponent', 'opponent')
+setObjectCamera('displaySelectionOpponent', 'camHUD')
+setProperty('displaySelectionOpponent.antialiasing', false)
+addLuaSprite('displaySelectionOpponent')
+
 -- General Infos --
 
 makeLuaText('genInfoStateName', ' Notes', 0, 7, 13)
@@ -312,6 +344,9 @@ function onUpdate(elapsed)
      Notes:selection()
      Notes:search()
      Notes:checkbox()
+     Notes:checkbox_selection()
+     Notes:checkbox_sync()
+     Notes:checkbox_search_sync()
      Notes:preview_selection()
      Notes:preview_animation()
 

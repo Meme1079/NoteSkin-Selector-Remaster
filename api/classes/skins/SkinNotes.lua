@@ -520,7 +520,7 @@ function SkinNotes:selection_byclick()
                end
           end
 
-          if skinObjectsPerSelected[curPage] == false and pageSkins ~= self.selectSkinCurSelectedIndex then
+          if skinObjectsPerSelected[curPage] == false or pageSkins ~= self.selectSkinCurSelectedIndex then
                displaySkinSelect()
           end
           if skinObjectsPerSelected[curPage] == true then
@@ -958,9 +958,108 @@ function SkinNotes:preview_selection_bycursor()
      end
 end
 
---- Collection of similair methods of the checkbox functions.
+--- Checkbox functionality, selecting certain skins for the player or opponent.
 ---@return nil
 function SkinNotes:checkbox()
+     for checkboxIndex = 1, #self.checkboxSkinObjectType do
+          local checkboxObjectTypes   = self.checkboxSkinObjectType[checkboxIndex]
+          local checkboxObjectTypeTag = self.checkboxSkinObjectType[checkboxIndex]:upperAtStart()
+
+          local checkboxSkinIndex      = self.checkboxSkinObjectIndex[checkboxObjectTypes:lower()]
+          local checkboxSkinCurrent    = checkboxSkinIndex == self.selectSkinCurSelectedIndex
+          local checkboxSkinNonCurrent = checkboxSkinIndex ~= self.selectSkinCurSelectedIndex
+
+          local selectionSkinButton = 'selectionSkinButton'..checkboxObjectTypeTag
+          local selectionSkinButtonAnimFinish = getProperty(selectionSkinButton..'.animation.finished')
+          local selectionSkinButtonAnimName   = getProperty(selectionSkinButton..'.animation.curAnim.name')
+          if checkboxSkinCurrent == true and selectionSkinButtonAnimFinish == true then
+               playAnim(selectionSkinButton, 'check')
+               self.checkboxSkinObjectToggle[checkboxObjectTypes:lower()] = true
+          end
+          if checkboxSkinNonCurrent == true and selectionSkinButtonAnimFinish == true then
+               playAnim(selectionSkinButton, 'uncheck')
+               self.checkboxSkinObjectToggle[checkboxObjectTypes:lower()] = false
+          end
+     end
+end
+
+function SkinNotes:checkbox_sync()
+     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
+     if #skinSearchInput_textContent > 0 then
+          return
+     end
+
+     local skinObjectsPerIDs = self.totalSkinObjectID[self.selectSkinPagePositionIndex]
+     for checkboxIndex = 1, #self.checkboxSkinObjectType do
+          local checkboxObjectTypes   = self.checkboxSkinObjectType[checkboxIndex]
+          local checkboxObjectTypeTag = self.checkboxSkinObjectType[checkboxIndex]:upperAtStart()
+          local checkboxSkinIndex     = self.checkboxSkinObjectIndex[checkboxObjectTypes:lower()]
+
+          local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = checkboxSkinIndex}
+          local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+          if checkboxSkinIndex == self.selectSkinCurSelectedIndex then
+               local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = checkboxSkinIndex}
+               local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+
+               local displaySelectionHighlightX = ('displaySelection${select}.x'):interpol({select = checkboxObjectTypeTag})
+               local displaySelectionHighlightY = ('displaySelection${select}.y'):interpol({select = checkboxObjectTypeTag})
+               setProperty(displaySelectionHighlightX, getProperty(displaySkinIconButton..'.x'))
+               setProperty(displaySelectionHighlightY, getProperty(displaySkinIconButton..'.y'))
+          end
+
+          local checkboxCondition_SpriteExist = luaSpriteExists(displaySkinIconButton)
+          local checkboxCondition_FindID      = table.find(skinObjectsPerIDs, checkboxSkinIndex)
+          if checkboxSkinIndex == 0 or checkboxCondition_SpriteExist == false or checkboxCondition_FindID == nil then
+               removeLuaSprite('displaySelection'..checkboxObjectTypeTag, false)
+          else
+               addLuaSprite('displaySelection'..checkboxObjectTypeTag, false)
+          end
+     end
+end
+
+function SkinNotes:checkbox_search_sync()
+     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
+     if #skinSearchInput_textContent == 0 then
+          return
+     end
+
+     for searchIndex = 1, math.max(#self.searchSkinObjectIndex, #self.searchSkinObjectPage) do
+          local searchSkinIndex = tonumber( self.searchSkinObjectIndex[searchIndex] )
+          local searchSkinPage  = tonumber( self.searchSkinObjectPage[searchIndex]  )
+          local searchSkinPresentIndex = table.find(self.totalSkinObjectID[searchSkinPage], searchSkinIndex)
+
+          local skinObjectsPerIDs = self.totalSkinObjectID[searchSkinPage]
+          for checkboxIndex = 1, #self.checkboxSkinObjectType do
+               local checkboxObjectTypes   = self.checkboxSkinObjectType[checkboxIndex]
+               local checkboxObjectTypeTag = self.checkboxSkinObjectType[checkboxIndex]:upperAtStart()
+               local checkboxSkinIndex     = self.checkboxSkinObjectIndex[checkboxObjectTypes:lower()]
+     
+               local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = checkboxSkinIndex}
+               local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+               if checkboxSkinIndex == self.selectSkinCurSelectedIndex then
+                    local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = checkboxSkinIndex}
+                    local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+     
+                    local displaySelectionHighlightX = ('displaySelection${select}.x'):interpol({select = checkboxObjectTypeTag})
+                    local displaySelectionHighlightY = ('displaySelection${select}.y'):interpol({select = checkboxObjectTypeTag})
+                    setProperty(displaySelectionHighlightX, getProperty(displaySkinIconButton..'.x'))
+                    setProperty(displaySelectionHighlightY, getProperty(displaySkinIconButton..'.y'))
+               end
+     
+               local checkboxCondition_SpriteExist = luaSpriteExists(displaySkinIconButton)
+               local checkboxCondition_FindID      = table.find(skinObjectsPerIDs, checkboxSkinIndex)
+               if checkboxSkinIndex == 0 or checkboxCondition_SpriteExist == false or checkboxCondition_FindID == nil then
+                    removeLuaSprite('displaySelection'..checkboxObjectTypeTag, false)
+               else
+                    addLuaSprite('displaySelection'..checkboxObjectTypeTag, false)
+               end
+          end
+     end
+end
+
+--- Collection of similair methods of the checkbox selection functions.
+---@return nil
+function SkinNotes:checkbox_selection()
      self:checkbox_selection_byclick()
      self:checkbox_selection_byhover()
      self:checkbox_selection_bycursor()
@@ -995,20 +1094,6 @@ function SkinNotes:checkbox_selection_byclick()
 
           local selectionSkinButtonAnimFinish = getProperty(selectionSkinButton..'.animation.finished')
           local selectionSkinButtonAnimName   = getProperty(selectionSkinButton..'.animation.curAnim.name')
-
-          local checkboxSkinCurrent    = self.checkboxSkinObjectIndex[skin:lower()] == self.selectSkinCurSelectedIndex
-          local checkboxSkinNonCurrent = self.checkboxSkinObjectIndex[skin:lower()] ~= self.selectSkinCurSelectedIndex
-          if checkboxSkinCurrent == true and selectionSkinButtonAnimFinish == true then
-               playAnim(selectionSkinButton, 'check')
-               self.checkboxSkinObjectToggle[skin:lower()] = true
-               return
-          end
-          if checkboxSkinNonCurrent == true and selectionSkinButtonAnimFinish == true then
-               playAnim(selectionSkinButton, 'uncheck')
-               self.checkboxSkinObjectToggle[skin:lower()] = false
-               return
-          end
-
           if selectionSkinButtonAnimName == 'unchecking' and selectionSkinButtonAnimFinish == true then
                playAnim(selectionSkinButton, 'uncheck')
                return
@@ -1488,7 +1573,7 @@ function SkinNotes:search_selection_byclick()
                end
           end
 
-          if skinObjectsPerSelected[searchSkinPresentIndex] == false and searchSkinIndex ~= self.selectSkinCurSelectedIndex then
+          if skinObjectsPerSelected[searchSkinPresentIndex] == false or searchSkinIndex ~= self.selectSkinCurSelectedIndex then
                displaySkinSelect()
           end
           if skinObjectsPerSelected[searchSkinPresentIndex] == true then

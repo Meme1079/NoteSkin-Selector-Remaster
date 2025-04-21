@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="display_selected.png">
+	<!-- Created using the Spritesheet and XML generator -->
+	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
+	<SubTexture name="selected-opponent0000" x="0" y="0" width="85" height="166" frameX="-79" frameY="2" frameWidth="162" frameHeight="162"/>
+	<SubTexture name="selected-player0000" x="85" y="0" width="85" height="166" frameX="2" frameY="2" frameWidth="162" frameHeight="162"/>
+</TextureAtlas>
