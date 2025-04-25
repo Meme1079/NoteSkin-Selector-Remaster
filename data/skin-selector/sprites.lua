@@ -1,6 +1,7 @@
 luaDebugMode = true
 
-local SkinNotes = require 'mods.NoteSkin Selector Remastered.api.classes.skins.SkinNotes'
+local SkinNotes    = require 'mods.NoteSkin Selector Remastered.api.classes.skins.SkinNotes'
+local SkinSplashes = require 'mods.NoteSkin Selector Remastered.api.classes.skins.SkinSplashes'
 
 local string    = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.string'
 local math      = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.math'
@@ -326,7 +327,34 @@ local function hueChangeBG()
      end
 end
 
-local Notes = SkinNotes:new('notes', 'noteSkins', 'NOTE_assets', true)
+local Splashes = SkinSplashes:new('splashes', 'noteSplashes', 'noteSplashes', false)
+Splashes:load()
+Splashes:save_load()
+Splashes:save()
+Splashes:precache()
+Splashes:preload()
+Splashes:preview()
+Splashes:page_slider_marks()
+
+function onUpdate(elapsed)
+     Splashes:page_slider()
+     Splashes:page_moved()
+     Splashes:selection()
+     Splashes:search()
+     Splashes:checkbox()
+     Splashes:checkbox_selection()
+     Splashes:checkbox_sync()
+     Splashes:preview_selection()
+     Splashes:preview_animation()
+
+     hueChangeBG()
+end
+
+function onDestroy()
+     Splashes:save()
+end
+
+--[[ local Notes = SkinNotes:new('notes', 'noteSkins', 'NOTE_assets', true)
 Notes:load()
 Notes:save_load()
 Notes:save()
@@ -351,4 +379,4 @@ end
 
 function onDestroy()
      Notes:save()
-end
+end ]]

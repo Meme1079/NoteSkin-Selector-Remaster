@@ -30,111 +30,106 @@ local SkinSplashes = SkinNotes:new()
 ---@param stateType table[string] The given skin states within a group to display later.
 ---@param statePath table[string] The given corresponding image paths to each skin states.
 ---@return table
-function SkinSplashes:new(stateClass, startStart, stateTypes, statePaths)
+function SkinSplashes:new(stateClass, statePaths, statePrefix, startStart)
      local self = setmetatable({}, {__index = self})
-     self.stateClass = stateClass
-     self.stateType  = stateTypes
-     self.statePath  = statePaths
-     self.stateStart = stateStart
+     self.stateClass  = stateClass
+     self.statePaths  = statePaths
+     self.statePrefix = statePrefix
+     self.stateStart  = stateStart
 
      return self
 end
 
---- Loads table data for the methods to use later.
---- Loads a bunch of data to the class
+--- Creates a 16 chunk display of the selected skins.
+---@param index? integer The specified page index for the given chunk to display.
 ---@return nil
-function SkinSplashes:load()
-     self.metadata_display = json.parse(getTextFromFile('json/'..self.currentState..'/metadata_display.json'))
-     self.metadata_preview = json.parse(getTextFromFile('json/'..self.currentState..'/metadata_preview.json'))
-    
-     self.totalSkinLimit              = states.getTotalSkinLimit(self.currentState)
-     self.totalSkinObjects            = states.getTotalSkinObjects(self.currentState)
-     self.totalSkinObjectID           = states.getTotalSkinObjects(self.currentState, 'ids')
-     self.totalSkinObjectNames        = states.getTotalSkinObjects(self.currentState, 'names')
-     
-     self.totalSkinObjectHovered      = states.getTotalSkinObjects(self.currentState, 'bools')
-     self.totalSkinObjectClicked      = states.getTotalSkinObjects(self.currentState, 'bools')
-     self.totalSkinObjectSelected     = states.getTotalSkinObjects(self.currentState, 'bools')
+function SkinNotes:create(index)
+     local index = index == nil and 1 or index
 
-     self.sliderPageIndex             = 1
-     self.sliderTrackIntervals        = states.getPageSkinSliderPositions(self.currentState).intervals
-     self.sliderTrackSemiIntervals    = states.getPageSkinSliderPositions(self.currentState).semiIntervals
+     for pages = 1, self.totalSkinLimit do
+          for displays = 1, #self.totalSkinObjects[pages] do
+               if pages == index then
+                    goto continue_removeNonCurrentPages
+               end
 
-     self.selectSkinPagePositionIndex = 1     -- lordx
-     self.selectSkinInitSelectedIndex = 0     -- d2011x
-     self.selectSkinPreSelectedIndex  = 0     -- xeno
-     self.selectSkinCurSelectedIndex  = 0     -- s2017x
-     self.selectSkinHasBeenClicked    = false -- sunky
+               local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = self.totalSkinObjectID[pages][displays]}
+               local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
+               local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplates)
+               if luaSpriteExists(displaySkinIconButton) == true and luaSpriteExists(displaySkinIconSkin) == true then
+                    removeLuaSprite(displaySkinIconButton, true)
+                    removeLuaSprite(displaySkinIconSkin, true)
+               end
+               ::continue_removeNonCurrentPages::
+          end
+     end
+
+     local function displaySkinPositions()
+          local displaySkinIndexes   = {x = 0, y = 0}
+          local displaySkinPositions = {}
+          for displays = 1, #self.totalSkinObjects[index] do
+               if (displays-1) % 4 == 0 then
+                    displaySkinIndexes.x = 0
+                    displaySkinIndexes.y = displaySkinIndexes.y + 1
+               else
+                    displaySkinIndexes.x = displaySkinIndexes.x + 1
+               end
+
+               local displaySkinPositionX = 20  + (170 * displaySkinIndexes.x) - (25 * displaySkinIndexes.x)
+               local displaySkinPositionY = -20 + (180 * displaySkinIndexes.y) - (30 * displaySkinIndexes.y)
+               displaySkinPositions[#displaySkinPositions + 1] = {displaySkinPositionX, displaySkinPositionY}
+          end
+          return displaySkinPositions
+     end
+
+     for displays = 1, #self.totalSkinObjects[index] do
+          local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = self.totalSkinObjectID[index][displays]}
+          local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
+          local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplates)
+
+          local displaySkinPositionX = displaySkinPositions()[displays][1]
+          local displaySkinPositionY = displaySkinPositions()[displays][2]
+          makeAnimatedLuaSprite(displaySkinIconButton, 'ui/buttons/display_button', displaySkinPositionX, displaySkinPositionY)
+          addAnimationByPrefix(displaySkinIconButton, 'static', 'static')
+          addAnimationByPrefix(displaySkinIconButton, 'selected', 'selected')
+          addAnimationByPrefix(displaySkinIconButton, 'hover', 'hovered-static')
+          addAnimationByPrefix(displaySkinIconButton, 'pressed', 'hovered-pressed')
+          playAnim(displaySkinIconButton, 'static', true)
+          scaleObject(displaySkinIconButton, 0.8, 0.8)
+          setObjectCamera(displaySkinIconButton, 'camHUD')
+          setProperty(displaySkinIconButton..'.antialiasing', false)
+          addLuaSprite(displaySkinIconButton)
+
+          local displaySkinMetadataJSON = self.totalMetadataObjectDisplay[index][displays]
+          local displaySkinMetadata_frames   = displaySkinMetadataJSON == '@void' and 16                    or (displaySkinMetadataJSON.frames   or 16)
+          local displaySkinMetadata_prefixes = displaySkinMetadataJSON == '@void' and 'note splash green 1' or (displaySkinMetadataJSON.prefixes or 'note splash green 1')
+          local displaySkinMetadata_size     = displaySkinMetadataJSON == '@void' and {0.4, 0.4}            or (displaySkinMetadataJSON.size     or {0.4, 0.4})
+          local displaySkinMetadata_offsets  = displaySkinMetadataJSON == '@void' and {0, 0}                or (displaySkinMetadataJSON.offsets  or {0, 0})
+
+          local displaySkinImageTemplate = {path = self.statePaths, skin = self.totalSkinObjects[index][displays]}
+          local displaySkinImage = ('${path}/${skin}'):interpol(displaySkinImageTemplate)
+
+          local displaySkinImagePositionX = displaySkinPositionX + 16.5
+          local displaySkinImagePositionY = displaySkinPositionY + 12
+          makeAnimatedLuaSprite(displaySkinIconSkin, displaySkinImage, displaySkinImagePositionX, displaySkinImagePositionY)
+          scaleObject(displaySkinIconSkin, displaySkinMetadata_size[1], displaySkinMetadata_size[2])
+          addAnimationByPrefix(displaySkinIconSkin, 'static', displaySkinMetadata_prefixes, displaySkinMetadata_frames, true)
+
+          local curOffsetX = getProperty(displaySkinIconSkin..'.offset.x')
+          local curOffsetY = getProperty(displaySkinIconSkin..'.offset.y')
+          addOffset(displaySkinIconSkin, 'static', curOffsetX - displaySkinMetadata_offsets[1], curOffsetY + displaySkinMetadata_offsets[2])
+          playAnim(displaySkinIconSkin, 'static')
+          setObjectCamera(displaySkinIconSkin, 'camHUD')
+          addLuaSprite(displaySkinIconSkin)
+     end
+
+     self:page_text()
+     self:save_selection()
 end
 
---- Creates a chunk from the current skin state selected to display skins.
----@param index? integer The chunk position index to display.
----@return nil
-function SkinSplashes:create(index)
-
+function SkinNotes:preview()
 end
 
---- Creates and loads chunks from the current skin state, improves optimization significantly
----@param index? integer The chunk position index to display.
----@return nil
-function SkinSplashes:create_preload()
-
-end
-
-local sliderTrackThumbPressed = false
-local sliderTrackToggle       = false
-local sliderTrackCurrentPage  = 0
---- Main functionlity of the slider for switching pages.
----@param snapToPage? boolean Whether to enable snap to page when scrolling through pages.
----@return nil
-function SkinSplashes:page_slider(snapToPage)
-
-end
-
---- Alternative functionlity of the slider for switching pages.
----@return nil
-function SkinSplashes:page_moved()
-
-end
-
---- Setups the current page text, that's it.
----@return nil
-function SkinSplashes:page_setup()
-
-end
-
---- Searches and finds the given skin.
----@return nil
-function SkinSplashes:found()
-
-end
-
---- Selects the certain skin by a click or a search
----@return nil
-function SkinSplashes:selection()
-
-end
-
---- Syncs the saved selection of the certain skin
----@param bySearch boolean Whether to use by the search functionality or not.
----@return nil
-function SkinSplashes:selection_sync(bySearch)
-
-end
-
-function SkinSplashes:preview()
-
-end
-
-function SkinSplashes:switch()
-
-end
-
-
---- Precaches the images to each skin states for optimizations.
----@return nil
-function SkinSplashes:precache()
-
+function SkinNotes:preview_animation(loadAnim)
 end
 
 return SkinSplashes

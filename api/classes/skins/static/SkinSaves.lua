@@ -1,3 +1,4 @@
+---@class SkinSaves
 local SkinSaves = {}
 
 --- Creates a save for this mod, that's it.
@@ -15,7 +16,6 @@ end
 
 --- Sets the data field with a new value from the save game data or be created with inherited field value. 
 --- If the said data field currently doesn't exist yet.
-
 ---@param tag string The specified data field to set a new value to.
 ---@param prefix string The prefix to concatenate with a tag.
 ---@param value any The new value to set it to.

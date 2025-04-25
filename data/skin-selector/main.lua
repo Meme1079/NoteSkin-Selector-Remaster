@@ -1,7 +1,6 @@
 luaDebugMode = true
 
 local SkinSaves = require 'mods.NoteSkin Selector Remastered.api.classes.skins.static.SkinSaves'
-
 local funkinlua = require 'mods.NoteSkin Selector Remastered.api.modules.funkinlua'
 
 local keyboardJustConditionPressed  = funkinlua.keyboardJustConditionPressed
