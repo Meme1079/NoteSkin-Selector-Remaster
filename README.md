@@ -14,7 +14,7 @@ NoteSkin Selector Remastered © 2024 by Meme1079 is licensed under CC BY-NC-ND 4
      - Android, Switch, Consoles and other devices are not supported due to controller issues. 
           - Never ask a FUCKING port of this, especially Android I ain't doin' that shit.
 2. Psych Engine
-     - Versions: 0.7.3, 1.0.3, & 1.0.4 are only supported when playing this mod.
+     - Versions: ~~0.7.3~~, 1.0.3, & 1.0.4 are only supported when playing this mod.
      - Other Psych Engine forks **might support** this mod.
           - The fork may use an unsupported version of Psych Engine or alter certain Lua & HScript features.
 
@@ -27,7 +27,7 @@ NoteSkin Selector Remastered © 2024 by Meme1079 is licensed under CC BY-NC-ND 4
 - Previews of the skins and its animations associated with it
 - ~~Preview-editor for offsetings the skin's animation preview~~
 - Customizable background music
-- Saves the data
+- Data saving
 
 ***
 

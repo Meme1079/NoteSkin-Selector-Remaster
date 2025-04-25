@@ -2,12 +2,11 @@
 - [x] Search Bar Functionality
 - [x] Preview Skins & its Animation Options
 - [x] Checkboxes
-- [ ] Data Saving
-- [ ] State Switching
+- [x] Data Saving
 
 ## Version 2.1.0
+- [ ] State Switching
 - [ ] Support for version 0.7.3
-- [ ] Bug Fixes (If any exist)
 
 ## Version 3.0.0
 - [ ] Skin Debug State

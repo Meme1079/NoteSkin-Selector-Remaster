@@ -334,7 +334,6 @@ Notes:precache()
 Notes:preload()
 Notes:preview()
 Notes:page_slider_marks()
-Notes:checkbox_sync()
 
 function onUpdate(elapsed)
      Notes:page_slider()

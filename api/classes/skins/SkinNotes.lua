@@ -89,10 +89,10 @@ function SkinNotes:load()
 
      -- Display Selection Properties --
      
-     local selectPagePositionIndex = SkinNoteSave:get('selectSkinPagePositionIndex', 1)
-     local selectInitSelectedIndex = SkinNoteSave:get('selectSkinInitSelectedIndex', 1)
-     local selectPreSelectedIndex  = SkinNoteSave:get('selectSkinPreSelectedIndex',  1)
-     local selectCurSelectedIndex  = SkinNoteSave:get('selectSkinCurSelectedIndex',  1)
+     local selectPagePositionIndex = SkinNoteSave:get('selectSkinPagePositionIndex', self.stateClass, 1)
+     local selectInitSelectedIndex = SkinNoteSave:get('selectSkinInitSelectedIndex', self.stateClass, 1)
+     local selectPreSelectedIndex  = SkinNoteSave:get('selectSkinPreSelectedIndex',  self.stateClass, 1)
+     local selectCurSelectedIndex  = SkinNoteSave:get('selectSkinCurSelectedIndex',  self.stateClass, 1)
      self.selectSkinPagePositionIndex = selectPagePositionIndex -- current page index
      self.selectSkinInitSelectedIndex = selectInitSelectedIndex -- current pressed selected skin
      self.selectSkinPreSelectedIndex  = selectPreSelectedIndex  -- highlighting the current selected skin
@@ -112,8 +112,8 @@ function SkinNotes:load()
      self.checkboxSkinObjectHovered = {false, false}
      self.checkboxSkinObjectClicked = {false, false}
 
-     local checkboxIndexPlayer   = SkinNoteSave:get('checkboxSkinObjectIndexPlayer',   0)
-     local checkboxIndexOpponent = SkinNoteSave:get('checkboxSkinObjectIndexOpponent', 0)
+     local checkboxIndexPlayer   = SkinNoteSave:get('checkboxSkinObjectIndexPlayer',   self.stateClass, 0)
+     local checkboxIndexOpponent = SkinNoteSave:get('checkboxSkinObjectIndexOpponent', self.stateClass, 0)
      self.checkboxSkinObjectIndex  = {player = checkboxIndexPlayer,  opponent = checkboxIndexOpponent}
      self.checkboxSkinObjectToggle = {player = false,                opponent = false}
      self.checkboxSkinObjectType   = table.keys(self.checkboxSkinObjectIndex)
@@ -303,7 +303,7 @@ function SkinNotes:page_slider(snapToPage)
 
                     playSound('ding', 0.5)
                     callOnScripts('skinSearchInput_callResetSearch')
-                    SkinNoteSave:set('selectSkinPagePositionIndex', self.selectSkinPagePositionIndex)
+                    SkinNoteSave:set('selectSkinPagePositionIndex', self.stateClass, self.selectSkinPagePositionIndex)
                end
                
                self.sliderTrackPageIndex = sliderTrackCurrentPageIndex
@@ -389,7 +389,7 @@ function SkinNotes:page_moved()
           playSound('ding', 0.5)
           setProperty('displaySliderIcon.y', self.sliderTrackIntervals[self.selectSkinPagePositionIndex])
           callOnScripts('skinSearchInput_callResetSearch')
-          SkinNoteSave:set('selectSkinPagePositionIndex', self.selectSkinPagePositionIndex)
+          SkinNoteSave:set('selectSkinPagePositionIndex', self.stateClass, self.selectSkinPagePositionIndex)
      end
      if conditionPressedDown and self.selectSkinPagePositionIndex < self.totalSkinLimit then
           self.sliderPageIndex             = self.sliderPageIndex + 1
@@ -399,7 +399,7 @@ function SkinNotes:page_moved()
           playSound('ding', 0.5)
           setProperty('displaySliderIcon.y', self.sliderTrackIntervals[self.selectSkinPagePositionIndex])
           callOnScripts('skinSearchInput_callResetSearch')
-          SkinNoteSave:set('selectSkinPagePositionIndex', self.selectSkinPagePositionIndex)
+          SkinNoteSave:set('selectSkinPagePositionIndex', self.stateClass, self.selectSkinPagePositionIndex)
      end
 
      if self.selectSkinPagePositionIndex == self.totalSkinLimit then
@@ -454,7 +454,7 @@ function SkinNotes:selection_byclick()
                     self.selectSkinPreSelectedIndex = pageSkins
                     self.selectSkinHasBeenClicked   = true
 
-                    SkinNoteSave:set('selectSkinPreSelectedIndex', self.selectSkinPreSelectedIndex)
+                    SkinNoteSave:set('selectSkinPreSelectedIndex', self.stateClass, self.selectSkinPreSelectedIndex)
                     skinObjectsPerClicked[curPage] = true
                end
 
@@ -469,9 +469,9 @@ function SkinNotes:selection_byclick()
                     self:preview()
                     self:search_preview()
 
-                    SkinNoteSave:set('selectSkinInitSelectedIndex', self.selectSkinInitSelectedIndex)
-                    SkinNoteSave:set('selectSkinCurSelectedIndex',  self.selectSkinCurSelectedIndex)
-                    SkinNoteSave:set('selectSkinPagePositionIndex', self.selectSkinPagePositionIndex)
+                    SkinNoteSave:set('selectSkinInitSelectedIndex', self.stateClass, self.selectSkinInitSelectedIndex)
+                    SkinNoteSave:set('selectSkinCurSelectedIndex',  self.stateClass, self.selectSkinCurSelectedIndex)
+                    SkinNoteSave:set('selectSkinPagePositionIndex', self.stateClass, self.selectSkinPagePositionIndex)
                     skinObjectsPerSelected[curPage] = true
                     skinObjectsPerClicked[curPage]  = false
                end
@@ -485,7 +485,7 @@ function SkinNotes:selection_byclick()
                     self.selectSkinPreSelectedIndex = pageSkins
                     self.selectSkinHasBeenClicked   = true
 
-                    SkinNoteSave:set('selectSkinPreSelectedIndex', self.selectSkinPreSelectedIndex)
+                    SkinNoteSave:set('selectSkinPreSelectedIndex', self.stateClass, self.selectSkinPreSelectedIndex)
                     skinObjectsPerClicked[curPage] = true
                end
 
@@ -498,8 +498,8 @@ function SkinNotes:selection_byclick()
 
                     self:preview()
                     self:search_preview()
-                    SkinNoteSave:set('selectSkinCurSelectedIndex', self.selectSkinCurSelectedIndex)
-                    SkinNoteSave:set('selectSkinPreSelectedIndex', self.selectSkinPreSelectedIndex)
+                    SkinNoteSave:set('selectSkinCurSelectedIndex', self.stateClass, self.selectSkinCurSelectedIndex)
+                    SkinNoteSave:set('selectSkinPreSelectedIndex', self.stateClass, self.selectSkinPreSelectedIndex)
                     skinObjectsPerSelected[curPage] = false
                     skinObjectsPerClicked[curPage]  = false
                     skinObjectsPerHovered[curPage]  = false
@@ -519,7 +519,7 @@ function SkinNotes:selection_byclick()
                end
 
                self.selectSkinInitSelectedIndex = 0
-               SkinNoteSave:set('selectSkinInitSelectedIndex', self.selectSkinInitSelectedIndex)
+               SkinNoteSave:set('selectSkinInitSelectedIndex', self.stateClass, self.selectSkinInitSelectedIndex)
                skinObjectsPerSelected[curPage]  = false
           end
      end
@@ -1030,15 +1030,17 @@ function SkinNotes:checkbox_selection_byclick()
 
           if self.checkboxSkinObjectToggle[skin:lower()] == false and self.checkboxSkinObjectClicked[index] == true then
                self.checkboxSkinObjectIndex[skin:lower()] = self.selectSkinCurSelectedIndex
-               
                playAnim(selectionSkinButton, 'checking')
-               SkinNoteSave:set('checkboxSkinObjectIndex'..skin:upperAtStart(), self.checkboxSkinObjectIndex[skin:lower()])
+
+               local checkboxSkinIndexField = 'checkboxSkinObjectIndex'..skin:upperAtStart()
+               SkinNoteSave:set(checkboxSkinIndexField, self.stateClass, self.checkboxSkinObjectIndex[skin:lower()])
           end
           if self.checkboxSkinObjectToggle[skin:lower()] == true and self.checkboxSkinObjectClicked[index] == true then
                self.checkboxSkinObjectIndex[skin:lower()] = 0
-
                playAnim(selectionSkinButton, 'unchecking')
-               SkinNoteSave:set('checkboxSkinObjectIndex'..skin:upperAtStart(), self.checkboxSkinObjectIndex[skin:lower()])
+
+               local checkboxSkinIndexField = 'checkboxSkinObjectIndex'..skin:upperAtStart()
+               SkinNoteSave:set(checkboxSkinIndexField, self.stateClass, self.checkboxSkinObjectIndex[skin:lower()])
           end
 
           local selectionSkinButtonAnimFinish = getProperty(selectionSkinButton..'.animation.finished')
@@ -1519,7 +1521,7 @@ function SkinNotes:search_selection_byclick()
                     self.selectSkinPreSelectedIndex = skinObjectsPerIDs[searchSkinPresentIndex]
                     self.selectSkinHasBeenClicked   = true
 
-                    SkinNoteSave:set('selectSkinPreSelectedIndex', self.selectSkinPreSelectedIndex)
+                    SkinNoteSave:set('selectSkinPreSelectedIndex', self.stateClass, self.selectSkinPreSelectedIndex)
                     skinObjectsPerClicked[searchSkinPresentIndex] = true
                end
 
@@ -1532,8 +1534,8 @@ function SkinNotes:search_selection_byclick()
                     self.selectSkinHasBeenClicked    = false
                     
                     self:search_preview()
-                    SkinNoteSave:set('selectSkinInitSelectedIndex', self.selectSkinInitSelectedIndex)
-                    SkinNoteSave:set('selectSkinCurSelectedIndex',  self.selectSkinCurSelectedIndex)
+                    SkinNoteSave:set('selectSkinInitSelectedIndex', self.stateClass, self.selectSkinInitSelectedIndex)
+                    SkinNoteSave:set('selectSkinCurSelectedIndex',  self.stateClass, self.selectSkinCurSelectedIndex)
                     skinObjectsPerSelected[searchSkinPresentIndex] = true
                     skinObjectsPerClicked[searchSkinPresentIndex]  = false
                end
@@ -1547,7 +1549,7 @@ function SkinNotes:search_selection_byclick()
                     self.selectSkinPreSelectedIndex = skinObjectsPerIDs[searchSkinPresentIndex]
                     self.selectSkinHasBeenClicked   = true
 
-                    SkinNoteSave:set('selectSkinPreSelectedIndex', self.selectSkinPreSelectedIndex)
+                    SkinNoteSave:set('selectSkinPreSelectedIndex', self.stateClass, self.selectSkinPreSelectedIndex)
                     skinObjectsPerClicked[searchSkinPresentIndex] = true
                end
 
@@ -1559,8 +1561,8 @@ function SkinNotes:search_selection_byclick()
                     self.selectSkinHasBeenClicked   = false
 
                     self:search_preview()
-                    SkinNoteSave:set('selectSkinPreSelectedIndex', self.selectSkinPreSelectedIndex)
-                    SkinNoteSave:set('selectSkinCurSelectedIndex', self.selectSkinCurSelectedIndex)
+                    SkinNoteSave:set('selectSkinPreSelectedIndex', self.stateClass, self.selectSkinPreSelectedIndex)
+                    SkinNoteSave:set('selectSkinCurSelectedIndex', self.stateClass, self.selectSkinCurSelectedIndex)
                     skinObjectsPerSelected[searchSkinPresentIndex] = false
                     skinObjectsPerClicked[searchSkinPresentIndex]  = false
                     skinObjectsPerHovered[searchSkinPresentIndex]  = false
@@ -1580,7 +1582,7 @@ function SkinNotes:search_selection_byclick()
                end
 
                self.selectSkinInitSelectedIndex = 0
-               SkinNoteSave:set('selectSkinInitSelectedIndex', self.selectSkinInitSelectedIndex)
+               SkinNoteSave:set('selectSkinInitSelectedIndex', self.stateClass, self.selectSkinInitSelectedIndex)
                skinObjectsPerSelected[searchSkinPresentIndex]  = false
           end
      end
