@@ -178,7 +178,6 @@ addOffset('displaySelectionPlayer', 'opponent', displaySelectionPlayerOffsetX + 
 playAnim('displaySelectionPlayer', 'player')
 setObjectCamera('displaySelectionPlayer', 'camHUD')
 setProperty('displaySelectionPlayer.antialiasing', false)
-addLuaSprite('displaySelectionPlayer')
 
 makeAnimatedLuaSprite('displaySelectionOpponent', 'ui/display_selected', 0, 0)
 scaleObject('displaySelectionOpponent', 0.8, 0.8)
@@ -192,7 +191,6 @@ addOffset('displaySelectionOpponent', 'opponent', displaySelectionOpponentOffset
 playAnim('displaySelectionOpponent', 'opponent')
 setObjectCamera('displaySelectionOpponent', 'camHUD')
 setProperty('displaySelectionOpponent.antialiasing', false)
-addLuaSprite('displaySelectionOpponent')
 
 -- General Infos --
 
@@ -328,15 +326,15 @@ local function hueChangeBG()
      end
 end
 
--- 'splashes', 'noteSplashes', 'noteSplashes', true
--- 'notes', 'noteSkins', 'NOTE_assets', true
 local Notes = SkinNotes:new('notes', 'noteSkins', 'NOTE_assets', true)
 Notes:load()
 Notes:save_load()
+Notes:save()
 Notes:precache()
 Notes:preload()
 Notes:preview()
 Notes:page_slider_marks()
+Notes:checkbox_sync()
 
 function onUpdate(elapsed)
      Notes:page_slider()
@@ -350,4 +348,8 @@ function onUpdate(elapsed)
      Notes:preview_animation()
 
      hueChangeBG()
+end
+
+function onDestroy()
+     Notes:save()
 end

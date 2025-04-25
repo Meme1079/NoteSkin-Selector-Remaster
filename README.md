@@ -6,17 +6,17 @@ NoteSkin Selector Remastered; new layout, new code, and more customizability.
 ## About
 This is a completely remastered one of my old mods "NoteSkin Selector", created in 2022. This mod heavily improves and enhances everything from the old mod. It includes a new friendlier GUI layout for selecting skins more easily, a better optimized and organized code. Basically, a more improved version of the current built-in noteskin system in the engine, because that one sucks ass ngl.
 
-NoteSkin Selector Remastered © 2024 by Meme0179 is licensed under CC BY-NC-ND 4.0
+NoteSkin Selector Remastered © 2024 by Meme1079 is licensed under CC BY-NC-ND 4.0
 
 ## Installation Requirements
 1. Computer
      - Windows, MacOS, and Linux are only supported when playing this mod. 
      - Android, Switch, Consoles and other devices are not supported due to controller issues. 
           - Never ask a FUCKING port of this, especially Android I ain't doin' that shit.
-2. Psych Engine & P-Slice
-     - Some specific version of Psych Engine are only supported when playing this mod:
-          - 1.0.3
-          - 0.7.3
+2. Psych Engine
+     - Versions: 0.7.3, 1.0.3, & 1.0.4 are only supported when playing this mod.
+     - Other Psych Engine forks **might support** this mod.
+          - The fork may use an unsupported version of Psych Engine or alter certain Lua & HScript features.
 
 ## Features
 - A brand new user-friendly graphical user interface (GUI)
@@ -60,6 +60,9 @@ NoteSkin Selector Remastered © 2024 by Meme0179 is licensed under CC BY-NC-ND 4
 ***
 
 # Stuff Used Here
+> [!CAUTION]
+> If you are a developer and you want to remove certain assets (skins, sprites, music, etc) that you own within this mod. I will happily obliged with your decision, I will remove your assetx within the mod with no hesitation.
+
 ## Noteskins
 - Majin - [Vs. Sonic.EXE 2.0](https://gamebanana.com/mods/316022)
 - Arrow Funk - [Arrow Funk](https://gamebanana.com/mods/370234)
@@ -80,7 +83,7 @@ NoteSkin Selector Remastered © 2024 by Meme0179 is licensed under CC BY-NC-ND 4
 - Monkey - Original: [Mario Paint (Hirokazu Tanaka)](https://www.youtube.com/watch?v=gMRFXrbfKEo); Remix: [Mario's Madness (FriedFrick)](https://www.youtube.com/watch?v=x0AMU2nelAw)
 
 ## Lua Libraries
-- [MathParser](https://github.com/bytexenon/MathParser.lua) - bytexenon
+<!-- - [MathParser](https://github.com/bytexenon/MathParser.lua) - bytexenon -->
 - [Lua Pretty JSON](https://github.com/xiedacon/lua-pretty-json) - xiedaco
 - [Lua Easing Library](https://github.com/EmmanuelOga/easing) - EmmanuelOga
 
