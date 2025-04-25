@@ -13,6 +13,10 @@ function onCreatePost()
 end
 
 function onUpdate(elapsed)
+     
+end
+
+function onUpdatePost(elapsed)
      if keyboardJustConditionPressed('ONE',    not getVar('skinSearchInputFocus')) then restartSong(true) end
      if keyboardJustConditionPressed('ESCAPE', not getVar('skinSearchInputFocus')) then exitSong()        end
      if mouseClicked('left')  then playSound('clicks/clickDown', 0.5) end
@@ -23,9 +27,7 @@ function onUpdate(elapsed)
 
      setProperty('mouseTexture.x', getMouseX('camHUD'))
      setProperty('mouseTexture.y', getMouseY('camHUD'))
-end
-
-function onUpdatePost(elapsed)
+     
      if keyboardJustPressed('TAB') and songName == 'Skin Selector' then
           local dataSongName = SkinNoteSave:get('dataSongName', '')
           local dataDiffID   = SkinNoteSave:get('dataDiffID',   '')

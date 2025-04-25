@@ -100,7 +100,7 @@ function SkinNotes:create(index)
           addLuaSprite(displaySkinIconButton)
 
           local displaySkinMetadataJSON = self.totalMetadataObjectDisplay[index][displays]
-          local displaySkinMetadata_frames   = displaySkinMetadataJSON == '@void' and 16                    or (displaySkinMetadataJSON.frames   or 16)
+          local displaySkinMetadata_frames   = displaySkinMetadataJSON == '@void' and 12                    or (displaySkinMetadataJSON.frames   or 12)
           local displaySkinMetadata_prefixes = displaySkinMetadataJSON == '@void' and 'note splash green 1' or (displaySkinMetadataJSON.prefixes or 'note splash green 1')
           local displaySkinMetadata_size     = displaySkinMetadataJSON == '@void' and {0.4, 0.4}            or (displaySkinMetadataJSON.size     or {0.4, 0.4})
           local displaySkinMetadata_offsets  = displaySkinMetadataJSON == '@void' and {0, 0}                or (displaySkinMetadataJSON.offsets  or {0, 0})

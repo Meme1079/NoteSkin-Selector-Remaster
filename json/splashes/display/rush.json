@@ -1,6 +1,6 @@
 {
      "prefixes": "note splash green 1",
-     "frames": 16,
-     "size": [0.45, 0.45],
-     "offsets": [0, 0]
+     "frames": 10,
+     "size": [0.4, 0.4],
+     "offsets": [-35, 8]
 }
