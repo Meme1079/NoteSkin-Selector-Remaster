@@ -93,7 +93,7 @@ function SkinNotes:load()
      local selectInitSelectedIndex = SkinNoteSave:get('selectSkinInitSelectedIndex', 1)
      local selectPreSelectedIndex  = SkinNoteSave:get('selectSkinPreSelectedIndex',  1)
      local selectCurSelectedIndex  = SkinNoteSave:get('selectSkinCurSelectedIndex',  1)
-     self.selectSkinPagePositionIndex = selectInitSelectedIndex -- current page index
+     self.selectSkinPagePositionIndex = selectPagePositionIndex -- current page index
      self.selectSkinInitSelectedIndex = selectInitSelectedIndex -- current pressed selected skin
      self.selectSkinPreSelectedIndex  = selectPreSelectedIndex  -- highlighting the current selected skin
      self.selectSkinCurSelectedIndex  = selectCurSelectedIndex  -- current selected skin index
