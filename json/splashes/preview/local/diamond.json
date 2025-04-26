@@ -3,36 +3,44 @@
           "note_splash1": {
                "left_splash1": {
                     "prefix": "note splash diamond purple 1",
+                    "name": "left_splash1",
                     "offsets": [0,0]
                },
                "down_splash1": {
                     "prefix": "note splash diamond blue 1",
+                    "name": "down_splash1",
                     "offsets": [0,0]
                },
                "up_splash1": {
                     "prefix": "note splash diamond green 1",
+                    "name": "up_splash1",
                     "offsets": [0,0]
                },
                "right_splash1": {
                     "prefix": "note splash diamond red 1",
+                    "name": "right_splash1",
                     "offsets": [0,0]
                }
           },
           "note_splash2": {
                "left_splash2": {
                     "prefix": "note splash diamond purple 2",
+                    "name": "left_splash2",
                     "offsets": [0,0]
                },
                "down_splash2": {
                     "prefix": "note splash diamond blue 2",
+                    "name": "down_splash2",
                     "offsets": [0,0]
                },
                "up_splash2": {
                     "prefix": "note splash diamond green 2",
+                    "name": "up_splash2",
                     "offsets": [0,0]
                },
                "right_splash2": {
                     "prefix": "note splash diamond red 2",
+                    "name": "right_splash2",
                     "offsets": [0,0]
                }
           }

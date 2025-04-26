@@ -3,18 +3,22 @@
           "note_splash1": {
                "left_splash1": {
                     "prefix": "splash electro purple 1",
+                    "name": "left_splash1",
                     "offsets": [0,0]
                },
                "down_splash1": {
                     "prefix": "splash electro blue 1",
+                    "name": "down_splash1",
                     "offsets": [0,0]
                },
                "up_splash1": {
-                    "prefix": "splash electro reen 1",
+                    "prefix": "splash electro green 1",
+                    "name": "up_splash1",
                     "offsets": [0,0]
                },
                "right_splash1": {
                     "prefix": "splash electro red 1",
+                    "name": "right_splash1",
                     "offsets": [0,0]
                }
           }
