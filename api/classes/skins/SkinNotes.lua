@@ -1020,26 +1020,26 @@ function SkinNotes:checkbox_selection_byclick()
           if selectionSkinButtonClick == true and self.checkboxSkinObjectClicked[index] == false then
                self.checkboxSkinObjectClicked[index] = true
           end
+
           if selectionSkinButtonReleased == true and self.checkboxSkinObjectClicked[index] == true then
+               if self.checkboxSkinObjectToggle[skin:lower()] == false then
+                    self.checkboxSkinObjectIndex[skin:lower()] = self.selectSkinCurSelectedIndex
+                    playAnim(selectionSkinButton, 'checking')
+     
+                    local checkboxSkinIndexField = 'checkboxSkinObjectIndex'..skin:upperAtStart()
+                    SkinNoteSave:set(checkboxSkinIndexField, self.stateClass, self.checkboxSkinObjectIndex[skin:lower()])
+               end
+               if self.checkboxSkinObjectToggle[skin:lower()] == true then
+                    self.checkboxSkinObjectIndex[skin:lower()] = 0
+                    playAnim(selectionSkinButton, 'unchecking')
+     
+                    local checkboxSkinIndexField = 'checkboxSkinObjectIndex'..skin:upperAtStart()
+                    SkinNoteSave:set(checkboxSkinIndexField, self.stateClass, self.checkboxSkinObjectIndex[skin:lower()])
+               end
                playSound('remote_click')
 
                self.checkboxSkinObjectToggle[skin:lower()] = not self.checkboxSkinObjectToggle[skin:lower()]
                self.checkboxSkinObjectClicked[index]       = false
-          end
-
-          if self.checkboxSkinObjectToggle[skin:lower()] == false and self.checkboxSkinObjectClicked[index] == true then
-               self.checkboxSkinObjectIndex[skin:lower()] = self.selectSkinCurSelectedIndex
-               playAnim(selectionSkinButton, 'checking')
-
-               local checkboxSkinIndexField = 'checkboxSkinObjectIndex'..skin:upperAtStart()
-               SkinNoteSave:set(checkboxSkinIndexField, self.stateClass, self.checkboxSkinObjectIndex[skin:lower()])
-          end
-          if self.checkboxSkinObjectToggle[skin:lower()] == true and self.checkboxSkinObjectClicked[index] == true then
-               self.checkboxSkinObjectIndex[skin:lower()] = 0
-               playAnim(selectionSkinButton, 'unchecking')
-
-               local checkboxSkinIndexField = 'checkboxSkinObjectIndex'..skin:upperAtStart()
-               SkinNoteSave:set(checkboxSkinIndexField, self.stateClass, self.checkboxSkinObjectIndex[skin:lower()])
           end
 
           local selectionSkinButtonAnimFinish = getProperty(selectionSkinButton..'.animation.finished')

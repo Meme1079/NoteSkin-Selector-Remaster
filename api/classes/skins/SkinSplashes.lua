@@ -42,7 +42,7 @@ end
 
 --- Loads multiple-unique data to the class itself, to be used later.
 ---@return nil
-function SkinNotes:load()
+function SkinSplashes:load()
      self.totalSkins     = states.getTotalSkins(self.stateClass, self.statePaths)
      self.totalSkinNames = states.getTotalSkinNames(self.stateClass)
 
@@ -117,7 +117,7 @@ end
 --- Creates a 16 chunk display of the selected skins.
 ---@param index? integer The specified page index for the given chunk to display.
 ---@return nil
-function SkinNotes:create(index)
+function SkinSplashes:create(index)
      local index = index == nil and 1 or index
 
      for pages = 1, self.totalSkinLimit do
@@ -202,7 +202,7 @@ end
 
 --- Creates the selected skin's preview strums.
 ---@return nil
-function SkinNotes:preview()
+function SkinSplashes:preview()
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
      if #skinSearchInput_textContent > 0 then
           return
@@ -296,7 +296,7 @@ end
 --- Creates and loads the selected skin's preview animations.
 ---@param loadAnim? boolean Will only load the current skin's preview animations or not, bug fixing purposes.
 ---@return nil
-function SkinNotes:preview_animation(loadAnim)
+function SkinSplashes:preview_animation(loadAnim)
      local loadAnim = loadAnim ~= nil and true or false
 
      local firstJustPressed  = callMethodFromClass('flixel.FlxG', 'keys.firstJustPressed', {''})
