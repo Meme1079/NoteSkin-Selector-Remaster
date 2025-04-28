@@ -1478,6 +1478,23 @@ function SkinNotes:search_checkbox_sync()
                end
           end
      end
+
+     if math.max(#self.searchSkinObjectIndex, #self.searchSkinObjectPage) == 0 then --! FAIL-SAFE; DO NOT DELETE
+          for checkboxIndex = 1, #self.checkboxSkinObjectType do
+               local checkboxObjectTypes   = self.checkboxSkinObjectType[checkboxIndex]
+               local checkboxObjectTypeTag = self.checkboxSkinObjectType[checkboxIndex]:upperAtStart()
+               local checkboxSkinIndex     = self.checkboxSkinObjectIndex[checkboxObjectTypes:lower()]
+
+               local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = checkboxSkinIndex}
+               local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+
+               if checkboxSkinIndex == 0 or luaSpriteExists(displaySkinIconButton) == false then
+                    removeLuaSprite('displaySelection'..checkboxObjectTypeTag, false)
+               else
+                    addLuaSprite('displaySelection'..checkboxObjectTypeTag, false)
+               end
+          end
+     end
 end
 
 --- Collection of similair methods of the search selection functions.
