@@ -2,8 +2,9 @@
 <TextureAtlas imagePath="display_button.png">
 	<!-- Created using the Spritesheet and XML generator -->
 	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
-	<SubTexture name="static0000" x="154" y="0" width="154" height="154" frameX="2" frameY="2" frameWidth="150" frameHeight="150"/>
-	<SubTexture name="hovered-static0000" x="308" y="0" width="154" height="154" frameX="2" frameY="2" frameWidth="150" frameHeight="150"/>
+	<SubTexture name="blocked0000" x="154" y="0" width="154" height="154" frameX="2" frameY="2" frameWidth="150" frameHeight="150"/>
 	<SubTexture name="hovered-pressed0000" x="0" y="154" width="154" height="154" frameX="2" frameY="2" frameWidth="150" frameHeight="150"/>
-	<SubTexture name="selected0000" x="0" y="0" width="154" height="154" frameX="2" frameY="2" frameWidth="150" frameHeight="150"/>
+	<SubTexture name="hovered-static0000" x="0" y="0" width="154" height="154" frameX="2" frameY="2" frameWidth="150" frameHeight="150"/>
+	<SubTexture name="selected0000" x="308" y="0" width="154" height="154" frameX="2" frameY="2" frameWidth="150" frameHeight="150"/>
+	<SubTexture name="static0000" x="154" y="154" width="154" height="154" frameX="2" frameY="2" frameWidth="150" frameHeight="150"/>
 </TextureAtlas>
