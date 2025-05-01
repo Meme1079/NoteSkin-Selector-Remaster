@@ -1460,50 +1460,95 @@ function SkinNotes:search_preview()
                local previewSkinTemplate = {state = (self.stateClass):upperAtStart(), groupID = strums}
                local previewSkinGroup    = ('previewSkinGroup${state}-${groupID}'):interpol(previewSkinTemplate)
      
-               local previewMetadataObjectData = function(skinAnim)
-                    local previewMetadataObjecNames = getCurrentPreviewSkinObjectPreview['names'][skinAnim][strums]
-                    return getCurrentPreviewSkinObjectPreview['animations'][skinAnim][previewMetadataObjecNames]
+               local previewMetadataObjectAnims = {
+                    names = {
+                         confirm = {'left_confirm', 'down_confirm', 'up_confirm', 'right_confirm'},
+                         pressed = {'left_pressed', 'down_pressed', 'up_pressed', 'right_pressed'},
+                         colored = {'left_colored', 'down_colored', 'up_colored', 'right_colored'},
+                         strums  = {'left', 'down', 'up', 'right'}
+                    },
+                    prefixes = {
+                         confirm = {'left confirm', 'down confirm', 'up confirm', 'right confirm'},
+                         pressed = {'left press', 'down press', 'up press', 'right press'},
+                         colored = {'purple0', 'blue0', 'green0', 'red0'},
+                         strums  = {'arrowLEFT', 'arrowDOWN', 'arrowUP', 'arrowRIGHT'}
+                    },
+                    frames = {
+                         confirm = 24,
+                         pressed = 24,
+                         colored = 24,
+                         strums  = 24
+                    }
+               }
+     
+               local function previewMetadataObjectData(skinAnim)
+                    local previewMetadataObject         = getCurrentPreviewSkinObjectPreview
+                    local previewMetadataObjectByAnim   = getCurrentPreviewSkinObjectPreview.animations
+                    local previewStaticDataObjectByAnim = self.previewStaticDataPreview.animations
+     
+                    local previewMetadataObjectNames = previewMetadataObjectAnims['names'][skinAnim]
+                    if previewMetadataObject == '@void' or previewMetadataObjectByAnim == nil then
+                         return previewStaticDataObjectByAnim[skinAnim][previewMetadataObjectNames[strums]]
+                    end
+                    if previewMetadataObjectByAnim[skinAnim] == nil then
+                         previewMetadataObject['animations'][skinAnim] = previewStaticDataObjectByAnim[skinAnim]
+                         return previewStaticDataObjectByAnim[skinAnim][previewMetadataObjectNames[strums]]
+                    end
+                    return previewMetadataObjectByAnim[skinAnim][previewMetadataObjectNames[strums]]
                end
-               local previewMetadataObjectNames = function(skinAnim)
-                    return getCurrentPreviewSkinObjectPreview['names'][skinAnim]
+               local function previewMetadataObjects(element)
+                    local previewMetadataObject       = getCurrentPreviewSkinObjectPreview
+                    local previewMetadataObjectByElem = getCurrentPreviewSkinObjectPreview[element]
+     
+                    if previewMetadataObject == '@void' or previewMetadataObjectByElem == nil then
+                         return self.previewStaticDataPreview[element]
+                    end
+                    return previewMetadataObjectByElem
                end
      
-               local previewMetadataConfirmObject = previewMetadataObjectData('confirm')
-               local previewMetadataPressedObject = previewMetadataObjectData('pressed')
-               local previewMetadataColoredObject = previewMetadataObjectData('colored')
-               local previewMetadataStrumsObject  = previewMetadataObjectData('strums')
+               local previewMetadataByObjectConfirm = previewMetadataObjectData('confirm')
+               local previewMetadataByObjectPressed = previewMetadataObjectData('pressed')
+               local previewMetadataByObjectColored = previewMetadataObjectData('colored')
+               local previewMetadataByObjectStrums  = previewMetadataObjectData('strums')
+     
+               local previewMetadataByFramesConfirm = previewMetadataObjects('frames').confirm
+               local previewMetadataByFramesPressed = previewMetadataObjects('frames').pressed
+               local previewMetadataByFramesColored = previewMetadataObjects('frames').colored
+               local previewMetadataByFramesStrums  = previewMetadataObjects('frames').strums
+     
+               local previewMetadataBySize = previewMetadataObjects('size')
      
                local previewSkinImagePath = self.statePaths..'/'..getCurrentPreviewSkinObjects
                local previewSkinPositionX = 790 + (105*(strums-1))
                local previewSkinPositionY = 135
                makeAnimatedLuaSprite(previewSkinGroup, previewSkinImagePath, previewSkinPositionX, previewSkinPositionY)
-               scaleObject(previewSkinGroup, 0.65, 0.65)
-               addAnimationByPrefix(previewSkinGroup, previewMetadataConfirmObject.name, previewMetadataConfirmObject.prefix, 24, false)
-               addAnimationByPrefix(previewSkinGroup, previewMetadataPressedObject.name, previewMetadataPressedObject.prefix, 24, false)
-               addAnimationByPrefix(previewSkinGroup, previewMetadataColoredObject.name, previewMetadataColoredObject.prefix, 24, false)
-               addAnimationByPrefix(previewSkinGroup, previewMetadataStrumsObject.name,  previewMetadataStrumsObject.prefix, 24, false)
+               scaleObject(previewSkinGroup, previewMetadataBySize[1], previewMetadataBySize[2])
      
-               local curOffsets = function(previewMetadataObject, positionType)
-                    local curOffsetX = getProperty(previewSkinGroup..'.offset.x')
-                    local curOffsetY = getProperty(previewSkinGroup..'.offset.y')
-                    if positionType == 'x' then
-                         return curOffsetX - previewMetadataObject.offsets[1]
-                    end
-                    if positionType == 'y' then
-                         return curOffsetY + previewMetadataObject.offsets[2]
-                    end
+               local previewSkinAddAnimationPrefix = function(objectData, dataFrames)
+                    addAnimationByPrefix(previewSkinGroup, objectData.name, objectData.prefix, dataFrames, false)
                end
-               local addOffsets = function(previewSkinGroup, previewMetadataObject)
-                    local curOffsetX = curOffsets(previewMetadataObject, 'x')
-                    local curOffsetY = curOffsets(previewMetadataObject, 'y')
-                    addOffset(previewSkinGroup, previewMetadataObject.name, curOffsetX, curOffsetY)
+               local previewSkinGetOffsets = function(objectData, position)
+                    local previewSkinGroupOffsetX = getProperty(previewSkinGroup..'.offset.x')
+                    local previewSkinGroupOffsetY = getProperty(previewSkinGroup..'.offset.y')
+                    if position == 'x' then return previewSkinGroupOffsetX - objectData.offsets[1] end
+                    if position == 'y' then return previewSkinGroupOffsetY + objectData.offsets[2] end
+               end
+               local previewSkinAddOffsets = function(objectData)
+                    local previewSkinOffsetX = previewSkinGetOffsets(objectData, 'x')
+                    local previewSkinOffsetY = previewSkinGetOffsets(objectData, 'y')
+                    addOffset(previewSkinGroup, objectData.name, previewSkinOffsetX, previewSkinOffsetY)
                end
      
-               addOffsets(previewSkinGroup, previewMetadataConfirmObject)
-               addOffsets(previewSkinGroup, previewMetadataPressedObject)
-               addOffsets(previewSkinGroup, previewMetadataColoredObject)
-               addOffsets(previewSkinGroup, previewMetadataStrumsObject)
-               playAnim(previewSkinGroup, previewMetadataObjectNames('strums')[strums])
+               local previewSkinAnimation = function(objectData, dataFrames)
+                    previewSkinAddAnimationPrefix(objectData, dataFrames)
+                    previewSkinAddOffsets(objectData)
+               end
+               previewSkinAnimation(previewMetadataByObjectConfirm, previewMetadataByFramesConfirm)
+               previewSkinAnimation(previewMetadataByObjectPressed, previewMetadataByFramesPressed)
+               previewSkinAnimation(previewMetadataByObjectColored, previewMetadataByFramesColored)
+               previewSkinAnimation(previewMetadataByObjectStrums, previewMetadataByFramesStrums)
+     
+               playAnim(previewSkinGroup, previewMetadataObjectAnims['names']['strums'][strums])
                setObjectCamera(previewSkinGroup, 'camHUD')
                addLuaSprite(previewSkinGroup, true)
           end

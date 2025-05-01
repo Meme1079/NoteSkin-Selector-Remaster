@@ -623,39 +623,63 @@ function SkinSplashes:search_preview()
                local previewSkinTemplate = {state = (self.stateClass):upperAtStart(), groupID = strums}
                local previewSkinGroup    = ('previewSkinGroup${state}-${groupID}'):interpol(previewSkinTemplate)
      
-               local previewMetadataObjectData = function(skinAnim)
-                    if getCurrentPreviewSkinObjectPreview['names'][skinAnim] == nil then
-                         return '@void'
+               local previewMetadataObjectAnims = {
+                    names = {
+                         note_splash1 = {'left_splash1', 'down_splash1', 'up_splash1', 'right_splash1'},
+                         note_splash2 = {'left_splash2', 'down_splash2', 'up_splash2', 'right_splash2'}
+                    },
+                    prefixes = {
+                         note_splash1 = {'note splash purple 1', 'note splash blue 1', 'note splash green 1', 'note splash red 1'},
+                         note_splash2 = {'note splash purple 2', 'note splash blue 2', 'note splash green 2', 'note splash red 2'}
+                    },
+                    frames = {
+                         note_splash1 = 24,
+                         note_splash2 = 24
+                    }
+               }
+     
+               local function previewMetadataObjectData(skinAnim)
+                    local previewMetadataObject         = getCurrentPreviewSkinObjectPreview
+                    local previewMetadataObjectByAnim   = getCurrentPreviewSkinObjectPreview.animations
+                    local previewStaticDataObjectByAnim = self.previewStaticDataPreview.animations
+     
+                    local previewMetadataObjectNames = previewMetadataObjectAnims['names'][skinAnim]
+                    if previewMetadataObject == '@void' or previewMetadataObjectByAnim == nil then
+                         return previewStaticDataObjectByAnim[skinAnim][previewMetadataObjectNames[strums]]
                     end
-                    local previewMetadataObjecNames = getCurrentPreviewSkinObjectPreview['names'][skinAnim][strums]
-                    return getCurrentPreviewSkinObjectPreview['animations'][skinAnim][previewMetadataObjecNames]
+                    if previewMetadataObjectByAnim[skinAnim] == nil then
+                         previewMetadataObject['animations'][skinAnim] = previewStaticDataObjectByAnim[skinAnim]
+                         return previewStaticDataObjectByAnim[skinAnim][previewMetadataObjectNames[strums]]
+                    end
+                    return previewMetadataObjectByAnim[skinAnim][previewMetadataObjectNames[strums]]
                end
-               local previewMetadataObjectSkinAnim = function(element, skinAnim)
-                    if getCurrentPreviewSkinObjectPreview[element][skinAnim] == nil then return '@void' end
-                    return getCurrentPreviewSkinObjectPreview[element][skinAnim]
-               end
-               local previewMetadataObjects = function(element)
-                    if getCurrentPreviewSkinObjectPreview[element] == nil then return '@void' end
-                    return getCurrentPreviewSkinObjectPreview[element]
+               local function previewMetadataObjects(element)
+                    local previewMetadataObject       = getCurrentPreviewSkinObjectPreview
+                    local previewMetadataObjectByElem = getCurrentPreviewSkinObjectPreview[element]
+     
+                    if previewMetadataObject == '@void' or previewMetadataObjectByElem == nil then
+                         return self.previewStaticDataPreview[element]
+                    end
+                    return previewMetadataObjectByElem
                end
      
                local previewMetadataByObjectNoteSplash1 = previewMetadataObjectData('note_splash1')
                local previewMetadataByObjectNoteSplash2 = previewMetadataObjectData('note_splash2')
      
-               local previewMetadataByFramesNoteSplash1 = previewMetadataObjectSkinAnim('frames', 'note_splash1')
-               local previewMetadataByFramesNoteSplash2 = previewMetadataObjectSkinAnim('frames', 'note_splash2')
-               local previewObjectSizeNoteSplashes  = previewMetadataObjects('size')
+               local previewMetadataByFramesNoteSplash1 = previewMetadataObjects('frames').note_splash1
+               local previewMetadataByFramesNoteSplash2 = previewMetadataObjects('frames').note_splash2
      
-               local previewSkinStrumImage = ('${paths}/${objects}'):interpol{paths = self.statePaths, objects = getCurrentPreviewSkinObjects}
-               local previewSkinPositionX  = 790 + (105 * (strums - 1))
-               local previewSkinPositionY  = 135
-               makeAnimatedLuaSprite(previewSkinGroup, previewSkinStrumImage, previewSkinPositionX, previewSkinPositionY)
-               scaleObject(previewSkinGroup, previewObjectSizeNoteSplashes[1], previewObjectSizeNoteSplashes[2])
+               local previewMetadataBySize = previewMetadataObjects('size')
+               
+               local previewSkinImagePath = self.statePaths..'/'..getCurrentPreviewSkinObjects
+               local previewSkinPositionX = 790 + (105*(strums-1))
+               local previewSkinPositionY = 135
+               makeAnimatedLuaSprite(previewSkinGroup, previewSkinImagePath, previewSkinPositionX, previewSkinPositionY)
+               scaleObject(previewSkinGroup, previewMetadataBySize[1], previewMetadataBySize[2])
      
                local previewSkinAddAnimationPrefix = function(objectData, dataFrames)
                     addAnimationByPrefix(previewSkinGroup, objectData.name, objectData.prefix, dataFrames, false)
                end
-     
                local previewSkinGetOffsets = function(objectData, position)
                     local previewSkinGroupOffsetX = getProperty(previewSkinGroup..'.offset.x')
                     local previewSkinGroupOffsetY = getProperty(previewSkinGroup..'.offset.y')
@@ -668,14 +692,12 @@ function SkinSplashes:search_preview()
                     addOffset(previewSkinGroup, objectData.name, previewSkinOffsetX, previewSkinOffsetY)
                end
                
-               if previewMetadataByObjectNoteSplash1 ~= '@void' and previewMetadataByFramesNoteSplash1 ~= '@void' then
-                    previewSkinAddAnimationPrefix(previewMetadataByObjectNoteSplash1, previewMetadataByFramesNoteSplash1)
-                    previewSkinAddOffsets(previewMetadataByObjectNoteSplash1)
+               local previewSkinAnimation = function(objectData, dataFrames)
+                    previewSkinAddAnimationPrefix(objectData, dataFrames)
+                    previewSkinAddOffsets(objectData)
                end
-               if previewMetadataByObjectNoteSplash2 ~= '@void' and previewMetadataByFramesNoteSplash2 ~= '@void' then
-                    previewSkinAddAnimationPrefix(previewMetadataByObjectNoteSplash2, previewMetadataByFramesNoteSplash2)
-                    previewSkinAddOffsets(previewMetadataByObjectNoteSplash2)
-               end
+               previewSkinAnimation(previewMetadataByObjectNoteSplash1, previewMetadataByFramesNoteSplash1)
+               previewSkinAnimation(previewMetadataByObjectNoteSplash2, previewMetadataByFramesNoteSplash2)
                
                setObjectCamera(previewSkinGroup, 'camHUD')
                setProperty(previewSkinGroup..'.visible', false)
