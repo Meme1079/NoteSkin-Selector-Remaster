@@ -327,7 +327,7 @@ local function hueChangeBG()
      end
 end
 
-local Splashes = SkinSplashes:new('splashes', 'noteSplashes', 'noteSplashes', false)
+--[[ local Splashes = SkinSplashes:new('splashes', 'noteSplashes', 'noteSplashes', false)
 Splashes:load()
 Splashes:save_load()
 Splashes:save()
@@ -352,9 +352,9 @@ end
 
 function onDestroy()
      Splashes:save()
-end
+end ]]
 
---[[ local Notes = SkinNotes:new('notes', 'noteSkins', 'NOTE_assets', true)
+local Notes = SkinNotes:new('notes', 'noteSkins', 'NOTE_assets', true)
 Notes:load()
 Notes:save_load()
 Notes:save()
@@ -379,4 +379,4 @@ end
 
 function onDestroy()
      Notes:save()
-end ]]
+end

@@ -89,12 +89,6 @@
                }
           }
      },
-     "names": {
-          "confirm": ["left_confirm", "down_confirm", "up_confirm", "right_confirm"],
-          "pressed": ["left_pressed", "down_pressed", "up_pressed", "right_pressed"],
-          "colored": ["left_colored", "down_colored", "up_colored", "right_colored"],
-          "strums": ["left", "down", "up", "right"]
-     },
      "frames": {"confirm": 24, "pressed": 24, "colored": 24, "strums": 24},
      "size": [0.65, 0.65],
      "loop": false

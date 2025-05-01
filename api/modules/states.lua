@@ -42,9 +42,10 @@ function states.getTotalSkins(skin, withPath)
      for _,folders in next, directorySkinFolderGroup do
           local directorySkinSubFolderPath = 'mods/NoteSkin Selector Remastered/images/'..totalSkinFolder..'/'..folders
           local directorySkinSubFolder     = directoryFileList(directorySkinSubFolderPath)
+
           for _,skins in next, directorySkinSubFolder do
                if skins:match('^('..totalSkinPrefix..'%-.+)%.png$') then
-                    local includedPath = withPath == true and totalSkinFolder..'/'..skins..'/' or skins..'/'
+                    local includedPath = withPath == true and totalSkinFolder..'/'..folders..'/' or folders..'/'
                     totalSkins[#totalSkins + 1] = includedPath..skins:match('^('..totalSkinPrefix..'%-.+)%.png$')
                end
           end
