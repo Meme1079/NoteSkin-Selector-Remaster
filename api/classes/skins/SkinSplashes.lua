@@ -103,7 +103,7 @@ function SkinSplashes:load()
      self.previewAnimationObjectClicked = {false, false}
 
      self.previewAnimationObjectIndex     = 1
-     self.previewAnimationObjectPrevAnims = {'note splash 1', 'note splash 2'}
+     self.previewAnimationObjectPrevAnims = {'note_splash1', 'note_splash2'}
 
      -- Checkbox Skin Properties --
 
@@ -115,6 +115,11 @@ function SkinSplashes:load()
      self.checkboxSkinObjectIndex  = {player = checkboxIndexPlayer,  opponent = checkboxIndexOpponent}
      self.checkboxSkinObjectToggle = {player = false,                opponent = false}
      self.checkboxSkinObjectType   = table.keys(self.checkboxSkinObjectIndex)
+
+
+     local a = states.getPreviewObjectMissingAnims(self.previewAnimationObjectPrevAnims, self.totalMetadataObjectPreview, self.totalSkinLimit)
+
+     debugPrint(json.stringify(a, nil, 5))
 end
 
 --- Creates a 16 chunk display of the selected skins.
@@ -309,7 +314,7 @@ function SkinSplashes:preview()
           end
           previewSkinAnimation(previewMetadataByObjectNoteSplash1, previewMetadataByFramesNoteSplash1)
           previewSkinAnimation(previewMetadataByObjectNoteSplash2, previewMetadataByFramesNoteSplash2)
-          
+     
           setObjectCamera(previewSkinGroup, 'camHUD')
           setProperty(previewSkinGroup..'.visible', false)
           addLuaSprite(previewSkinGroup, true)
@@ -397,14 +402,60 @@ function SkinSplashes:preview_animation(loadAnim)
                setProperty(previewSkinGroup..'.visible', false)
           end
           if keyboardJustConditionPressed(getKeyBinds(strums), not getVar('skinSearchInputFocus')) then
-               local previewSkinAnimFilter = previewSkinAnim:gsub('%s+', '_'):gsub('_(%d)', '%1')
-               playAnim(previewSkinGroup, previewMetadataObjectGroupData[previewSkinAnimFilter]['name'], true)
+               playAnim(previewSkinGroup, previewMetadataObjectGroupData[previewSkinAnim]['name'], true)
                setProperty(previewSkinGroup..'.visible', true)
           end
           if keyboardJustConditionReleased(getKeyBinds(strums), not getVar('skinSearchInputFocus')) then
                setProperty(previewSkinGroup..'.visible', false)
           end
      end
+end
+
+local previewSelectionToggle = false -- * ok who gaf
+--- Changes the skin's preview animations by using keyboard keys.
+---@return nil
+function SkinSplashes:preview_selection_moved()
+     local conditionPressedLeft  = keyboardJustConditionPressed('Z', not getVar('skinSearchInputFocus'))
+     local conditionPressedRight = keyboardJustConditionPressed('X', not getVar('skinSearchInputFocus'))
+
+     local previewAnimationMinIndex = self.previewAnimationObjectIndex > 1
+     local previewAnimationMaxIndex = self.previewAnimationObjectIndex < #self.previewAnimationObjectPrevAnims
+     local previewAnimationInverseMinIndex = self.previewAnimationObjectIndex <= 1
+     local previewAnimationInverseMaxIndex = self.previewAnimationObjectIndex >= #self.previewAnimationObjectPrevAnims
+     if conditionPressedLeft and previewAnimationMinIndex then
+          self.previewAnimationObjectIndex = self.previewAnimationObjectIndex - 1
+          previewSelectionToggle  = true
+
+          playSound('ding', 0.5)
+     end
+     if conditionPressedRight and previewAnimationMaxIndex then
+          self.previewAnimationObjectIndex = self.previewAnimationObjectIndex + 1
+          previewSelectionToggle  = true
+
+          playSound('ding', 0.5)
+     end
+     
+     if previewSelectionToggle == true then --! DO NOT DELETE
+          previewSelectionToggle = false
+          return
+     end
+
+     if previewAnimationInverseMinIndex then
+          playAnim('previewSkinInfoIconLeft', 'none', true)
+          playAnim('previewSkinInfoIconRight', 'right', true)
+     else
+          playAnim('previewSkinInfoIconLeft', 'left', true)
+     end
+
+     if previewAnimationInverseMaxIndex then
+          playAnim('previewSkinInfoIconLeft', 'left', true)
+          playAnim('previewSkinInfoIconRight', 'none', true)
+     else
+          playAnim('previewSkinInfoIconRight', 'right', true)
+     end
+
+     local previewMetadataObjectAnims = self.previewAnimationObjectPrevAnims[self.previewAnimationObjectIndex]
+     setTextString('previewSkinButtonSelectionText', previewMetadataObjectAnims:upperAtStart():gsub('_', ' '):gsub('(%w)(%d)', '%1 %2'))
 end
 
 --- Creates a 16 chunk display of the selected search skins.

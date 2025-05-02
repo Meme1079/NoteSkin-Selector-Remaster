@@ -120,6 +120,11 @@ function SkinNotes:load()
      self.checkboxSkinObjectIndex  = {player = checkboxIndexPlayer,  opponent = checkboxIndexOpponent}
      self.checkboxSkinObjectToggle = {player = false,                opponent = false}
      self.checkboxSkinObjectType   = table.keys(self.checkboxSkinObjectIndex)
+
+
+     local a = states.getPreviewObjectMissingAnims(self.previewAnimationObjectPrevAnims, self.totalMetadataObjectPreview, self.totalSkinLimit)
+
+     debugPrint(json.stringify(a[2], nil, 5))
 end
 
 --- Checks if the any of skin states' data misaligned with each other.

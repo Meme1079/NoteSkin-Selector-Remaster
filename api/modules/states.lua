@@ -353,4 +353,36 @@ function states.getMetadataObjectSkins(skin, metadataFolder, converted)
      return totalSkinObjectMetadatas[skin]
 end
 
+---
+---@param previewSkinAnim table[any]
+---@param previewSkinObjects table[any]
+---@param skinLimit table[number]
+---@return table[table[any]]
+function states.getPreviewObjectMissingAnims(previewSkinAnim, previewSkinObjects, skinLimit)
+     local totalPreviewMissingAnims = table.new(0, 0xff)
+     for pages = 1, skinLimit do
+          totalPreviewMissingAnims[pages] = table.new(0, 0xff)
+
+          for previewIndex, previewValue in pairs(previewSkinObjects[pages]) do
+               totalPreviewMissingAnims[pages][previewIndex] = table.new(0, 0xff)
+
+               for animInd = 1, #previewSkinAnim do
+                    local previewSkinAnimFilter = previewSkinAnim[animInd]
+                    if previewValue['animations'] == nil then
+                         totalPreviewMissingAnims[pages][previewIndex][previewSkinAnimFilter] = false
+                         goto skip_previewMissingMetadata
+                    end
+
+                    if previewValue['animations'][previewSkinAnimFilter] == nil then
+                         totalPreviewMissingAnims[pages][previewIndex][previewSkinAnimFilter] = true
+                    else
+                         totalPreviewMissingAnims[pages][previewIndex][previewSkinAnimFilter] = false
+                    end
+                    ::skip_previewMissingMetadata::
+               end
+          end
+     end
+     return totalPreviewMissingAnims
+end
+
 return states
