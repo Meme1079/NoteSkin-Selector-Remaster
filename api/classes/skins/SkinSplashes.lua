@@ -105,6 +105,10 @@ function SkinSplashes:load()
      self.previewAnimationObjectIndex     = 1
      self.previewAnimationObjectPrevAnims = {'note_splash1', 'note_splash2'}
 
+     local previewObjectAnims    = {'note_splash1', 'note_splash2'}
+     local previewObjectMetadata = self.totalMetadataObjectPreview
+     self.previewAnimationObjectMissing = states.getPreviewObjectMissingAnims(previewObjectAnims, previewObjectMetadata, self.totalSkinLimit)
+
      -- Checkbox Skin Properties --
 
      self.checkboxSkinObjectHovered = {false, false}
@@ -115,11 +119,6 @@ function SkinSplashes:load()
      self.checkboxSkinObjectIndex  = {player = checkboxIndexPlayer,  opponent = checkboxIndexOpponent}
      self.checkboxSkinObjectToggle = {player = false,                opponent = false}
      self.checkboxSkinObjectType   = table.keys(self.checkboxSkinObjectIndex)
-
-
-     local a = states.getPreviewObjectMissingAnims(self.previewAnimationObjectPrevAnims, self.totalMetadataObjectPreview, self.totalSkinLimit)
-
-     debugPrint(json.stringify(a, nil, 5))
 end
 
 --- Creates a 16 chunk display of the selected skins.

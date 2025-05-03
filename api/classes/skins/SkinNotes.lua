@@ -110,6 +110,10 @@ function SkinNotes:load()
      self.previewAnimationObjectIndex     = 1
      self.previewAnimationObjectPrevAnims = {'confirm', 'pressed', 'colored'}
 
+     local previewObjectAnims    = {'strums', 'confirm', 'pressed', 'colored'}
+     local previewObjectMetadata = self.totalMetadataObjectPreview
+     self.previewAnimationObjectMissing = states.getPreviewObjectMissingAnims(previewObjectAnims, previewObjectMetadata, self.totalSkinLimit)
+
      -- Checkbox Skin Properties --
 
      self.checkboxSkinObjectHovered = {false, false}
@@ -120,11 +124,6 @@ function SkinNotes:load()
      self.checkboxSkinObjectIndex  = {player = checkboxIndexPlayer,  opponent = checkboxIndexOpponent}
      self.checkboxSkinObjectToggle = {player = false,                opponent = false}
      self.checkboxSkinObjectType   = table.keys(self.checkboxSkinObjectIndex)
-
-
-     local a = states.getPreviewObjectMissingAnims(self.previewAnimationObjectPrevAnims, self.totalMetadataObjectPreview, self.totalSkinLimit)
-
-     debugPrint(json.stringify(a[2], nil, 5))
 end
 
 --- Checks if the any of skin states' data misaligned with each other.
@@ -514,12 +513,32 @@ function SkinNotes:selection_byclick()
                     skinObjectsPerHovered[curPage]  = false
                end
           end
+          local function displaySkinAutoDeselect()
+               self.selectSkinCurSelectedIndex = 0
+               self.selectSkinPreSelectedIndex = 0
+               self.selectSkinHasBeenClicked   = false
 
-          if skinObjectsPerSelected[curPage] == false and pageSkins ~= self.selectSkinCurSelectedIndex then
+               self:preview()
+               self:search_preview()
+               SkinNoteSave:set('selectSkinCurSelectedIndex', self.stateClass, self.selectSkinCurSelectedIndex)
+               SkinNoteSave:set('selectSkinPreSelectedIndex', self.stateClass, self.selectSkinPreSelectedIndex)
+               skinObjectsPerSelected[curPage] = false
+               skinObjectsPerClicked[curPage]  = false
+               skinObjectsPerHovered[curPage]  = false
+          end
+
+          local previewObjectCurAnim        = self.previewAnimationObjectPrevAnims[self.previewAnimationObjectIndex]
+          local previewObjectMissingAnim    = self.previewAnimationObjectMissing[self.selectSkinPagePositionIndex][curPage]
+          local previewObjectCurMissingAnim = previewObjectMissingAnim[previewObjectCurAnim]
+          if skinObjectsPerSelected[curPage] == false and pageSkins ~= self.selectSkinCurSelectedIndex and previewObjectCurMissingAnim == false then
                displaySkinSelect()
           end
           if skinObjectsPerSelected[curPage] == true then
                --displaySkinDeselect()
+          end
+
+          if skinObjectsPerSelected[curPage] == true and previewObjectCurMissingAnim == true then
+               displaySkinAutoDeselect()
           end
 
           if pageSkins == self.selectSkinInitSelectedIndex then
@@ -569,6 +588,13 @@ function SkinNotes:selection_byhover()
                if luaSpriteExists(displaySkinIconButton) == false then return end
                playAnim(displaySkinIconButton, 'static', true)
           end
+
+          local previewObjectCurAnim        = self.previewAnimationObjectPrevAnims[self.previewAnimationObjectIndex]
+          local previewObjectMissingAnim    = self.previewAnimationObjectMissing[self.selectSkinPagePositionIndex][curPage]
+          local previewObjectCurMissingAnim = previewObjectMissingAnim[previewObjectCurAnim]
+          if previewObjectCurMissingAnim == true then
+               playAnim(displaySkinIconButton, 'blocked', true)
+          end
      end
 end
 
@@ -576,12 +602,19 @@ end
 --- Changes the cursor's texture depending on its interaction (i.e. selecting and hovering).
 ---@return nil
 function SkinNotes:selection_bycursor()
+     local skinObjectsPerIDs      = self.totalSkinObjectID[self.selectSkinPagePositionIndex]
      local skinObjectsPerHovered  = self.totalSkinObjectHovered[self.selectSkinPagePositionIndex]
      local skinObjectsPerClicked  = self.totalSkinObjectClicked[self.selectSkinPagePositionIndex]
 
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
      if #skinSearchInput_textContent > 0 then
           return
+     end
+
+     if mouseClicked('left') or mousePressed('left') then 
+          playAnim('mouseTexture', 'idleClick', true)
+     else
+          playAnim('mouseTexture', 'idle', true)
      end
 
      local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = self.selectSkinCurSelectedIndex}
@@ -593,15 +626,36 @@ function SkinNotes:selection_bycursor()
 
           if skinObjectsPerClicked[skinIndex] == true then
                playAnim('mouseTexture', 'handClick', true)
-               return
           end
           if skinObjectsPerHovered[skinIndex] == true then
                playAnim('mouseTexture', 'hand', true)
-               return
           end
           ::skipSelectedSkin::
      end
+     
+     for pageSkins = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
+          local curPage = pageSkins - (16 * (self.selectSkinPagePositionIndex - 1))
 
+          local previewObjectCurAnim        = self.previewAnimationObjectPrevAnims[self.previewAnimationObjectIndex]
+          local previewObjectMissingAnim    = self.previewAnimationObjectMissing[self.selectSkinPagePositionIndex][curPage]
+          local previewObjectCurMissingAnim = previewObjectMissingAnim[previewObjectCurAnim]
+          if previewObjectCurMissingAnim == true then
+               local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = curPage}
+               local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+               if hoverObject(displaySkinIconButton, 'camHUD') == true then
+                    if mouseClicked('left') then 
+                         playSound('cancel') 
+                    end
+
+                    if mouseClicked('left') or mousePressed('left') then 
+                         playAnim('mouseTexture', 'disabledClick', true)
+                    else
+                         playAnim('mouseTexture', 'disabled', true)
+                    end
+               end
+          end
+     end
+     
      if hoverObject('displaySliderIcon', 'camHUD') == true and self.totalSkinLimit == 1 then
           if mouseClicked('left') or mousePressed('left') then 
                playAnim('mouseTexture', 'disabledClick', true)
@@ -612,13 +666,6 @@ function SkinNotes:selection_bycursor()
           if mouseClicked('left') then 
                playSound('cancel') 
           end
-          return
-     end
-
-     if mouseClicked('left') or mousePressed('left') then 
-          playAnim('mouseTexture', 'idleClick', true)
-     else
-          playAnim('mouseTexture', 'idle', true)
      end
 end
 
