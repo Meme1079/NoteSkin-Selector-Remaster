@@ -4,11 +4,18 @@ local SkinSplashes = require 'mods.NoteSkin Selector Remastered.api.classes.skin
 local SkinNotes    = require 'mods.NoteSkin Selector Remastered.api.classes.skins.SkinNotes'
 
 local string    = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.string'
-local math      = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.math'
+local table     = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.table'
 local json      = require 'mods.NoteSkin Selector Remastered.api.libraries.json.main'
 local ease      = require 'mods.NoteSkin Selector Remastered.api.libraries.ease.ease'
 local funkinlua = require 'mods.NoteSkin Selector Remastered.api.modules.funkinlua'
 local states    = require 'mods.NoteSkin Selector Remastered.api.modules.states'
+local global    = require 'mods.NoteSkin Selector Remastered.api.modules.global'
+
+local switch = global.switch
+local addCallbackEvents = funkinlua.addCallbackEvents
+local keyboardJustConditionPressed  = funkinlua.keyboardJustConditionPressed
+local keyboardJustConditionPress    = funkinlua.keyboardJustConditionPress
+local keyboardJustConditionReleased = funkinlua.keyboardJustConditionReleased
 
 -- Background --
 
@@ -327,56 +334,112 @@ local function hueChangeBG()
      end
 end
 
+function onUpdate(elapsed)
+     hueChangeBG()
+end
+
+local Notes    = SkinNotes:new('notes', 'noteSkins', 'NOTE_assets', true)
 local Splashes = SkinSplashes:new('splashes', 'noteSplashes', 'noteSplashes', false)
-Splashes:load()
-Splashes:save_load()
-Splashes:save()
-Splashes:precache()
-Splashes:preload()
-Splashes:preview()
-Splashes:page_slider_marks()
 
-function onUpdate(elapsed)
-     Splashes:page_slider()
-     Splashes:page_moved()
-     Splashes:selection()
-     Splashes:search()
-     Splashes:checkbox()
-     Splashes:checkbox_selection()
-     Splashes:checkbox_sync()
-     Splashes:preview_selection()
-     Splashes:preview_animation()
+local p = 'splashes'
+switch (p) {
+     notes = function()
+          Notes:load()
+          Notes:save_load()
+          Notes:save()
+          Notes:precache()
+          Notes:preload()
+          Notes:preview()
+          Notes:page_slider_marks()
+     end,
+     splashes = function()
+          Splashes:load()
+          Splashes:save_load()
+          Splashes:save()
+          Splashes:precache()
+          Splashes:preload()
+          Splashes:preview()
+          Splashes:page_slider_marks()
+     end
+}
 
-     hueChangeBG()
-end
-
-function onDestroy()
-     Splashes:save()
-end
-
---[[ local Notes = SkinNotes:new('notes', 'noteSkins', 'NOTE_assets', true)
-Notes:load()
-Notes:save_load()
-Notes:save()
-Notes:precache()
-Notes:preload()
-Notes:preview()
-Notes:page_slider_marks()
-
-function onUpdate(elapsed)
-     Notes:page_slider()
-     Notes:page_moved()
-     Notes:selection()
-     Notes:search()
-     Notes:checkbox()
-     Notes:checkbox_selection()
-     Notes:checkbox_sync()
-     Notes:preview_selection()
-     Notes:preview_animation()
-
-     hueChangeBG()
+function onUpdatePost()
+     if keyboardJustConditionPressed('P', not getVar('skinSearchInputFocus')) then
+          p = 'notes'
+          switch (p) {
+               notes = function()
+                    Notes:load()
+                    Notes:save_load()
+                    Notes:save()
+                    Notes:precache()
+                    Notes:preload()
+                    Notes:preview()
+                    Notes:page_slider_marks()
+          
+                    Splashes:destroy()
+               end,
+               splashes = function()
+                    Splashes:load()
+                    Splashes:save_load()
+                    Splashes:save()
+                    Splashes:precache()
+                    Splashes:preload()
+                    Splashes:preview()
+                    Splashes:page_slider_marks()
+          
+                    Notes:destroy()
+               end
+          }
+     end
+     if keyboardJustConditionPressed('O', not getVar('skinSearchInputFocus')) then
+          p = 'splashes'
+          switch (p) {
+               notes = function()
+                    Notes:precache()
+                    Notes:preload()
+                    Notes:preview()
+                    Notes:page_slider_marks()
+          
+                    Splashes:destroy()
+               end,
+               splashes = function()
+                    Splashes:precache()
+                    Splashes:preload()
+                    Splashes:preview()
+                    Splashes:page_slider_marks()
+          
+                    Notes:destroy()
+               end
+          }
+     end
+     
+     switch (p) {
+          notes = function()
+               Notes:page_slider()
+               Notes:page_moved()
+               Notes:selection()
+               Notes:search()
+               Notes:checkbox()
+               Notes:checkbox_selection()
+               Notes:checkbox_sync()
+               Notes:preview_selection()
+               Notes:preview_animation()
+          end,
+          splashes = function()
+               Splashes:page_slider()
+               Splashes:page_moved()
+               Splashes:selection()
+               Splashes:search()
+               Splashes:checkbox()
+               Splashes:checkbox_selection()
+               Splashes:checkbox_sync()
+               Splashes:preview_selection()
+               Splashes:preview_animation()
+          end
+     }
 end
 
 function onDestroy()
      Notes:save()
-end ]]
+     Splashes:save()
+end

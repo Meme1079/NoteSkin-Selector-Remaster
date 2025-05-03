@@ -1220,6 +1220,24 @@ function SkinNotes:checkbox_selection_bycursor()
      end
 end
 
+function SkinNotes:destroy()
+     local curPage = self.selectSkinPagePositionIndex
+     for displays = 1, #self.totalSkinObjects[curPage] do
+          local displaySkinIconTemplates = {state = (self.stateClass):upperAtStart(), ID = self.totalSkinObjectID[curPage][displays]}
+          local displaySkinIconButton = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplates)
+          local displaySkinIconSkin   = ('displaySkinIconSkin${state}-${ID}'):interpol(displaySkinIconTemplates)
+          
+          local displaySkinImageTemplate = {path = self.statePaths, skin = self.totalSkinObjects[curPage][displays]}
+          local displaySkinImage = ('${path}/${skin}'):interpol(displaySkinImageTemplate)
+
+          removeLuaSprite(displaySkinIconButton, true)
+          removeLuaSprite(displaySkinIconSkin, true)
+          removeLuaSprite(displaySkinImage, true)
+     end
+
+     callOnScripts('skinSearchInput_callResetSearch')
+end
+
 --- Collection of similair methods of the search functions.
 ---@return nil
 function SkinNotes:search()
