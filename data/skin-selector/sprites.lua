@@ -341,7 +341,7 @@ end
 local Notes    = SkinNotes:new('notes', 'noteSkins', 'NOTE_assets', true)
 local Splashes = SkinSplashes:new('splashes', 'noteSplashes', 'noteSplashes', false)
 
-local p = 'splashes'
+local p = 'notes'
 switch (p) {
      notes = function()
           Notes:load()
@@ -395,6 +395,9 @@ function onUpdatePost()
           p = 'splashes'
           switch (p) {
                notes = function()
+                    Notes:load()
+                    Notes:save_load()
+                    Notes:save()
                     Notes:precache()
                     Notes:preload()
                     Notes:preview()
@@ -403,6 +406,9 @@ function onUpdatePost()
                     Splashes:destroy()
                end,
                splashes = function()
+                    Splashes:load()
+                    Splashes:save_load()
+                    Splashes:save()
                     Splashes:precache()
                     Splashes:preload()
                     Splashes:preview()

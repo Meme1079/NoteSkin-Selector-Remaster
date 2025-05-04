@@ -247,7 +247,7 @@ function SkinNotes:page_slider(snapToPage)
      local snapToPage = snapToPage == nil and true or false
 
      local function sliderTrackThumbAnimations()
-          if self.totalSkinLimit < 2 then
+          if self.totalSkinLimit <= 1 then
                return
           end
 
@@ -266,10 +266,10 @@ function SkinNotes:page_slider(snapToPage)
      if self.sliderTrackThumbPressed == true then
           sliderTrackThumbAnimations()
      end
-     if self.totalSkinLimit < 2 then
+     if self.totalSkinLimit == 1 then
           playAnim('displaySliderIcon', 'unscrollable')
      end
-     
+
      if getProperty('displaySliderIcon.y') <= 127 then
           setProperty('displaySliderIcon.y', 127)
      end
@@ -342,8 +342,8 @@ end
 ---@return nil
 function SkinNotes:page_slider_marks()
      local function sectionSliderMarks(tag, color, width, offsetTrackX, sliderTracks, sliderTrackIndex)
-          local sectionSliderMarksTemplate = {tag = tag:upperAtStart(), index = sliderTrackIndex}
-          local sectionSliderMarksTag = ('displaySliderMark${tag}${index}'):interpol(sectionSliderMarksTemplate)
+          local sectionSliderMarksTemplate = {state = (self.stateClass):upperAtStart(), tag = tag:upperAtStart(), index = sliderTrackIndex}
+          local sectionSliderMarksTag = ('displaySliderMark${state}${tag}${index}'):interpol(sectionSliderMarksTemplate)
           local sectionSliderMarksX   = getProperty('displaySliderTrack.x') - offsetTrackX
           local sectionSliderMarksY   = sliderTracks[sliderTrackIndex]
      
@@ -1235,6 +1235,23 @@ function SkinNotes:destroy()
           removeLuaSprite(displaySkinImage, true)
      end
 
+     for strums = 1, 4 do
+          local previewSkinTemplate = {state = (self.stateClass):upperAtStart(), groupID = strums}
+          local previewSkinGroup    = ('previewSkinGroup${state}-${groupID}'):interpol(previewSkinTemplate)
+          removeLuaSprite(previewSkinGroup, true)
+     end
+
+     local function removeSectionSliderMarks(tag, sliderTrackIndex)
+          local sectionSliderMarksTemplate = {state = (self.stateClass):upperAtStart(), tag = tag:upperAtStart(), index = sliderTrackIndex}
+          local sectionSliderMarksTag = ('displaySliderMark${state}${tag}${index}'):interpol(sectionSliderMarksTemplate)
+          removeLuaSprite(sectionSliderMarksTag, true)
+     end
+     for intervalIndex = 1, #self.sliderTrackIntervals do
+          removeSectionSliderMarks('interval', intervalIndex)
+     end
+     for semiIntervalIndex = 2, #self.sliderTrackSemiIntervals do
+          removeSectionSliderMarks('semiInterval', semiIntervalIndex)
+     end
      callOnScripts('skinSearchInput_callResetSearch')
 end
 
@@ -1899,7 +1916,10 @@ function SkinNotes:save_load()
 
      if math.isReal(self.sliderTrackIntervals[self.selectSkinPagePositionIndex]) == true then
           setProperty('displaySliderIcon.y', self.sliderTrackIntervals[self.selectSkinPagePositionIndex])
+     else
+          setProperty('displaySliderIcon.y', 0)
      end
+     playAnim('displaySliderIcon', 'static')
 end
 
 --- Loads and syncs the saved selected skin.

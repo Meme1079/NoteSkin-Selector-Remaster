@@ -757,6 +757,6 @@ function SkinSplashes:search_preview()
           setTextString('genInfoSkinName', getCurrentPreviewSkinObjectNames)
      end
      self:preview_animation(true)
-end
+end 
 
 return SkinSplashes
