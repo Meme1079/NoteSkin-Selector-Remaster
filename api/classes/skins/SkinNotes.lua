@@ -247,7 +247,7 @@ function SkinNotes:page_slider(snapToPage)
      local snapToPage = snapToPage == nil and true or false
 
      local function sliderTrackThumbAnimations()
-          if self.totalSkinLimit <= 1 then
+          if self.totalSkinLimit < 2 then
                return
           end
 
@@ -266,7 +266,7 @@ function SkinNotes:page_slider(snapToPage)
      if self.sliderTrackThumbPressed == true then
           sliderTrackThumbAnimations()
      end
-     if self.totalSkinLimit == 1 then
+     if self.totalSkinLimit < 2 then
           playAnim('displaySliderIcon', 'unscrollable')
      end
 
@@ -296,12 +296,11 @@ function SkinNotes:page_slider(snapToPage)
      local function sliderTrackSwitchPage()
           local sliderTrackThumbPressed  = sliderTrackCurrentPageIndex ~= false and self.sliderTrackToggle == false
           local sliderTrackThumbReleased = sliderTrackCurrentPageIndex == false and self.sliderTrackToggle == true
-
           if sliderTrackThumbPressed and sliderTrackCurrentPageIndex ~= self.sliderPageIndex then
                if self.sliderTrackThumbPressed == true then
-                    self:create(sliderTrackCurrentPageIndex)
                     self.selectSkinPagePositionIndex = sliderTrackCurrentPageIndex
                     self.sliderPageIndex             = sliderTrackCurrentPageIndex
+                    self:create(sliderTrackCurrentPageIndex)
 
                     if self.sliderPageIndex == self.totalSkinLimit then
                          setTextColor('genInfoStatePage', 'ff0000')
@@ -633,15 +632,16 @@ function SkinNotes:selection_bycursor()
           ::skipSelectedSkin::
      end
      
-     for pageSkins = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
-          local curPage = pageSkins - (16 * (self.selectSkinPagePositionIndex - 1))
+     for skinIndex = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
+          local curIndex = skinIndex - (16 * (self.selectSkinPagePositionIndex - 1))
 
           local previewObjectCurAnim        = self.previewAnimationObjectPrevAnims[self.previewAnimationObjectIndex]
-          local previewObjectMissingAnim    = self.previewAnimationObjectMissing[self.selectSkinPagePositionIndex][curPage]
+          local previewObjectMissingAnim    = self.previewAnimationObjectMissing[self.selectSkinPagePositionIndex][curIndex]
           local previewObjectCurMissingAnim = previewObjectMissingAnim[previewObjectCurAnim]
           if previewObjectCurMissingAnim == true then
-               local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = curPage}
+               local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = skinIndex}
                local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+
                if hoverObject(displaySkinIconButton, 'camHUD') == true then
                     if mouseClicked('left') then 
                          playSound('cancel') 

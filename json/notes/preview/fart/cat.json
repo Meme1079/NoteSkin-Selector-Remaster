@@ -1,0 +1,51 @@
+{
+     "animations": {
+          "confirm": {
+               "left_confirm": {
+                    "prefix": "left confirm",
+                    "name": "left_confirm",
+                    "offsets": [-22,22]
+               },
+               "down_confirm": {
+                    "prefix": "down confirm",
+                    "name": "down_confirm",
+                    "offsets": [-22,22]
+               },
+               "up_confirm": {
+                    "prefix": "up confirm",
+                    "name": "up_confirm",
+                    "offsets": [-22,22]
+               },
+               "right_confirm": {
+                    "prefix": "right confirm",
+                    "name": "right_confirm",
+                    "offsets": [-22,22]
+               }
+          },
+          "strums": {
+               "left": {
+                    "prefix": "arrowLEFT",
+                    "name": "left",
+                    "offsets": [0,0]
+               },
+               "down": {
+                    "prefix": "arrowDOWN",
+                    "name": "down",
+                    "offsets": [0,0]
+               },
+               "up": {
+                    "prefix": "arrowUP",
+                    "name": "up",
+                    "offsets": [0,0]
+               },
+               "right": {
+                    "prefix": "arrowRIGHT",
+                    "name": "right",
+                    "offsets": [0,0]
+               }
+          }
+     },
+     "frames": {"confirm": 24, "pressed": 24, "colored": 24, "strums": 24},
+     "size": [0.65, 0.65],
+     "loop": false
+}
