@@ -71,11 +71,6 @@ function SkinNotes:load()
      self.totalMetadataOrderedDisplay = states.getMetadataSkinsOrdered(self.stateClass, 'display', true)
      self.totalMetadataOrderedPreview = states.getMetadataSkinsOrdered(self.stateClass, 'preview', true)
      self.totalMetadataOrderedSkins   = states.getMetadataSkinsOrdered(self.stateClass, 'skins', true)
-     
-     -- Search Properties --
-
-     self.searchSkinObjectIndex = table.new(16, 0)
-     self.searchSkinObjectPage  = table.new(16, 0)
 
      -- Slider Properties --
 
@@ -124,6 +119,12 @@ function SkinNotes:load()
      self.checkboxSkinObjectIndex  = {player = checkboxIndexPlayer,  opponent = checkboxIndexOpponent}
      self.checkboxSkinObjectToggle = {player = false,                opponent = false}
      self.checkboxSkinObjectType   = table.keys(self.checkboxSkinObjectIndex)
+
+     -- Search Properties --
+
+     self.searchSkinObjectIndex = table.new(16, 0)
+     self.searchSkinObjectPage  = table.new(16, 0)
+     self.searchAnimationObjectMissing = table.new(16, 0)
 end
 
 --- Checks if the any of skin states' data misaligned with each other.
@@ -474,7 +475,6 @@ function SkinNotes:selection_byclick()
                     self.selectSkinHasBeenClicked    = false
                     
                     self:preview()
-                    self:search_preview()
 
                     SkinNoteSave:set('selectSkinInitSelectedIndex', self.stateClass, self.selectSkinInitSelectedIndex)
                     SkinNoteSave:set('selectSkinCurSelectedIndex',  self.stateClass, self.selectSkinCurSelectedIndex)
@@ -504,7 +504,6 @@ function SkinNotes:selection_byclick()
                     self.selectSkinHasBeenClicked   = false
 
                     self:preview()
-                    self:search_preview()
                     SkinNoteSave:set('selectSkinCurSelectedIndex', self.stateClass, self.selectSkinCurSelectedIndex)
                     SkinNoteSave:set('selectSkinPreSelectedIndex', self.stateClass, self.selectSkinPreSelectedIndex)
                     skinObjectsPerSelected[curPage] = false
@@ -518,7 +517,6 @@ function SkinNotes:selection_byclick()
                self.selectSkinHasBeenClicked   = false
 
                self:preview()
-               self:search_preview()
                SkinNoteSave:set('selectSkinCurSelectedIndex', self.stateClass, self.selectSkinCurSelectedIndex)
                SkinNoteSave:set('selectSkinPreSelectedIndex', self.stateClass, self.selectSkinPreSelectedIndex)
                skinObjectsPerSelected[curPage] = false
@@ -626,7 +624,7 @@ function SkinNotes:selection_bycursor()
           if skinObjectsPerClicked[skinIndex] == true then
                playAnim('mouseTexture', 'handClick', true)
           end
-          if skinObjectsPerHovered[skinIndex] == true then
+          if skinObjectsPerHovered[skinIndex] == true and skinObjectsPerClicked[skinIndex] == false then
                playAnim('mouseTexture', 'hand', true)
           end
           ::skipSelectedSkin::
@@ -1220,6 +1218,9 @@ function SkinNotes:checkbox_selection_bycursor()
      end
 end
 
+--- Removes all the sprites in the given state.
+--- Only used for switching states.
+---@return nil
 function SkinNotes:destroy()
      local curPage = self.selectSkinPagePositionIndex
      for displays = 1, #self.totalSkinObjects[curPage] do
@@ -1262,6 +1263,71 @@ function SkinNotes:search()
      self:search_skins()
      self:search_selection()
      self:search_checkbox_sync()
+end
+
+--- Calculates and loads the nearest total amount of searched skins.
+---@return nil
+function SkinNotes:search_skins()
+     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
+     if #skinSearchInput_textContent <= 0 then
+          return
+     end
+
+     local justReleased = callMethodFromClass('flixel.FlxG', 'keys.firstJustReleased', {''})
+     if not (justReleased ~= -1 and justReleased ~= nil and getVar('skinSearchInputFocus') == true) then
+          return
+     end
+
+     --- Searches the closest skin name it can possibly find
+     ---@param list table[string] The given list of skins for the algorithm to do its work.
+     ---@param input string The given input to search the closest skins.
+     ---@param element string What element it can return either its 'id' or 'skins'.
+     ---@param match string The prefix of the skin to match.
+     ---@param allowPath? boolean Wheather it will include a path or not.
+     ---@return table
+     local function filter_search(list, input, element, match, allowPath)
+          local search_result = {}
+          for i = 1, #list, 1 do
+               local startName   = list[i]:match(match..'(.+)')   == nil and 'funkin' or list[i]:match(match..'(.+)')
+               local startFolder = list[i]:match('(%w+/)'..match) == nil and ''       or list[i]:match('(%w+/)'..match)
+
+               local startPos = startName:upper():find(input:upper())
+               local wordPos  = startPos == nil and -1 or startPos
+               if wordPos >= 1 and #table.keys(search_result) <= 16 then
+                    local p = allowPath == true and startFolder..match:gsub('%%%-', '-')..startName or startName
+                    search_result[i] = p:match(match..'funkin') == nil and p or match:gsub('%%%-', '')
+               end
+          end
+
+          local search_resultFilter = {}
+          for ids, skins in pairs(search_result) do
+               if skins ~= nil and #table.keys(search_result) <= 16 then
+                    if element == 'skins' then
+                         search_resultFilter[#search_resultFilter + 1] = skins
+                    elseif element == 'ids' then
+                         search_resultFilter[#search_resultFilter + 1] = ids
+                    end
+               end
+          end 
+          return search_resultFilter
+     end
+
+     local skinSearchInput_textContent   = getVar('skinSearchInput_textContent')
+     local skinSearchInput_textContentID = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'ids', self.statePrefix..'%-', false)
+     local searchSkinIndex = 0
+     for searchPage = 1, #self.totalSkinObjectID do
+          local totalSkinObjectIDs     = self.totalSkinObjectID[searchPage]
+          local totalSkinObjectPresent = table.singularity(table.merge(totalSkinObjectIDs, skinSearchInput_textContentID), true)
+
+          if #totalSkinObjectPresent == 0 then 
+               return
+          end
+          for pageSkins = 1, #totalSkinObjectPresent do
+               searchSkinIndex = searchSkinIndex + 1
+               self.searchSkinObjectIndex[searchSkinIndex] = totalSkinObjectPresent[pageSkins]
+               self.searchSkinObjectPage[searchSkinIndex]  = searchPage
+          end
+     end
 end
 
 --- Creates a 16 chunk display of the selected search skins.
@@ -1312,15 +1378,15 @@ function SkinNotes:search_create()
 
                local startPos = startName:upper():find(input:upper())
                local wordPos  = startPos == nil and -1 or startPos
-               if wordPos > -1 and #search_result < 16 then
+               if wordPos > -1 and #table.keys(search_result) <= 16 then
                     local p = allowPath == true and startFolder..match:gsub('%%%-', '-')..startName or startName
-                    search_result[i] = p:match(match..'funkin') == nil and p or match:gsub('%%%-', '')
+                    search_result[tostring(i)] = p:match(match..'funkin') == nil and p or match:gsub('%%%-', '')
                end
           end
 
           local search_resultFilter = {}
           for ids, skins in pairs(search_result) do
-               if skins ~= nil and #search_resultFilter < 16 then
+               if skins ~= nil and #table.keys(search_result) <= 16 then
                     if element == 'skins' then
                          search_resultFilter[#search_resultFilter + 1] = skins
                     elseif element == 'ids' then
@@ -1436,73 +1502,6 @@ function SkinNotes:search_create()
      end
 end
 
---- Calculates and loads the nearest total amount of searched skins.
----@return nil
-function SkinNotes:search_skins()
-     local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
-     if #skinSearchInput_textContent <= 0 then
-          return
-     end
-
-     local justReleased = callMethodFromClass('flixel.FlxG', 'keys.firstJustReleased', {''})
-     if not (justReleased ~= -1 and justReleased ~= nil and getVar('skinSearchInputFocus') == true) then
-          return
-     end
-
-     --- Searches the closest skin name it can possibly find
-     ---@param list table[string] The given list of skins for the algorithm to do its work.
-     ---@param input string The given input to search the closest skins.
-     ---@param element string What element it can return either its 'id' or 'skins'.
-     ---@param match string The prefix of the skin to match.
-     ---@param allowPath? boolean Wheather it will include a path or not.
-     ---@return table
-     local function filter_search(list, input, element, match, allowPath)
-          local search_result = {}
-          for i = 1, #list, 1 do
-               local startName   = list[i]:match(match..'(.+)')   == nil and 'funkin' or list[i]:match(match..'(.+)')
-               local startFolder = list[i]:match('(%w+/)'..match) == nil and ''       or list[i]:match('(%w+/)'..match)
-
-               local startPos = startName:upper():find(input:upper())
-               local wordPos  = startPos == nil and -1 or startPos
-               if wordPos > -1 and #search_result < 16 then
-                    local p = allowPath == true and startFolder..match:gsub('%%%-', '-')..startName or startName
-                    search_result[i] = p:match(match..'funkin') == nil and p or match:gsub('%%%-', '')
-               end
-          end
-
-          local search_resultFilter = {}
-          for ids, skins in pairs(search_result) do
-               if skins ~= nil and #search_resultFilter < 16 then
-                    if element == 'skins' then
-                         search_resultFilter[#search_resultFilter + 1] = skins
-                    elseif element == 'ids' then
-                         search_resultFilter[#search_resultFilter + 1] = ids
-                    end
-               end
-          end 
-          return search_resultFilter
-     end
-
-     local skinSearchInput_textContent   = getVar('skinSearchInput_textContent')
-     local skinSearchInput_textContentID = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'ids', self.statePrefix..'%-', false)
-
-     local searchSkinIndex = 0
-     for searchPage = 1, #self.totalSkinObjectID do
-          local totalSkinObjectIDs     = self.totalSkinObjectID[searchPage]
-          local totalSkinObjectPresent = table.singularity(table.merge(totalSkinObjectIDs, skinSearchInput_textContentID), true)
-
-          for pageSkins = 1, #totalSkinObjectPresent do
-               if #totalSkinObjectPresent == 0 then 
-                    return 
-               end
-
-               searchSkinIndex = searchSkinIndex + 1
-               self.searchSkinObjectIndex[searchSkinIndex] = totalSkinObjectPresent[pageSkins]
-               self.searchSkinObjectPage[searchSkinIndex]  = searchPage
-          end
-     end
-end
-
 --- Creates and loads the selected search skin's preview strums.
 ---@return nil
 function SkinNotes:search_preview()
@@ -1526,122 +1525,121 @@ function SkinNotes:search_preview()
 
      local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = previewSearchSkinIndex()}
      local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
-     if releasedObject(displaySkinIconButton, 'camHUD') then
-          local function getCurrentPreviewSkin(previewSkinArray)
-               if curIndex == 0 then
-                    return previewSkinArray[1][1]
-               end
+     local function getCurrentPreviewSkin(previewSkinArray)
+          if curIndex == 0 then
+               return previewSkinArray[1][1]
+          end
 
-               for pages = 1, self.totalSkinLimit do
-                    local presentObjectIndex = table.find(self.totalSkinObjectIndexes[pages], curIndex)
-                    if presentObjectIndex ~= nil then
-                         return previewSkinArray[pages][presentObjectIndex]
-                    end
+          for pages = 1, self.totalSkinLimit do
+               local presentObjectIndex = table.find(self.totalSkinObjectIndexes[pages], curIndex)
+               if presentObjectIndex ~= nil then
+                    return previewSkinArray[pages][presentObjectIndex]
                end
           end
-     
-          local getCurrentPreviewSkinObjects       = getCurrentPreviewSkin(self.totalSkinObjects)
-          local getCurrentPreviewSkinObjectNames   = getCurrentPreviewSkin(self.totalSkinObjectNames)
-          local getCurrentPreviewSkinObjectPreview = getCurrentPreviewSkin(self.totalMetadataObjectPreview)
-          for strums = 1, 4 do
-               local previewSkinTemplate = {state = (self.stateClass):upperAtStart(), groupID = strums}
-               local previewSkinGroup    = ('previewSkinGroup${state}-${groupID}'):interpol(previewSkinTemplate)
-     
-               local previewMetadataObjectAnims = {
-                    names = {
-                         confirm = {'left_confirm', 'down_confirm', 'up_confirm', 'right_confirm'},
-                         pressed = {'left_pressed', 'down_pressed', 'up_pressed', 'right_pressed'},
-                         colored = {'left_colored', 'down_colored', 'up_colored', 'right_colored'},
-                         strums  = {'left', 'down', 'up', 'right'}
-                    },
-                    prefixes = {
-                         confirm = {'left confirm', 'down confirm', 'up confirm', 'right confirm'},
-                         pressed = {'left press', 'down press', 'up press', 'right press'},
-                         colored = {'purple0', 'blue0', 'green0', 'red0'},
-                         strums  = {'arrowLEFT', 'arrowDOWN', 'arrowUP', 'arrowRIGHT'}
-                    },
-                    frames = {
-                         confirm = 24,
-                         pressed = 24,
-                         colored = 24,
-                         strums  = 24
-                    }
-               }
-     
-               local function previewMetadataObjectData(skinAnim)
-                    local previewMetadataObject         = getCurrentPreviewSkinObjectPreview
-                    local previewMetadataObjectByAnim   = getCurrentPreviewSkinObjectPreview.animations
-                    local previewStaticDataObjectByAnim = self.previewStaticDataPreview.animations
-     
-                    local previewMetadataObjectNames = previewMetadataObjectAnims['names'][skinAnim]
-                    if previewMetadataObject == '@void' or previewMetadataObjectByAnim == nil then
-                         return previewStaticDataObjectByAnim[skinAnim][previewMetadataObjectNames[strums]]
-                    end
-                    if previewMetadataObjectByAnim[skinAnim] == nil then
-                         previewMetadataObject['animations'][skinAnim] = previewStaticDataObjectByAnim[skinAnim]
-                         return previewStaticDataObjectByAnim[skinAnim][previewMetadataObjectNames[strums]]
-                    end
-                    return previewMetadataObjectByAnim[skinAnim][previewMetadataObjectNames[strums]]
-               end
-               local function previewMetadataObjects(element)
-                    local previewMetadataObject       = getCurrentPreviewSkinObjectPreview
-                    local previewMetadataObjectByElem = getCurrentPreviewSkinObjectPreview[element]
-     
-                    if previewMetadataObject == '@void' or previewMetadataObjectByElem == nil then
-                         return self.previewStaticDataPreview[element]
-                    end
-                    return previewMetadataObjectByElem
-               end
-     
-               local previewMetadataByObjectConfirm = previewMetadataObjectData('confirm')
-               local previewMetadataByObjectPressed = previewMetadataObjectData('pressed')
-               local previewMetadataByObjectColored = previewMetadataObjectData('colored')
-               local previewMetadataByObjectStrums  = previewMetadataObjectData('strums')
-     
-               local previewMetadataByFramesConfirm = previewMetadataObjects('frames').confirm
-               local previewMetadataByFramesPressed = previewMetadataObjects('frames').pressed
-               local previewMetadataByFramesColored = previewMetadataObjects('frames').colored
-               local previewMetadataByFramesStrums  = previewMetadataObjects('frames').strums
-     
-               local previewMetadataBySize = previewMetadataObjects('size')
-     
-               local previewSkinImagePath = self.statePaths..'/'..getCurrentPreviewSkinObjects
-               local previewSkinPositionX = 790 + (105*(strums-1))
-               local previewSkinPositionY = 135
-               makeAnimatedLuaSprite(previewSkinGroup, previewSkinImagePath, previewSkinPositionX, previewSkinPositionY)
-               scaleObject(previewSkinGroup, previewMetadataBySize[1], previewMetadataBySize[2])
-     
-               local previewSkinAddAnimationPrefix = function(objectData, dataFrames)
-                    addAnimationByPrefix(previewSkinGroup, objectData.name, objectData.prefix, dataFrames, false)
-               end
-               local previewSkinGetOffsets = function(objectData, position)
-                    local previewSkinGroupOffsetX = getProperty(previewSkinGroup..'.offset.x')
-                    local previewSkinGroupOffsetY = getProperty(previewSkinGroup..'.offset.y')
-                    if position == 'x' then return previewSkinGroupOffsetX - objectData.offsets[1] end
-                    if position == 'y' then return previewSkinGroupOffsetY + objectData.offsets[2] end
-               end
-               local previewSkinAddOffsets = function(objectData)
-                    local previewSkinOffsetX = previewSkinGetOffsets(objectData, 'x')
-                    local previewSkinOffsetY = previewSkinGetOffsets(objectData, 'y')
-                    addOffset(previewSkinGroup, objectData.name, previewSkinOffsetX, previewSkinOffsetY)
-               end
-     
-               local previewSkinAnimation = function(objectData, dataFrames)
-                    previewSkinAddAnimationPrefix(objectData, dataFrames)
-                    previewSkinAddOffsets(objectData)
-               end
-               previewSkinAnimation(previewMetadataByObjectConfirm, previewMetadataByFramesConfirm)
-               previewSkinAnimation(previewMetadataByObjectPressed, previewMetadataByFramesPressed)
-               previewSkinAnimation(previewMetadataByObjectColored, previewMetadataByFramesColored)
-               previewSkinAnimation(previewMetadataByObjectStrums, previewMetadataByFramesStrums)
-     
-               playAnim(previewSkinGroup, previewMetadataObjectAnims['names']['strums'][strums])
-               setObjectCamera(previewSkinGroup, 'camHUD')
-               addLuaSprite(previewSkinGroup, true)
-          end
-     
-          setTextString('genInfoSkinName', getCurrentPreviewSkinObjectNames)
      end
+
+     local getCurrentPreviewSkinObjects       = getCurrentPreviewSkin(self.totalSkinObjects)
+     local getCurrentPreviewSkinObjectNames   = getCurrentPreviewSkin(self.totalSkinObjectNames)
+     local getCurrentPreviewSkinObjectPreview = getCurrentPreviewSkin(self.totalMetadataObjectPreview)
+     for strums = 1, 4 do
+          local previewSkinTemplate = {state = (self.stateClass):upperAtStart(), groupID = strums}
+          local previewSkinGroup    = ('previewSkinGroup${state}-${groupID}'):interpol(previewSkinTemplate)
+
+          local previewMetadataObjectAnims = {
+               names = {
+                    confirm = {'left_confirm', 'down_confirm', 'up_confirm', 'right_confirm'},
+                    pressed = {'left_pressed', 'down_pressed', 'up_pressed', 'right_pressed'},
+                    colored = {'left_colored', 'down_colored', 'up_colored', 'right_colored'},
+                    strums  = {'left', 'down', 'up', 'right'}
+               },
+               prefixes = {
+                    confirm = {'left confirm', 'down confirm', 'up confirm', 'right confirm'},
+                    pressed = {'left press', 'down press', 'up press', 'right press'},
+                    colored = {'purple0', 'blue0', 'green0', 'red0'},
+                    strums  = {'arrowLEFT', 'arrowDOWN', 'arrowUP', 'arrowRIGHT'}
+               },
+               frames = {
+                    confirm = 24,
+                    pressed = 24,
+                    colored = 24,
+                    strums  = 24
+               }
+          }
+
+          local function previewMetadataObjectData(skinAnim)
+               local previewMetadataObject         = getCurrentPreviewSkinObjectPreview
+               local previewMetadataObjectByAnim   = getCurrentPreviewSkinObjectPreview.animations
+               local previewStaticDataObjectByAnim = self.previewStaticDataPreview.animations
+
+               local previewMetadataObjectNames = previewMetadataObjectAnims['names'][skinAnim]
+               if previewMetadataObject == '@void' or previewMetadataObjectByAnim == nil then
+                    return previewStaticDataObjectByAnim[skinAnim][previewMetadataObjectNames[strums]]
+               end
+               if previewMetadataObjectByAnim[skinAnim] == nil then
+                    previewMetadataObject['animations'][skinAnim] = previewStaticDataObjectByAnim[skinAnim]
+                    return previewStaticDataObjectByAnim[skinAnim][previewMetadataObjectNames[strums]]
+               end
+               return previewMetadataObjectByAnim[skinAnim][previewMetadataObjectNames[strums]]
+          end
+          local function previewMetadataObjects(element)
+               local previewMetadataObject       = getCurrentPreviewSkinObjectPreview
+               local previewMetadataObjectByElem = getCurrentPreviewSkinObjectPreview[element]
+
+               if previewMetadataObject == '@void' or previewMetadataObjectByElem == nil then
+                    return self.previewStaticDataPreview[element]
+               end
+               return previewMetadataObjectByElem
+          end
+
+          local previewMetadataByObjectConfirm = previewMetadataObjectData('confirm')
+          local previewMetadataByObjectPressed = previewMetadataObjectData('pressed')
+          local previewMetadataByObjectColored = previewMetadataObjectData('colored')
+          local previewMetadataByObjectStrums  = previewMetadataObjectData('strums')
+
+          local previewMetadataByFramesConfirm = previewMetadataObjects('frames').confirm
+          local previewMetadataByFramesPressed = previewMetadataObjects('frames').pressed
+          local previewMetadataByFramesColored = previewMetadataObjects('frames').colored
+          local previewMetadataByFramesStrums  = previewMetadataObjects('frames').strums
+
+          local previewMetadataBySize = previewMetadataObjects('size')
+
+          local previewSkinImagePath = self.statePaths..'/'..getCurrentPreviewSkinObjects
+          local previewSkinPositionX = 790 + (105*(strums-1))
+          local previewSkinPositionY = 135
+
+          makeAnimatedLuaSprite(previewSkinGroup, previewSkinImagePath, previewSkinPositionX, previewSkinPositionY)
+          scaleObject(previewSkinGroup, previewMetadataBySize[1], previewMetadataBySize[2])
+
+          local previewSkinAddAnimationPrefix = function(objectData, dataFrames)
+               addAnimationByPrefix(previewSkinGroup, objectData.name, objectData.prefix, dataFrames, false)
+          end
+          local previewSkinGetOffsets = function(objectData, position)
+               local previewSkinGroupOffsetX = getProperty(previewSkinGroup..'.offset.x')
+               local previewSkinGroupOffsetY = getProperty(previewSkinGroup..'.offset.y')
+               if position == 'x' then return previewSkinGroupOffsetX - objectData.offsets[1] end
+               if position == 'y' then return previewSkinGroupOffsetY + objectData.offsets[2] end
+          end
+          local previewSkinAddOffsets = function(objectData)
+               local previewSkinOffsetX = previewSkinGetOffsets(objectData, 'x')
+               local previewSkinOffsetY = previewSkinGetOffsets(objectData, 'y')
+               addOffset(previewSkinGroup, objectData.name, previewSkinOffsetX, previewSkinOffsetY)
+          end
+
+          local previewSkinAnimation = function(objectData, dataFrames)
+               previewSkinAddAnimationPrefix(objectData, dataFrames)
+               previewSkinAddOffsets(objectData)
+          end
+          previewSkinAnimation(previewMetadataByObjectConfirm, previewMetadataByFramesConfirm)
+          previewSkinAnimation(previewMetadataByObjectPressed, previewMetadataByFramesPressed)
+          previewSkinAnimation(previewMetadataByObjectColored, previewMetadataByFramesColored)
+          previewSkinAnimation(previewMetadataByObjectStrums, previewMetadataByFramesStrums)
+
+          playAnim(previewSkinGroup, previewMetadataObjectAnims['names']['strums'][strums])
+          setObjectCamera(previewSkinGroup, 'camHUD')
+          addLuaSprite(previewSkinGroup, true) 
+     end
+
+     setTextString('genInfoSkinName', getCurrentPreviewSkinObjectNames)
      self:preview_animation(true)
 end
 
@@ -1787,12 +1785,31 @@ function SkinNotes:search_selection_byclick()
                     skinObjectsPerHovered[searchSkinPresentIndex]  = false
                end
           end
+          local function displaySkinAutoDeselect()
+               self.selectSkinCurSelectedIndex = 0
+               self.selectSkinPreSelectedIndex = 0
+               self.selectSkinHasBeenClicked   = false
 
-          if skinObjectsPerSelected[searchSkinPresentIndex] == false and searchSkinIndex ~= self.selectSkinCurSelectedIndex then
+               self:search_preview()
+               SkinNoteSave:set('selectSkinCurSelectedIndex', self.stateClass, self.selectSkinCurSelectedIndex)
+               SkinNoteSave:set('selectSkinPreSelectedIndex', self.stateClass, self.selectSkinPreSelectedIndex)
+               skinObjectsPerSelected[searchSkinPresentIndex] = false
+               skinObjectsPerClicked[searchSkinPresentIndex]  = false
+               skinObjectsPerHovered[searchSkinPresentIndex]  = false
+          end
+
+          local previewObjectCurAnim        = self.previewAnimationObjectPrevAnims[self.previewAnimationObjectIndex]
+          local previewObjectMissingAnim    = self.previewAnimationObjectMissing[searchSkinPage][searchSkinPresentIndex]
+          local previewObjectCurMissingAnim = previewObjectMissingAnim[previewObjectCurAnim]
+          if skinObjectsPerSelected[searchSkinPresentIndex] == false and searchSkinIndex ~= self.selectSkinCurSelectedIndex and previewObjectCurMissingAnim == false then
                displaySkinSelect()
           end
           if skinObjectsPerSelected[searchSkinPresentIndex] == true then
                --displaySkinDeselect()
+          end
+
+          if skinObjectsPerSelected[searchSkinPresentIndex] == true and previewObjectCurMissingAnim == true then
+               displaySkinAutoDeselect()
           end
 
           if searchSkinIndex == self.selectSkinInitSelectedIndex then
@@ -1845,6 +1862,13 @@ function SkinNotes:search_selection_byhover()
                if luaSpriteExists(displaySkinIconButton) == false then return end
                playAnim(displaySkinIconButton, 'static', true)
           end
+
+          local previewObjectCurAnim        = self.previewAnimationObjectPrevAnims[self.previewAnimationObjectIndex]
+          local previewObjectMissingAnim    = self.previewAnimationObjectMissing[searchSkinPage][searchSkinPresentIndex]
+          local previewObjectCurMissingAnim = previewObjectMissingAnim[previewObjectCurAnim]
+          if previewObjectCurMissingAnim == true then
+               playAnim(displaySkinIconButton, 'blocked', true)
+          end
      end
 end
 
@@ -1855,6 +1879,12 @@ function SkinNotes:search_selection_cursor()
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
      if #skinSearchInput_textContent == 0 then
           return
+     end
+
+     if mouseClicked('left') or mousePressed('left') then 
+          playAnim('mouseTexture', 'idleClick', true)
+     else
+          playAnim('mouseTexture', 'idle', true)
      end
 
      for searchIndex = 1, math.max(#self.searchSkinObjectIndex, #self.searchSkinObjectPage) do
@@ -1873,11 +1903,29 @@ function SkinNotes:search_selection_cursor()
 
           if skinObjectsPerClicked[searchSkinPresentIndex] == true and luaSpriteExists(displaySkinIconButton) == true then
                playAnim('mouseTexture', 'handClick', true)
-               return
           end
           if skinObjectsPerHovered[searchSkinPresentIndex] == true and luaSpriteExists(displaySkinIconButton) == true then
                playAnim('mouseTexture', 'hand', true)
-               return
+          end
+
+          local previewObjectCurAnim        = self.previewAnimationObjectPrevAnims[self.previewAnimationObjectIndex]
+          local previewObjectMissingAnim    = self.previewAnimationObjectMissing[searchSkinPage][searchSkinPresentIndex]
+          local previewObjectCurMissingAnim = previewObjectMissingAnim[previewObjectCurAnim]
+          if previewObjectCurMissingAnim == true then
+               local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = searchSkinIndex}
+               local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
+
+               if hoverObject(displaySkinIconButton, 'camHUD') == true then
+                    if mouseClicked('left') then 
+                         playSound('cancel') 
+                    end
+
+                    if mouseClicked('left') or mousePressed('left') then 
+                         playAnim('mouseTexture', 'disabledClick', true)
+                    else
+                         playAnim('mouseTexture', 'disabled', true)
+                    end
+               end
           end
           ::skipSelectedSearchSkin::
      end
@@ -1892,20 +1940,14 @@ function SkinNotes:search_selection_cursor()
           if mouseClicked('left') then 
                playSound('cancel') 
           end
-          return
-     end
-
-     if mouseClicked('left') or mousePressed('left') then 
-          playAnim('mouseTexture', 'idleClick', true)
-     else
-          playAnim('mouseTexture', 'idle', true)
      end
 end
 
+--- Sabes the data when exiting.
+---@return nil
 function SkinNotes:save()
      if keyboardJustConditionPressed('ONE',    not getVar('skinSearchInputFocus')) then SkinNoteSave:flush() end
      if keyboardJustConditionPressed('ESCAPE', not getVar('skinSearchInputFocus')) then SkinNoteSave:flush() end
-     addCallbackEvents('onDestroy', function() SkinNoteSave:flush() end)
 end
 
 --- Loads the save data from the current class state.
