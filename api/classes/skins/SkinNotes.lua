@@ -718,7 +718,7 @@ function SkinNotes:preview()
                }
           }
 
-          local function previewMetadataObjectData(skinAnim)
+          local function previewMetadataObjectData(skinAnim, withElement)
                local previewMetadataObject         = getCurrentPreviewSkinObjectPreview
                local previewMetadataObjectByAnim   = getCurrentPreviewSkinObjectPreview.animations
                local previewStaticDataObjectByAnim = self.previewStaticDataPreview.animations
@@ -731,12 +731,15 @@ function SkinNotes:preview()
                     previewMetadataObject['animations'][skinAnim] = previewStaticDataObjectByAnim[skinAnim]
                     return previewStaticDataObjectByAnim[skinAnim][previewMetadataObjectNames[strums]]
                end
+
+               if withElement == true then
+                    return previewMetadataObjectByAnim[skinAnim]
+               end
                return previewMetadataObjectByAnim[skinAnim][previewMetadataObjectNames[strums]]
           end
           local function previewMetadataObjects(element)
                local previewMetadataObject       = getCurrentPreviewSkinObjectPreview
                local previewMetadataObjectByElem = getCurrentPreviewSkinObjectPreview[element]
-
                if previewMetadataObject == '@void' or previewMetadataObjectByElem == nil then
                     return self.previewStaticDataPreview[element]
                end
@@ -752,7 +755,6 @@ function SkinNotes:preview()
           local previewMetadataByFramesPressed = previewMetadataObjects('frames').pressed
           local previewMetadataByFramesColored = previewMetadataObjects('frames').colored
           local previewMetadataByFramesStrums  = previewMetadataObjects('frames').strums
-
           local previewMetadataBySize = previewMetadataObjects('size')
 
           local previewSkinImagePath = self.statePaths..'/'..getCurrentPreviewSkinObjects
@@ -788,6 +790,11 @@ function SkinNotes:preview()
           playAnim(previewSkinGroup, previewMetadataObjectAnims['names']['strums'][strums])
           setObjectCamera(previewSkinGroup, 'camHUD')
           addLuaSprite(previewSkinGroup, true) 
+
+          SkinNoteSave:set('previewMetadataByObjectStrums', self.stateClass..'Static', previewMetadataObjectData('strums', true))
+          SkinNoteSave:set('previewMetadataByFramesStrums', self.stateClass..'Static', previewMetadataByFramesStrums)
+          SkinNoteSave:set('previewMetadataBySize', self.stateClass..'Static', previewMetadataBySize)
+          SkinNoteSave:set('previewSkinImagePath', self.stateClass..'Static', previewSkinImagePath)
      end
 
      setTextString('genInfoSkinName', getCurrentPreviewSkinObjectNames)
@@ -1600,7 +1607,6 @@ function SkinNotes:search_preview()
           local previewMetadataByFramesPressed = previewMetadataObjects('frames').pressed
           local previewMetadataByFramesColored = previewMetadataObjects('frames').colored
           local previewMetadataByFramesStrums  = previewMetadataObjects('frames').strums
-
           local previewMetadataBySize = previewMetadataObjects('size')
 
           local previewSkinImagePath = self.statePaths..'/'..getCurrentPreviewSkinObjects

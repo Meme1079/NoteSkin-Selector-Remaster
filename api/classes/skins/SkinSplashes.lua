@@ -98,6 +98,7 @@ function SkinSplashes:load()
 
      self.previewStaticDataDisplay = json.parse(getTextFromFile('json/splashes/default static data/dsd_display.json'))
      self.previewStaticDataPreview = json.parse(getTextFromFile('json/splashes/default static data/dsd_preview.json'))
+     self.previewNoteStaticDataPreview = json.parse(getTextFromFile('json/notes/default static data/dsd_preview.json'))
 
      self.previewAnimationObjectHovered = {false, false}
      self.previewAnimationObjectClicked = {false, false}
@@ -119,6 +120,23 @@ function SkinSplashes:load()
      self.checkboxSkinObjectIndex  = {player = checkboxIndexPlayer,  opponent = checkboxIndexOpponent}
      self.checkboxSkinObjectToggle = {player = false,                opponent = false}
      self.checkboxSkinObjectType   = table.keys(self.checkboxSkinObjectIndex)
+
+     -- Note Preview Properties --
+
+     local notePreviewStrumAnimation = {
+          left  = {prefix = "arrowLEFT",  name = "left",  offsets = {0,0}},
+          down  = {prefix = "arrowDOWN",  name = "down",  offsets = {0,0}},
+          up    = {prefix = "arrowUP",    name = "up",    offsets = {0,0}},
+          right = {prefix = "arrowRIGHT", name = "right", offsets = {0,0}}
+     }
+     local previewMetadataByObjectStrums = SkinSplashSave:get('previewMetadataByObjectStrums', 'notesStatic', notePreviewStrumAnimation)
+     local previewMetadataByFramesStrums = SkinSplashSave:set('previewMetadataByFramesStrums', 'notesStatic', {24, 24, 24, 24})
+     local previewMetadataBySize         = SkinSplashSave:get('previewMetadataBySize',         'notesStatic', {0.65, 0.65, 0.65, 0.65})
+     local previewSkinImagePath          = SkinSplashSave:get('previewSkinImagePath',          'notesStatic', 'noteSkins/NOTE_assets')
+     self.noteStaticPreviewMetadataByObjectStrums = previewMetadataByObjectStrums
+     self.noteStaticPreviewMetadataByFramesStrums = previewMetadataByFramesStrums
+     self.noteStaticPreviewMetadataBySize         = previewMetadataBySize
+     self.noteStaticPreviewSkinImagePath          = previewSkinImagePath
 end
 
 --- Creates a 16 chunk display of the selected skins.
@@ -321,6 +339,68 @@ function SkinSplashes:preview()
 
      setTextString('genInfoSkinName', getCurrentPreviewSkinObjectNames)
      self:preview_animation(true)
+end
+
+---@return nil
+function SkinSplashes:preview_notes()
+     for strums = 1, 4 do
+          local previewSkinTemplate = {state = ('Notes'):upperAtStart(), groupID = strums}
+          local previewSkinGroup    = ('previewSkinGroup${state}-${groupID}'):interpol(previewSkinTemplate)
+
+          local previewMetadataObjectAnims = {
+               names = {
+                    confirm = {'left_confirm', 'down_confirm', 'up_confirm', 'right_confirm'},
+                    pressed = {'left_pressed', 'down_pressed', 'up_pressed', 'right_pressed'},
+                    colored = {'left_colored', 'down_colored', 'up_colored', 'right_colored'},
+                    strums  = {'left', 'down', 'up', 'right'}
+               },
+               prefixes = {
+                    confirm = {'left confirm', 'down confirm', 'up confirm', 'right confirm'},
+                    pressed = {'left press', 'down press', 'up press', 'right press'},
+                    colored = {'purple0', 'blue0', 'green0', 'red0'},
+                    strums  = {'arrowLEFT', 'arrowDOWN', 'arrowUP', 'arrowRIGHT'}
+               },
+               frames = {
+                    confirm = 24,
+                    pressed = 24,
+                    colored = 24,
+                    strums  = 24
+               }
+          }
+
+          local previewMetadataBySize = self.noteStaticPreviewMetadataBySize
+
+          local previewSkinImagePath = self.noteStaticPreviewSkinImagePath
+          local previewSkinPositionX = 790 + (105*(strums-1))
+          local previewSkinPositionY = 135
+          makeAnimatedLuaSprite(previewSkinGroup, previewSkinImagePath, previewSkinPositionX, previewSkinPositionY)
+          scaleObject(previewSkinGroup, previewMetadataBySize[1], previewMetadataBySize[2])
+
+          local previewSkinAddAnimationPrefix = function(objectData, dataFrames)
+               addAnimationByPrefix(previewSkinGroup, objectData.name, objectData.prefix, dataFrames, false)
+          end
+          local previewSkinGetOffsets = function(objectData, position)
+               local previewSkinGroupOffsetX = getProperty(previewSkinGroup..'.offset.x')
+               local previewSkinGroupOffsetY = getProperty(previewSkinGroup..'.offset.y')
+               if position == 'x' then return previewSkinGroupOffsetX - objectData.offsets[1] end
+               if position == 'y' then return previewSkinGroupOffsetY + objectData.offsets[2] end
+          end
+          local previewSkinAddOffsets = function(objectData)
+               local previewSkinOffsetX = previewSkinGetOffsets(objectData, 'x')
+               local previewSkinOffsetY = previewSkinGetOffsets(objectData, 'y')
+               addOffset(previewSkinGroup, objectData.name, previewSkinOffsetX, previewSkinOffsetY)
+          end
+
+          local previewMetadataIndex = previewMetadataObjectAnims['names']['strums'][strums]
+          local previewMetadataByObjectStrums = self.noteStaticPreviewMetadataByObjectStrums
+          local previewMetadataByFramesStrums = self.noteStaticPreviewMetadataByFramesStrums
+          previewSkinAddAnimationPrefix(previewMetadataByObjectStrums[previewMetadataIndex], previewMetadataByFramesStrums)
+          previewSkinAddOffsets(previewMetadataByObjectStrums[previewMetadataIndex])
+
+          playAnim(previewSkinGroup, previewMetadataObjectAnims['names']['strums'][strums])
+          setObjectCamera(previewSkinGroup, 'camHUD')
+          addLuaSprite(previewSkinGroup, false)
+     end
 end
 
 --- Creates and loads the selected skin's preview animations.

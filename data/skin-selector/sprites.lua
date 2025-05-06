@@ -272,8 +272,8 @@ addOffset('mouseTexture', 'idle', 27.9, 27.6)
 addOffset('mouseTexture', 'idleClick', 27.9, 27.6)
 addOffset('mouseTexture', 'hand', 40, 27.6)
 addOffset('mouseTexture', 'handClick', 40, 27.6)
-addOffset('mouseTexture', 'disabled', 37.9, 27.6)
-addOffset('mouseTexture', 'disabledClick', 37.9, 27.6)
+addOffset('mouseTexture', 'disabled', 43, 27.6)
+addOffset('mouseTexture', 'disabledClick', 43, 27.6)
 playAnim('mouseTexture', 'idle')
 setObjectCamera('mouseTexture', 'camOther')
 addLuaSprite('mouseTexture', true)
@@ -347,12 +347,11 @@ end
 local Notes    = SkinNotes:new('notes', 'noteSkins', 'NOTE_assets', true)
 local Splashes = SkinSplashes:new('splashes', 'noteSplashes', 'noteSplashes', false)
 
-local p = 'notes'
+local p = 'splashes'
 switch (p) {
      notes = function()
           Notes:load()
           Notes:save_load()
-          Notes:save()
           Notes:precache()
           Notes:preload()
           Notes:preview()
@@ -361,10 +360,10 @@ switch (p) {
      splashes = function()
           Splashes:load()
           Splashes:save_load()
-          Splashes:save()
           Splashes:precache()
           Splashes:preload()
           Splashes:preview()
+          Splashes:preview_notes()
           Splashes:page_slider_marks()
      end
 }
@@ -374,26 +373,25 @@ function onUpdatePost()
           p = 'notes'
           switch (p) {
                notes = function()
+                    Splashes:destroy()
+
                     Notes:load()
                     Notes:save_load()
-                    Notes:save()
                     Notes:precache()
                     Notes:preload()
                     Notes:preview()
                     Notes:page_slider_marks()
-          
-                    Splashes:destroy()
                end,
                splashes = function()
+                    Notes:destroy()
+
                     Splashes:load()
                     Splashes:save_load()
-                    Splashes:save()
                     Splashes:precache()
                     Splashes:preload()
                     Splashes:preview()
+                    Splashes:preview_notes()
                     Splashes:page_slider_marks()
-          
-                    Notes:destroy()
                end
           }
      end
@@ -401,26 +399,25 @@ function onUpdatePost()
           p = 'splashes'
           switch (p) {
                notes = function()
+                    Splashes:destroy()
+
                     Notes:load()
                     Notes:save_load()
-                    Notes:save()
                     Notes:precache()
                     Notes:preload()
                     Notes:preview()
                     Notes:page_slider_marks()
-          
-                    Splashes:destroy()
                end,
                splashes = function()
+                    Notes:destroy()
+
                     Splashes:load()
                     Splashes:save_load()
-                    Splashes:save()
                     Splashes:precache()
                     Splashes:preload()
                     Splashes:preview()
+                    Splashes:preview_notes()
                     Splashes:page_slider_marks()
-          
-                    Notes:destroy()
                end
           }
      end

@@ -4,22 +4,22 @@
                "left_splash1": {
                     "prefix": "splash sparkles purple 1",
                     "name": "left_splash1",
-                    "offsets": [0,0]
+                    "offsets": [-30,32]
                },
                "down_splash1": {
                     "prefix": "splash sparkles blue 1",
                     "name": "down_splash1",
-                    "offsets": [0,0]
+                    "offsets": [-30,32]
                },
                "up_splash1": {
                     "prefix": "splash sparkles green 1",
                     "name": "up_splash1",
-                    "offsets": [0,0]
+                    "offsets": [-30,32]
                },
                "right_splash1": {
                     "prefix": "splash sparkles red 1",
                     "name": "right_splash1",
-                    "offsets": [0,0]
+                    "offsets": [-30,32]
                }
           }
      },
