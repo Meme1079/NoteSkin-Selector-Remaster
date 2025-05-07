@@ -574,7 +574,7 @@ function SkinNotes:selection_byhover()
           if hoverObject(displaySkinIconButton, 'camHUD') == false then
                skinObjectsPerHovered[curPage] = false
           end
-
+          
           local nonCurrentPreSelectedSkin = self.selectSkinPreSelectedIndex ~= pageSkins
           local nonCurrentCurSelectedSkin = self.selectSkinCurSelectedIndex ~= pageSkins
           if skinObjectsPerHovered[curPage] == true and nonCurrentPreSelectedSkin and nonCurrentCurSelectedSkin then
@@ -721,19 +721,22 @@ function SkinNotes:preview()
           local function previewMetadataObjectData(skinAnim, withElement)
                local previewMetadataObject         = getCurrentPreviewSkinObjectPreview
                local previewMetadataObjectByAnim   = getCurrentPreviewSkinObjectPreview.animations
+               local previewMetadataObjectNames    = previewMetadataObjectAnims['names'][skinAnim]
                local previewStaticDataObjectByAnim = self.previewStaticDataPreview.animations
+               if withElement == true then
+                    return previewStaticDataObjectByAnim[skinAnim]
+               end
 
-               local previewMetadataObjectNames = previewMetadataObjectAnims['names'][skinAnim]
                if previewMetadataObject == '@void' or previewMetadataObjectByAnim == nil then
                     return previewStaticDataObjectByAnim[skinAnim][previewMetadataObjectNames[strums]]
+               end
+               if previewMetadataObjectByAnim == nil then
+                    previewMetadataObject['animations'] = previewStaticDataObjectByAnim
+                    return previewStaticDataObjectByAnim
                end
                if previewMetadataObjectByAnim[skinAnim] == nil then
                     previewMetadataObject['animations'][skinAnim] = previewStaticDataObjectByAnim[skinAnim]
                     return previewStaticDataObjectByAnim[skinAnim][previewMetadataObjectNames[strums]]
-               end
-
-               if withElement == true then
-                    return previewMetadataObjectByAnim[skinAnim]
                end
                return previewMetadataObjectByAnim[skinAnim][previewMetadataObjectNames[strums]]
           end
@@ -789,7 +792,7 @@ function SkinNotes:preview()
 
           playAnim(previewSkinGroup, previewMetadataObjectAnims['names']['strums'][strums])
           setObjectCamera(previewSkinGroup, 'camHUD')
-          addLuaSprite(previewSkinGroup, true) 
+          addLuaSprite(previewSkinGroup, true)
 
           SkinNoteSave:set('previewMetadataByObjectStrums', self.stateClass..'Static', previewMetadataObjectData('strums', true))
           SkinNoteSave:set('previewMetadataByFramesStrums', self.stateClass..'Static', previewMetadataByFramesStrums)
@@ -1081,6 +1084,9 @@ function SkinNotes:checkbox()
           local checkboxSkinIndex      = self.checkboxSkinObjectIndex[checkboxObjectTypes:lower()]
           local checkboxSkinCurrent    = checkboxSkinIndex == self.selectSkinCurSelectedIndex
           local checkboxSkinNonCurrent = checkboxSkinIndex ~= self.selectSkinCurSelectedIndex
+          if self.selectSkinCurSelectedIndex == 0 and checkboxSkinCurrent == true then
+               return
+          end
 
           local selectionSkinButton = 'selectionSkinButton'..checkboxObjectTypeTag
           local selectionSkinButtonAnimFinish = getProperty(selectionSkinButton..'.animation.finished')
@@ -1141,6 +1147,13 @@ end
 ---@return nil
 function SkinNotes:checkbox_selection_byclick()
      local function checkboxSelectionButtonClick(index, skin)
+          local checkboxObjectTypes = self.checkboxSkinObjectType[index]:lower()
+          local checkboxSkinIndex   = self.checkboxSkinObjectIndex[checkboxObjectTypes]
+          local checkboxSkinCurrent = checkboxSkinIndex == self.selectSkinCurSelectedIndex
+          if self.selectSkinCurSelectedIndex == 0 and checkboxSkinCurrent == true then
+               return
+          end
+
           local selectionSkinButton = 'selectionSkinButton'..skin:upperAtStart()
           local selectionSkinButtonClick    = clickObject(selectionSkinButton, 'camHUD')
           local selectionSkinButtonReleased = mouseReleased('left')
@@ -1322,13 +1335,10 @@ function SkinNotes:search_skins()
      local skinSearchInput_textContent   = getVar('skinSearchInput_textContent')
      local skinSearchInput_textContentID = filter_search(self.totalSkins, skinSearchInput_textContent or '', 'ids', self.statePrefix..'%-', false)
      local searchSkinIndex = 0
+
      for searchPage = 1, #self.totalSkinObjectID do
           local totalSkinObjectIDs     = self.totalSkinObjectID[searchPage]
           local totalSkinObjectPresent = table.singularity(table.merge(totalSkinObjectIDs, skinSearchInput_textContentID), true)
-
-          if #totalSkinObjectPresent == 0 then 
-               return
-          end
           for pageSkins = 1, #totalSkinObjectPresent do
                searchSkinIndex = searchSkinIndex + 1
                self.searchSkinObjectIndex[searchSkinIndex] = totalSkinObjectPresent[pageSkins]
@@ -1573,14 +1583,21 @@ function SkinNotes:search_preview()
                }
           }
 
-          local function previewMetadataObjectData(skinAnim)
+          local function previewMetadataObjectData(skinAnim, withElement)
                local previewMetadataObject         = getCurrentPreviewSkinObjectPreview
                local previewMetadataObjectByAnim   = getCurrentPreviewSkinObjectPreview.animations
+               local previewMetadataObjectNames    = previewMetadataObjectAnims['names'][skinAnim]
                local previewStaticDataObjectByAnim = self.previewStaticDataPreview.animations
+               if withElement == true then
+                    return previewStaticDataObjectByAnim[skinAnim]
+               end
 
-               local previewMetadataObjectNames = previewMetadataObjectAnims['names'][skinAnim]
                if previewMetadataObject == '@void' or previewMetadataObjectByAnim == nil then
                     return previewStaticDataObjectByAnim[skinAnim][previewMetadataObjectNames[strums]]
+               end
+               if previewMetadataObjectByAnim == nil then
+                    previewMetadataObject['animations'] = previewStaticDataObjectByAnim
+                    return previewStaticDataObjectByAnim
                end
                if previewMetadataObjectByAnim[skinAnim] == nil then
                     previewMetadataObject['animations'][skinAnim] = previewStaticDataObjectByAnim[skinAnim]
@@ -1642,7 +1659,12 @@ function SkinNotes:search_preview()
 
           playAnim(previewSkinGroup, previewMetadataObjectAnims['names']['strums'][strums])
           setObjectCamera(previewSkinGroup, 'camHUD')
-          addLuaSprite(previewSkinGroup, true) 
+          addLuaSprite(previewSkinGroup, true)
+
+          SkinNoteSave:set('previewMetadataByObjectStrums', self.stateClass..'Static', previewMetadataObjectData('strums', true))
+          SkinNoteSave:set('previewMetadataByFramesStrums', self.stateClass..'Static', previewMetadataByFramesStrums)
+          SkinNoteSave:set('previewMetadataBySize', self.stateClass..'Static', previewMetadataBySize)
+          SkinNoteSave:set('previewSkinImagePath', self.stateClass..'Static', previewSkinImagePath)
      end
 
      setTextString('genInfoSkinName', getCurrentPreviewSkinObjectNames)
@@ -1981,6 +2003,9 @@ function SkinNotes:save_selection()
      local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
      if luaSpriteExists(displaySkinIconButton) == true then
           playAnim(displaySkinIconButton, 'selected', true)
+
+          local curIndex = self.selectSkinCurSelectedIndex - (16 * (self.selectSkinPagePositionIndex - 1))
+          self.totalSkinObjectSelected[self.selectSkinPagePositionIndex][curIndex] = true
      end
 end
 

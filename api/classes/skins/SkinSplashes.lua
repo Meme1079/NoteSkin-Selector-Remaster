@@ -129,6 +129,7 @@ function SkinSplashes:load()
           up    = {prefix = "arrowUP",    name = "up",    offsets = {0,0}},
           right = {prefix = "arrowRIGHT", name = "right", offsets = {0,0}}
      }
+
      local previewMetadataByObjectStrums = SkinSplashSave:get('previewMetadataByObjectStrums', 'notesStatic', notePreviewStrumAnimation)
      local previewMetadataByFramesStrums = SkinSplashSave:set('previewMetadataByFramesStrums', 'notesStatic', {24, 24, 24, 24})
      local previewMetadataBySize         = SkinSplashSave:get('previewMetadataBySize',         'notesStatic', {0.65, 0.65, 0.65, 0.65})

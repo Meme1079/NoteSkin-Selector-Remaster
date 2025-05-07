@@ -347,7 +347,7 @@ end
 local Notes    = SkinNotes:new('notes', 'noteSkins', 'NOTE_assets', true)
 local Splashes = SkinSplashes:new('splashes', 'noteSplashes', 'noteSplashes', false)
 
-local p = 'splashes'
+local p = 'notes'
 switch (p) {
      notes = function()
           Notes:load()
