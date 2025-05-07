@@ -1147,13 +1147,10 @@ end
 ---@return nil
 function SkinNotes:checkbox_selection_byclick()
      local function checkboxSelectionButtonClick(index, skin)
-          local checkboxObjectTypes = self.checkboxSkinObjectType[index]:lower()
-          local checkboxSkinIndex   = self.checkboxSkinObjectIndex[checkboxObjectTypes]
-          local checkboxSkinCurrent = checkboxSkinIndex == self.selectSkinCurSelectedIndex
-          if self.selectSkinCurSelectedIndex == 0 and checkboxSkinCurrent == true then
+          if self.selectSkinCurSelectedIndex == 0 then
                return
           end
-
+          
           local selectionSkinButton = 'selectionSkinButton'..skin:upperAtStart()
           local selectionSkinButtonClick    = clickObject(selectionSkinButton, 'camHUD')
           local selectionSkinButtonReleased = mouseReleased('left')
@@ -1226,15 +1223,31 @@ end
 --- Changes the cursor's texture depending on its interaction (i.e. selecting and hovering).
 ---@return nil
 function SkinNotes:checkbox_selection_bycursor()
-     for checkboxObjects = 1, 2 do
-          if self.checkboxSkinObjectClicked[checkboxObjects] == true then
+     for checkboxIndex = 1, 2 do
+          local selectionSkinButtonTemplate = {type = tostring(self.checkboxSkinObjectType[checkboxIndex]):upperAtStart()}
+          local selectionSkinButton = ('selectionSkinButton${type}'):interpol(selectionSkinButtonTemplate)
+          if hoverObject(selectionSkinButton, 'camHUD') == true and self.selectSkinCurSelectedIndex == 0 then
+               if mouseClicked('left') or mousePressed('left') then 
+                    playAnim('mouseTexture', 'disabledClick', true)
+               else
+                    playAnim('mouseTexture', 'disabled', true)
+               end
+     
+               if mouseClicked('left') then 
+                    playSound('cancel') 
+               end
+               goto skipCheckboxBlocked
+          end
+
+          if self.checkboxSkinObjectClicked[checkboxIndex] == true then
                playAnim('mouseTexture', 'handClick', true)
                return
           end
-          if self.checkboxSkinObjectHovered[checkboxObjects] == true then
+          if self.checkboxSkinObjectHovered[checkboxIndex] == true then
                playAnim('mouseTexture', 'hand', true)
                return
           end
+          ::skipCheckboxBlocked::
      end
 end
 
