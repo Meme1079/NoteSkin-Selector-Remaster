@@ -2025,6 +2025,7 @@ function SkinNotes:save_load()
           setProperty('displaySliderIcon.y', 0)
      end
      playAnim('displaySliderIcon', 'static')
+     setTextString('genInfoStateName', ' '..self.stateClass:upperAtStart())
 end
 
 --- Loads and syncs the saved selected skin.
