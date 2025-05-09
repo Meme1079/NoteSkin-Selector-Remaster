@@ -4,20 +4,23 @@
 - Overhual the main source-code of the mod for organization and an ability to soft-code new skin states.
      - Classes to create custom states for different skins by using inheritance and polymorphism stuff.
      - Loads separated chunks of object sprites of the skins when switching pages.
-- Additions/Changes on the NoteSkin Selector State.
-     - Added a functional slider for switching skin pages.
-          - It automatically snaps to its nearest page index.
-          - It also automatically disables itself if there's only currently `1` page index.
-     - Added an implementation for custom skin packs
-          - Subfolders for the textures of skins within the skin packs (images folder)
-          - Subfolders for certain metadata JSON files within the skin packs (json folder)
-     - Added a functional search bar for finding certain skins.
-          - Automatically filters to the closest skin it can find.
-     - Added an `inOutExpo` easing tween to the color changing background.
-     - Increase the skin grid selections from `3x4` to `4x4`, cuz it's better.
-- Additions/Changes on the preview animation selection.
-     - Added a new GUI for the preview animation selection.
-          - Allowing for selecting other preview animations by clicking a button
+- Additions/Changes on the Skin State.
+     - Added a slider for switching skin pages manually.
+          - Automatically snaps to the nearest page.
+          - Automatically disable it itself if there's only contain 1 page within that state.
+     - Added a search bar for searching certain skins more easily.
+     - Added a "smoother" color tweening to the background.
+- Additions/Changes on the Display Grid Selection.
+     - Added a new graphic icon to each display grid to easily see the skin's more easily.
+          - Features a hovering, pressed, selection, and blocked sprites.
+     - Increase the grid selection from a `3x4` to a `4x4`, to easily select more skins.
+- Additions/Changes on the Preview Strum Selection.
+     - Added a new GIU for selecting preview strum animations.
+          - Display it's current preview strum animation name.
+          - 2 selection buttons to change the preview strum animations.
+- Added an implementation for custom skin packs.
+     - Subfolders for the skin's texture within the skin packs (`images` folder).
+     - Subfolders for the skin's metdata JSON within the skin packs (`json` folder).
 - Organized file locations.
      - Added an `api` folder to group: `classes`, `libraries`, and `modules` for convenient sake.
      
