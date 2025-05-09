@@ -724,7 +724,18 @@ function SkinNotes:preview()
                local previewMetadataObjectNames    = previewMetadataObjectAnims['names'][skinAnim]
                local previewStaticDataObjectByAnim = self.previewStaticDataPreview.animations
                if withElement == true then
-                    return previewStaticDataObjectByAnim[skinAnim]
+                    if previewMetadataObject == '@void' or previewMetadataObjectByAnim == nil then
+                         return previewStaticDataObjectByAnim[skinAnim]
+                    end
+                    if previewMetadataObjectByAnim == nil then
+                         previewMetadataObject['animations'] = previewStaticDataObjectByAnim
+                         return previewStaticDataObjectByAnim
+                    end
+                    if previewMetadataObjectByAnim[skinAnim] == nil then
+                         previewMetadataObject['animations'][skinAnim] = previewStaticDataObjectByAnim[skinAnim]
+                         return previewStaticDataObjectByAnim[skinAnim]
+                    end
+                    return previewMetadataObjectByAnim[skinAnim]
                end
 
                if previewMetadataObject == '@void' or previewMetadataObjectByAnim == nil then
@@ -1602,7 +1613,18 @@ function SkinNotes:search_preview()
                local previewMetadataObjectNames    = previewMetadataObjectAnims['names'][skinAnim]
                local previewStaticDataObjectByAnim = self.previewStaticDataPreview.animations
                if withElement == true then
-                    return previewStaticDataObjectByAnim[skinAnim]
+                    if previewMetadataObject == '@void' or previewMetadataObjectByAnim == nil then
+                         return previewStaticDataObjectByAnim[skinAnim]
+                    end
+                    if previewMetadataObjectByAnim == nil then
+                         previewMetadataObject['animations'] = previewStaticDataObjectByAnim
+                         return previewStaticDataObjectByAnim
+                    end
+                    if previewMetadataObjectByAnim[skinAnim] == nil then
+                         previewMetadataObject['animations'][skinAnim] = previewStaticDataObjectByAnim[skinAnim]
+                         return previewStaticDataObjectByAnim[skinAnim]
+                    end
+                    return previewMetadataObjectByAnim[skinAnim]
                end
 
                if previewMetadataObject == '@void' or previewMetadataObjectByAnim == nil then
