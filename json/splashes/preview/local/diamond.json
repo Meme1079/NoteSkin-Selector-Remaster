@@ -26,22 +26,22 @@
                "left_splash2": {
                     "prefix": "note splash diamond purple 2",
                     "name": "left_splash2",
-                    "offsets": [0,0]
+                    "offsets": [-50,30]
                },
                "down_splash2": {
                     "prefix": "note splash diamond blue 2",
                     "name": "down_splash2",
-                    "offsets": [0,0]
+                    "offsets": [-50,30]
                },
                "up_splash2": {
                     "prefix": "note splash diamond green 2",
                     "name": "up_splash2",
-                    "offsets": [0,0]
+                    "offsets": [-50,30]
                },
                "right_splash2": {
                     "prefix": "note splash diamond red 2",
                     "name": "right_splash2",
-                    "offsets": [0,0]
+                    "offsets": [-50,30]
                }
           }
      },
