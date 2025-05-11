@@ -1,19 +1,24 @@
 luaDebugMode = true
 
-local SkinSaves = require 'mods.NoteSkin Selector Remastered.api.classes.skins.static.SkinSaves'
-local funkinlua = require 'mods.NoteSkin Selector Remastered.api.modules.funkinlua'
+local SkinSaves    = require 'mods.NoteSkin Selector Remastered.api.classes.skins.static.SkinSaves'
 
+local string    = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.string'
+local table     = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.table'
+local json      = require 'mods.NoteSkin Selector Remastered.api.libraries.json.main'
+local ease      = require 'mods.NoteSkin Selector Remastered.api.libraries.ease.ease'
+local funkinlua = require 'mods.NoteSkin Selector Remastered.api.modules.funkinlua'
+local states    = require 'mods.NoteSkin Selector Remastered.api.modules.states'
+local global    = require 'mods.NoteSkin Selector Remastered.api.modules.global'
+
+local switch = global.switch
+local addCallbackEvents = funkinlua.addCallbackEvents
 local keyboardJustConditionPressed  = funkinlua.keyboardJustConditionPressed
 local keyboardJustConditionPress    = funkinlua.keyboardJustConditionPress
 local keyboardJustConditionReleased = funkinlua.keyboardJustConditionReleased
 
-local SkinNoteSave = SkinSaves:new('noteskin_selector', 'NoteSkin Selector')
+local SkinStateSave = SkinSaves:new('noteskin_selector', 'NoteSkin Selector')
 function onCreatePost()
      playMusic(getModSetting('song_select', modFolder):lower(), 0.5, true)
-end
-
-function onUpdate(elapsed)
-     
 end
 
 function onUpdatePost(elapsed)
@@ -29,9 +34,9 @@ function onUpdatePost(elapsed)
      setProperty('mouseTexture.y', getMouseY('camHUD'))
      
      if keyboardJustPressed('TAB') and songName == 'Skin Selector' then
-          local dataSongName = SkinNoteSave:get('dataSongName', '')
-          local dataDiffID   = SkinNoteSave:get('dataDiffID',   '')
-          local dataDiffList = SkinNoteSave:get('dataDiffList', '')
+          local dataSongName = SkinStateSave:get('dataSongName', '')
+          local dataDiffID   = SkinStateSave:get('dataDiffID',   '')
+          local dataDiffList = SkinStateSave:get('dataDiffList', '')
           loadNewSong(dataSongName, tonumber(dataDiffID), dataDiffList)
      end
 end

@@ -1,5 +1,6 @@
 luaDebugMode = true
 
+local SkinStates   = require 'mods.NoteSkin Selector Remastered.api.classes.skins.static.SkinStates'
 local SkinSplashes = require 'mods.NoteSkin Selector Remastered.api.classes.skins.SkinSplashes'
 local SkinNotes    = require 'mods.NoteSkin Selector Remastered.api.classes.skins.SkinNotes'
 
@@ -214,7 +215,6 @@ makeLuaText('genInfoStatePage', ' Page 001 / 100', 0, 7^2.767, 17)
 setTextFont('genInfoStatePage', 'sonic.ttf')
 setTextSize('genInfoStatePage', 30)
 setTextBorder('genInfoStatePage', 3, '000000')
-setProperty('genInfoStatePage.camera', instanceArg('camHUD'), false, true)
 setObjectCamera('genInfoStatePage', 'camHUD')
 setProperty('genInfoStatePage.antialiasing', false)
 addLuaText('genInfoStatePage')
@@ -262,12 +262,13 @@ precacheImage('ui/cursor')
 
 makeAnimatedLuaSprite('mouseTexture', 'ui/cursor', getMouseX('camOther'), getMouseY('camOther'))
 scaleObject('mouseTexture', 0.4, 0.4)
-addAnimationByPrefix('mouseTexture', 'idle', 'idle', false)
-addAnimationByPrefix('mouseTexture', 'idleClick', 'idleClick', false)
-addAnimationByPrefix('mouseTexture', 'hand', 'hand', false)
-addAnimationByPrefix('mouseTexture', 'handClick', 'handClick', false)
-addAnimationByPrefix('mouseTexture', 'disabled', 'disabled', false)
-addAnimationByPrefix('mouseTexture', 'disabledClick', 'disabledClick', false)
+addAnimationByPrefix('mouseTexture', 'idle', 'idle', 24, false)
+addAnimationByPrefix('mouseTexture', 'idleClick', 'idleClick', 24, false)
+addAnimationByPrefix('mouseTexture', 'hand', 'hand', 24, false)
+addAnimationByPrefix('mouseTexture', 'handClick', 'handClick', 24, false)
+addAnimationByPrefix('mouseTexture', 'disabled', 'disabled', 24, false)
+addAnimationByPrefix('mouseTexture', 'disabledClick', 'disabledClick', 24, false)
+addAnimationByPrefix('mouseTexture', 'waiting', 'waiting', 5, true)
 addOffset('mouseTexture', 'idle', 27.9, 27.6)
 addOffset('mouseTexture', 'idleClick', 27.9, 27.6)
 addOffset('mouseTexture', 'hand', 40, 27.6)
@@ -344,111 +345,18 @@ function onUpdate(elapsed)
      hueChangeBG()
 end
 
-local Notes    = SkinNotes:new('notes', 'noteSkins', 'NOTE_assets', true)
-local Splashes = SkinSplashes:new('splashes', 'noteSplashes', 'noteSplashes', false)
+local Notes    = SkinNotes:new('notes', 'noteSkins', 'NOTE_assets')
+local Splashes = SkinSplashes:new('splashes', 'noteSplashes', 'noteSplashes')
 
-local p = 'notes'
-switch (p) {
-     notes = function()
-          Notes:load()
-          Notes:save_load()
-          Notes:precache()
-          Notes:preload()
-          Notes:preview()
-          Notes:page_slider_marks()
-     end,
-     splashes = function()
-          Splashes:load()
-          Splashes:save_load()
-          Splashes:precache()
-          Splashes:preload()
-          Splashes:preview()
-          Splashes:preview_notes()
-          Splashes:page_slider_marks()
-     end
-}
+local Skins = SkinStates:new({Notes, Splashes}, 'notes')
+Skins:load()
+Skins:create()
 
-function onUpdatePost()
-     if keyboardJustConditionPressed('P', not getVar('skinSearchInputFocus')) then
-          p = 'notes'
-          switch (p) {
-               notes = function()
-                    Splashes:destroy()
-
-                    Notes:load()
-                    Notes:save_load()
-                    Notes:precache()
-                    Notes:preload()
-                    Notes:preview()
-                    Notes:page_slider_marks()
-               end,
-               splashes = function()
-                    Notes:destroy()
-
-                    Splashes:load()
-                    Splashes:save_load()
-                    Splashes:precache()
-                    Splashes:preload()
-                    Splashes:preview()
-                    Splashes:preview_notes()
-                    Splashes:page_slider_marks()
-               end
-          }
-     end
-     if keyboardJustConditionPressed('O', not getVar('skinSearchInputFocus')) then
-          p = 'splashes'
-          switch (p) {
-               notes = function()
-                    Splashes:destroy()
-
-                    Notes:load()
-                    Notes:save_load()
-                    Notes:precache()
-                    Notes:preload()
-                    Notes:preview()
-                    Notes:page_slider_marks()
-               end,
-               splashes = function()
-                    Notes:destroy()
-
-                    Splashes:load()
-                    Splashes:save_load()
-                    Splashes:precache()
-                    Splashes:preload()
-                    Splashes:preview()
-                    Splashes:preview_notes()
-                    Splashes:page_slider_marks()
-               end
-          }
-     end
-     
-     switch (p) {
-          notes = function()
-               Notes:page_slider()
-               Notes:page_moved()
-               Notes:selection()
-               Notes:search()
-               Notes:checkbox()
-               Notes:checkbox_selection()
-               Notes:checkbox_sync()
-               Notes:preview_selection()
-               Notes:preview_animation()
-          end,
-          splashes = function()
-               Splashes:page_slider()
-               Splashes:page_moved()
-               Splashes:selection()
-               Splashes:search()
-               Splashes:checkbox()
-               Splashes:checkbox_selection()
-               Splashes:checkbox_sync()
-               Splashes:preview_selection()
-               Splashes:preview_animation()
-          end
-     }
+function onUpdatePost(elapsed)
+     Skins:switch()
+     Skins:update()
 end
 
 function onDestroy()
-     Notes:save()
-     Splashes:save()
+     Skins:save()
 end

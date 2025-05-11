@@ -32,14 +32,12 @@ local SkinNotes = {}
 ---@param stateClass string The given tag for the class to inherit.
 ---@param statePath string The corresponding image path to display its skins.
 ---@param statePrefix string the corresponding prefix image for the said state. 
----@param stateStart boolean Whether to the given class state will be displayed at the start or not.
 ---@return table
-function SkinNotes:new(stateClass, statePaths, statePrefix, startStart)
+function SkinNotes:new(stateClass, statePaths, statePrefix)
      local self = setmetatable({}, {__index = self})
      self.stateClass  = stateClass
      self.statePaths  = statePaths
      self.statePrefix = statePrefix
-     self.stateStart  = stateStart
 
      return self
 end
