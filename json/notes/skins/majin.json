@@ -1,6 +1,7 @@
 {
      "strums": {
           "height": 0,
+          "scaleDividedY": 1.78,
           "offsets": [0, 0]
      },
      "types": ["", "Hey!", "No Animation", "Alt Animation", "GF Sing"],

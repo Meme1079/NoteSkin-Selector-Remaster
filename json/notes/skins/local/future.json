@@ -1,7 +1,7 @@
 {
      "strums": {
-          "height": 0,
-          "offsets": [0, 0]
+          "height": 1.78,
+          "offsets": [-34.8, 5]
      },
      "types": ["", "Hey!", "No Animation", "Alt Animation", "GF Sing"],
      "rgbshader": true

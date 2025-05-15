@@ -172,6 +172,9 @@ function states.getTotalSkinObjectNames(skin)
      return totalSkinObjectNames[skin]
 end
 
+--- Gets the skin's index number each are spliced in every 16-index, inserted to their designated page array.
+---@param skin string The specified skin to find the total amount it currently has.
+---@return table[table[any]]
 function states.getTotalSkinObjectIndexes(skin)
      local totalSkinObjectIndexesIndex = 0
      local totalSkinObjectIndexes = table.new(0xff, 0)

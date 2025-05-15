@@ -49,6 +49,7 @@ function SkinStates:load()
      self.stateSkinMain  = self.stateSkins[self.stateSkinNames[self.stateSkinIndex]]
 end
 
+local p = false
 --- Switches state to another different state.
 ---@return nil
 function SkinStates:switch()
@@ -76,7 +77,7 @@ function SkinStates:switch()
           self.stateSkinIndex = self.stateSkinIndex - 1
           self.stateSkinMain  = self.stateSkins[self.stateSkinNames[self.stateSkinIndex]]
           swapStateSkin()
-     end
+     end     
 end
 
 --- Creates the current state.

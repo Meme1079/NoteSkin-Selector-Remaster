@@ -425,7 +425,7 @@ end
 
 --- Collection of similair methods of the selection function.
 ---@return nil
-function SkinNotes:selection()
+function SkinNotes:selection()     
      self:selection_byclick()
      self:selection_byhover()
      self:selection_bycursor()
@@ -801,7 +801,7 @@ function SkinNotes:preview()
 
           playAnim(previewSkinGroup, previewMetadataObjectAnims['names']['strums'][strums])
           setObjectCamera(previewSkinGroup, 'camHUD')
-          addLuaSprite(previewSkinGroup, true)
+          addLuaSprite(previewSkinGroup)
 
           SkinNoteSave:set('previewMetadataByObjectStrums', self.stateClass..'Static', previewMetadataObjectData('strums', true))
           SkinNoteSave:set('previewMetadataByFramesStrums', self.stateClass..'Static', previewMetadataByFramesStrums)
@@ -1692,7 +1692,7 @@ function SkinNotes:search_preview()
 
           playAnim(previewSkinGroup, previewMetadataObjectAnims['names']['strums'][strums])
           setObjectCamera(previewSkinGroup, 'camHUD')
-          addLuaSprite(previewSkinGroup, true)
+          addLuaSprite(previewSkinGroup)
 
           SkinNoteSave:set('previewMetadataByObjectStrums', self.stateClass..'Static', previewMetadataObjectData('strums', true))
           SkinNoteSave:set('previewMetadataByFramesStrums', self.stateClass..'Static', previewMetadataByFramesStrums)

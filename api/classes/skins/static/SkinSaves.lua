@@ -5,12 +5,14 @@ local SkinSaves = {}
 ---@param saveName string The global save name to utilize with.
 ---@param saveFolder? string The specified folder to save to.
 ---@return nil
-function SkinSaves:new(saveName, saveFolder)
+function SkinSaves:new(saveName, saveFolder, saveInit)
      local self = setmetatable({}, {__index = self})
      self.saveName   = saveName
      self.saveFolder = savePath
 
-     initSaveData(self.saveName, self.saveFolder)
+     if saveInit == true then
+          initSaveData(self.saveName, self.saveFolder)
+     end
      return self
 end
 

@@ -335,7 +335,7 @@ function SkinSplashes:preview()
      
           setObjectCamera(previewSkinGroup, 'camHUD')
           setProperty(previewSkinGroup..'.visible', false)
-          addLuaSprite(previewSkinGroup, true)
+          addLuaSprite(previewSkinGroup)
      end
 
      setTextString('genInfoSkinName', getCurrentPreviewSkinObjectNames)
@@ -400,7 +400,11 @@ function SkinSplashes:preview_notes()
 
           playAnim(previewSkinGroup, previewMetadataObjectAnims['names']['strums'][strums])
           setObjectCamera(previewSkinGroup, 'camHUD')
-          addLuaSprite(previewSkinGroup, false)
+          addLuaSprite(previewSkinGroup)
+
+          local previewSkinSplashTemplate = {state = (self.stateClass):upperAtStart(), groupID = strums}
+          local previewSkinSplashGroup    = ('previewSkinGroup${state}-${groupID}'):interpol(previewSkinSplashTemplate)
+          setObjectOrder(previewSkinGroup, getObjectOrder(previewSkinSplashGroup)-1)
      end
 end
 
@@ -832,7 +836,7 @@ function SkinSplashes:search_preview()
                
                setObjectCamera(previewSkinGroup, 'camHUD')
                setProperty(previewSkinGroup..'.visible', false)
-               addLuaSprite(previewSkinGroup, true)
+               addLuaSprite(previewSkinGroup)
           end
      
           setTextString('genInfoSkinName', getCurrentPreviewSkinObjectNames)

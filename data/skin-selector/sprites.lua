@@ -171,6 +171,15 @@ setObjectCamera('previewSkinButtonSelectionText', 'camHUD')
 setProperty('previewSkinButtonSelectionText.antialiasing', false)
 addLuaText('previewSkinButtonSelectionText')
 
+
+makeLuaSprite('fart', 'ui/buttons/test/fart7', 430, 48)
+setObjectCamera('fart', 'camHUD')
+setProperty('fart.scale.x', 0.7)
+setProperty('fart.scale.y', 0.8)
+setProperty('fart.antialiasing', false)
+addLuaSprite('fart')
+
+
 -- Display Selected Highlights --
 
 precacheImage('ui/display_selected')
@@ -360,3 +369,41 @@ end
 function onDestroy()
      Skins:save()
 end
+
+
+--[[ makeLuaSprite('eefwe', 'ui/buttons/test/daih2', 397.6, 160.8) --397.6, 160.8
+scaleObject('eefwe', 0.8, 0.75)
+setObjectCamera('eefwe', 'camHUD')
+setProperty('eefwe.antialiasing', false)
+addLuaSprite('eefwe', true)
+
+makeLuaSprite('efwef', 'ui/buttons/test/wcww3', 397.6, 328.8 - 230) --397.6, 328.8
+scaleObject('efwef', 0.8, 0.75)
+setObjectCamera('efwef', 'camHUD')
+setProperty('efwef.antialiasing', false)
+addLuaSprite('efwef', true)
+
+makeLuaText('eowefwe', ' State Selection', nil, 397.6 + 5, getProperty('efwef.y') + 16.2)
+setTextFont('eowefwe', 'sonic.ttf')
+setTextSize('eowefwe', 33)
+setTextBorder('eowefwe', 3, '000000')
+setProperty('eowefwe.antialiasing', false)
+addLuaSprite('eowefwe', true)
+
+
+makeAnimatedLuaSprite('wfwfwfwef', 'ui/buttons/slider_button', 397.6 + 430, 328.8 - 160) -- min: 127; max: 643
+addAnimationByPrefix('wfwfwfwef', 'static', 'slider_button-static')
+addAnimationByPrefix('wfwfwfwef', 'pressed', 'slider_button-pressed')
+addAnimationByPrefix('wfwfwfwef', 'unscrollable', 'slider_button-unscrollable')
+playAnim('wfwfwfwef', 'static')
+scaleObject('wfwfwfwef', 0.5, 0.5)
+setObjectCamera('wfwfwfwef', 'camHUD')
+setProperty('wfwfwfwef.antialiasing', false)
+addLuaSprite('wfwfwfwef', true)
+
+makeLuaSprite('wefveoifwq', nil, 397.6 + 432 + getProperty('wfwfwfwef.width') / 2.7, 328.8 - 160)
+makeGraphic('wefveoifwq', 8, 570, '1d1e1f')
+setObjectOrder('wefveoifwq', getObjectOrder('wfwfwfwef'))
+setObjectCamera('wefveoifwq', 'camHUD')
+setProperty('wefveoifwq.antialiasing', false)
+addLuaSprite('wefveoifwq', true) ]]

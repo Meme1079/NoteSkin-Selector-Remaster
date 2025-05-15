@@ -33,7 +33,7 @@ function onUpdatePost(elapsed)
      setProperty('mouseTexture.x', getMouseX('camHUD'))
      setProperty('mouseTexture.y', getMouseY('camHUD'))
      
-     if keyboardJustPressed('TAB') and songName == 'Skin Selector' then
+     if keyboardJustPressed('ENTER') and songName == 'Skin Selector' then
           local dataSongName = SkinStateSave:get('dataSongName', '')
           local dataDiffID   = SkinStateSave:get('dataDiffID',   '')
           local dataDiffList = SkinStateSave:get('dataDiffList', '')
