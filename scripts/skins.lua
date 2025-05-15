@@ -17,6 +17,9 @@ local stateSave_checkboxNoteIndexOpponent = SkinStateSave:get('checkboxSkinObjec
 
 local stateSave_checkboxSplashIndexPlayer = SkinStateSave:get('checkboxSkinObjectIndexPlayer', 'splashes', 0)
 
+local skinStaticDataNotes    = json.parse(getTextFromFile('json/notes/default static data/dsd_skins.json'))
+local skinStaticDataSplashes = json.parse(getTextFromFile('json/splashes/default static data/dsd_skins.json'))
+
 local getTotalSkinNotes       = states.getTotalSkins('notes', true)
 local getTotalSkinSplashes    = states.getTotalSkins('splashes', true)
 local getMetadataSkinNotes    = states.getMetadataSkinsOrdered('notes', 'skins', true)
@@ -29,7 +32,6 @@ local getNoteSkinMetadataOpponent  = getMetadataSkinNotes[stateSave_checkboxNote
 
 local getSplashesSkinImagePathPlayer = getTotalSkinSplashes[stateSave_checkboxSplashIndexPlayer]
 local getSplashesSkinMetadataPlayer  = getMetadataSkinSplashes[stateSave_checkboxSplashIndexPlayer]
-
 local function filterSkinImagePath(str)
      local filterLocalPath = 'assets/shared/images/'
      if str:match(filterLocalPath) then
@@ -38,9 +40,50 @@ local function filterSkinImagePath(str)
      return str
 end
 
+--- 
+---@param skinStaticDataType table
+---@param strumData string
+---@return
+local function skinsMetadataObjectData(skinStaticDataType, strumData)
+     local skinMetadataObject         = getNoteSkinMetadataPlayer
+     local skinMetadataObjectByAnim   = getNoteSkinMetadataPlayer.strums
+     local skinStaticDataObjectByAnim = skinStaticDataType.strums
+     if skinMetadataObject == '@void' or skinMetadataObjectByAnim == nil then
+          return skinStaticDataObjectByAnim[strumData]
+     end
+     if skinMetadataObjectByAnim == nil then
+          skinMetadataObjectByAnim['strums'] = skinStaticDataObjectByAnim
+          return skinMetadataObjectByAnim
+     end
+     if skinMetadataObjectByAnim[strumData] == nil then
+          skinMetadataObjectByAnim['strums'][strumData] = skinStaticDataObjectByAnim[strumData]
+          return skinMetadataObjectByAnim[strumData]
+     end
+     return skinMetadataObjectByAnim[strumData]
+end
+
+---
+---@param skinStaticDataType table
+---@param element string
+---@return any
+local function skinsMetadataObjects(skinStaticDataType, element)
+     local skinsMetadataObject       = getNoteSkinMetadataPlayer
+     local skinsMetadataObjectByElem = getNoteSkinMetadataPlayer[element]
+     if skinsMetadataObject == '@void' or skinsMetadataObjectByElem == nil then
+          return skinStaticDataType[element]
+     end
+     return skinsMetadataObjectByElem
+end
+
+
 function onCreatePost()
      local fliterSkinNotePathPlayer   = filterSkinImagePath( getNoteSkinImagePathPlayer )
      local fliterSkinNotePathOpponent = filterSkinImagePath( getNoteSkinImagePathOpponent )
+
+     debugPrint( skinsMetadataObjectData(skinStaticDataNotes, 'height') )
+     debugPrint( skinsMetadataObjects(skinStaticDataNotes, 'rgbshader') )
+
+     
      for strums = 0,3 do
           setPropertyFromGroup('playerStrums', strums, 'texture', fliterSkinNotePathPlayer)
           setPropertyFromGroup('playerStrums', strums, 'useRGBShader', false)
@@ -57,7 +100,7 @@ function onCreatePost()
 end
 
 function onSpawnNote(memberIndex, noteData, noteType, isSustainNote, strumTime)
-     local fliterSkinNotePathPlayer   = filterSkinImagePath( getNoteSkinImagePathPlayer )
+     --[[ local fliterSkinNotePathPlayer   = filterSkinImagePath( getNoteSkinImagePathPlayer )
      local fliterSkinNotePathOpponent = filterSkinImagePath( getNoteSkinImagePathOpponent )
 
      local songSpeed    = getProperty('songSpeed')
@@ -91,7 +134,7 @@ function onSpawnNote(memberIndex, noteData, noteType, isSustainNote, strumTime)
                end
           end
           updateHitboxFromGroup('notes', memberIndex)
-     end
+     end ]]
 end
 
 function onUpdatePost(elapsed)
