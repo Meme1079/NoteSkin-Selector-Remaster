@@ -31,6 +31,12 @@ function onCreatePost()
      end
 end
 
+
+local dad_offsetX = d_dad['strums']['offsetX']
+local dad_height  = d_dad['strums']['height']
+
+local bf_offsetX = d_bf['strums']['offsetX']
+local bf_height  = d_bf['strums']['height']
 function onSpawnNote(memberIndex, noteData, noteType, isSustainNote, strumTime)
      local songSpeed    = getProperty('songSpeed')
      local songPlayRate = getProperty('playbackRate')
@@ -40,21 +46,28 @@ function onSpawnNote(memberIndex, noteData, noteType, isSustainNote, strumTime)
      local ultimateNoteWidth = getPropertyFromGroup('notes', memberIndex, 'width')
      local ultimateWidth = (ultimateSwagWidth - ultimateNoteWidth) / 2
      
-     local offsetsAddedX = d_dad['strums']['offsets'][1]
-     local scaleDividedY = d_dad['strums']['height']
-
 
      if getPropertyFromGroup('notes', memberIndex, 'mustPress') then
           setPropertyFromGroup('notes', memberIndex, 'texture', bf:gsub('assets/shared/images/', ''));
+
+          if isSustainNote == true then
+               setPropertyFromGroup('notes', memberIndex, 'offsetX', ultimateNoteWidth - bf_offsetX)
+
+               local isTailNote = stringEndsWith(getProperty('game.notes.members['..memberIndex..'].animation.curAnim.name'), 'end')
+               if not isTailNote then
+                    setPropertyFromGroup('notes', memberIndex, 'scale.y', calculateNoteSustian / bf_height % calculateNoteSustian)
+               end
+          end
           updateHitboxFromGroup('notes', memberIndex)
      else
           setPropertyFromGroup('notes', memberIndex, 'texture', dad:gsub('assets/shared/images/', ''));
           
           if isSustainNote == true then
-               setPropertyFromGroup('notes', memberIndex, 'offsetX', ultimateNoteWidth + offsetsAddedX)
+               setPropertyFromGroup('notes', memberIndex, 'offsetX', ultimateNoteWidth - dad_offsetX)
 
-               if not stringEndsWith(getProperty('game.notes.members['..memberIndex..'].animation.curAnim.name'), 'end') then
-                    setPropertyFromGroup('notes', memberIndex, 'scale.y', calculateNoteSustian / scaleDividedY % calculateNoteSustian)
+               local isTailNote = stringEndsWith(getProperty('game.notes.members['..memberIndex..'].animation.curAnim.name'), 'end')
+               if not isTailNote then
+                    setPropertyFromGroup('notes', memberIndex, 'scale.y', calculateNoteSustian / dad_height % calculateNoteSustian)
                end
           end
           updateHitboxFromGroup('notes', memberIndex)
