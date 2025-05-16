@@ -13,7 +13,7 @@ states.splashes = {prefix = 'noteSplashes', folder = 'noteSplashes'}
 ---@param withPath? boolean Wheather the result will include a path to the skin or not.
 ---@return table[table[string]]
 function states.getTotalSkins(skin, withPath)
-     local totalSkins = {states[skin]['prefix']}
+     local totalSkins = {'assets/shared/images/noteSkins/'..states[skin]['prefix']}
      local totalSkinPrefix = states[skin]['prefix']
      local totalSkinFolder = states[skin]['folder']
 
@@ -33,7 +33,7 @@ function states.getTotalSkins(skin, withPath)
           if skins:match('^('..totalSkinPrefix..'%-.+)%.png$') then
                local includedPath = withPath == true and totalSkinFolder..'/' or ''
                totalSkins[#totalSkins + 1] = includedPath..skins:match('^('..totalSkinPrefix..'%-.+)%.png$')
-          end
+          end   
           if not skins:match('%.%w+$') then
                table.insert(directorySkinFolderGroup, skins)
           end
