@@ -3,7 +3,7 @@
 - [x] Preview Skins & its Animation Options
 - [x] Checkboxes
 - [x] Data Saving
-- [ ] State Switching
+- [x] State Switching
 
 ## Version 2.1.0
 - [ ] Support for version 0.7.3

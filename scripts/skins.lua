@@ -10,20 +10,24 @@ local funkinlua = require 'mods.NoteSkin Selector Remastered.api.modules.funkinl
 local states    = require 'mods.NoteSkin Selector Remastered.api.modules.states'
 local global    = require 'mods.NoteSkin Selector Remastered.api.modules.global'
 
+local stateSkinMetadata = {}
+function stateSkinMetadata:__index(index)
+     return '@void'
+end
+
 local SkinStateSave = SkinSaves:new('noteskin_selector', 'NoteSkin Selector', true)
 
 local stateSave_checkboxNoteIndexPlayer   = SkinStateSave:get('checkboxSkinObjectIndexPlayer', 'notes', 0)
 local stateSave_checkboxNoteIndexOpponent = SkinStateSave:get('checkboxSkinObjectIndexOpponent', 'notes', 0)
-
 local stateSave_checkboxSplashIndexPlayer = SkinStateSave:get('checkboxSkinObjectIndexPlayer', 'splashes', 0)
 
 local skinStaticDataNotes    = json.parse(getTextFromFile('json/notes/default static data/dsd_skins.json'))
 local skinStaticDataSplashes = json.parse(getTextFromFile('json/splashes/default static data/dsd_skins.json'))
 
-local getTotalSkinNotes       = states.getTotalSkins('notes', true)
-local getTotalSkinSplashes    = states.getTotalSkins('splashes', true)
-local getMetadataSkinNotes    = states.getMetadataSkinsOrdered('notes', 'skins', true)
-local getMetadataSkinSplashes = states.getMetadataSkinsOrdered('splashes', 'skins', true)
+local getTotalSkinNotes       = setmetatable(states.getTotalSkins('notes', true), stateSkinMetadata)
+local getTotalSkinSplashes    = setmetatable(states.getTotalSkins('splashes', true), stateSkinMetadata)
+local getMetadataSkinNotes    = setmetatable(states.getMetadataSkinsOrdered('notes', 'skins', true), stateSkinMetadata)
+local getMetadataSkinSplashes = setmetatable(states.getMetadataSkinsOrdered('splashes', 'skins', true), stateSkinMetadata)
 
 local getNoteSkinImagePathPlayer   = getTotalSkinNotes[stateSave_checkboxNoteIndexPlayer]
 local getNoteSkinImagePathOpponent = getTotalSkinNotes[stateSave_checkboxNoteIndexOpponent]
@@ -40,11 +44,11 @@ local function filterSkinImagePath(str)
      return str
 end
 
---- 
----@param skinStaticDataType table
----@param skinMetadataType table
----@param strumData string
----@return
+--- Gets the skin's metadata object value from the strum properties.
+---@param skinStaticDataType table The static data type to use in-place, if no value exists.
+---@param skinMetadataType table The metadata object type to use.
+---@param strumData string The element from the strum properties to use.
+---@return any
 local function skinsMetadataObjectData(skinStaticDataType, skinMetadataType, strumData)
      local skinMetadataObject         = skinMetadataType
      local skinMetadataObjectByAnim   = skinMetadataType.strums
@@ -63,10 +67,10 @@ local function skinsMetadataObjectData(skinStaticDataType, skinMetadataType, str
      return skinMetadataObjectByAnim[strumData]
 end
 
----
----@param skinStaticDataType table
----@param skinMetadataType table
----@param element string
+--- Gets the skin's metadata object value.
+---@param skinStaticDataType table The static data type to use in-place, if no value exists.
+---@param skinMetadataType table The metadata object type to use.
+---@param element string The element to use.
 ---@return any
 local function skinsMetadataObjects(skinStaticDataType, skinMetadataType, element)
      local skinsMetadataObject       = skinMetadataType
@@ -109,16 +113,21 @@ local skinMetadataObjectSplashPlayer = skinMetadataObjectSplashes
 local filterSkinSplashesPathPlayer   = filterSkinImagePath( getSplashesSkinImagePathPlayer )
 function onCreatePost()
      for strums = 0,3 do
-          setPropertyFromGroup('playerStrums', strums, 'texture', fliterSkinNotePathPlayer)
-          setPropertyFromGroup('playerStrums', strums, 'useRGBShader', skinMetadataObjectNotePlayer.rgbshader)
-
-          setPropertyFromGroup('opponentStrums', strums, 'texture', fliterSkinNotePathOpponent)
-          setPropertyFromGroup('opponentStrums', strums, 'useRGBShader', skinMetadataObjectNoteOpponent.rgbshader)
+          if getNoteSkinImagePathPlayer ~= '@void' then
+               setPropertyFromGroup('playerStrums', strums, 'texture', fliterSkinNotePathPlayer)
+               setPropertyFromGroup('playerStrums', strums, 'useRGBShader', skinMetadataObjectNotePlayer.rgbshader)
+          end
+          if getNoteSkinImagePathOpponent ~= '@void' then
+               setPropertyFromGroup('opponentStrums', strums, 'texture', fliterSkinNotePathOpponent)
+               setPropertyFromGroup('opponentStrums', strums, 'useRGBShader', skinMetadataObjectNoteOpponent.rgbshader)
+          end
      end
 
      for memberIndex = 0, getProperty('unspawnNotes.length')-1 do
-          setPropertyFromGroup('unspawnNotes', memberIndex, 'noteSplashData.texture', filterSkinSplashesPathPlayer)
-          setPropertyFromGroup('unspawnNotes', memberIndex, 'noteSplashData.useRGBShader', skinMetadataObjectSplashPlayer.rgbshader)
+          if filterSkinSplashesPathPlayer ~= '@void' then
+               setPropertyFromGroup('unspawnNotes', memberIndex, 'noteSplashData.texture', filterSkinSplashesPathPlayer)
+               setPropertyFromGroup('unspawnNotes', memberIndex, 'noteSplashData.useRGBShader', skinMetadataObjectSplashPlayer.rgbshader)
+          end
      end
 end
 
@@ -131,10 +140,10 @@ function onSpawnNote(memberIndex, noteData, noteType, isSustainNote, strumTime)
      local ultimateNoteWidth = getPropertyFromGroup('notes', memberIndex, 'width')
      local ultimateWidth     = (ultimateSwagWidth - ultimateNoteWidth) / 2
 
-     ---
-     ---@param skinMetadataObjectType table
+     --- Sets the note's sustain tail and tail-end properties to match properly
+     ---@param skinMetadataObjectType table The metadata object type of the skin.
      ---@return nil
-     local function setPropertySustain(skinMetadataObjectType)
+     local function setPropertySustainGroup(skinMetadataObjectType)
           if isSustainNote == false then
                return
           end
@@ -154,15 +163,21 @@ function onSpawnNote(memberIndex, noteData, noteType, isSustainNote, strumTime)
      end
 
      if getPropertyFromGroup('notes', memberIndex, 'mustPress') then
-          setPropertyFromGroup('notes', memberIndex, 'texture', fliterSkinNotePathPlayer);
-          setPropertyFromGroup('notes', memberIndex, 'rgbShader.enabled', skinMetadataObjectNotePlayer.rgbshader)
-          setPropertySustain(skinMetadataObjectNotePlayer)
-          updateHitboxFromGroup('notes', memberIndex)
+          local isTypeExist = table.find(skinMetadataObjectNotePlayer.types, noteType)
+          if getNoteSkinImagePathPlayer ~= '@void' and isTypeExist ~= nil then
+               setPropertyFromGroup('notes', memberIndex, 'texture', fliterSkinNotePathPlayer);
+               setPropertyFromGroup('notes', memberIndex, 'rgbShader.enabled', skinMetadataObjectNotePlayer.rgbshader)
+               setPropertySustainGroup(skinMetadataObjectNotePlayer)
+               updateHitboxFromGroup('notes', memberIndex)
+          end
      else
-          setPropertyFromGroup('notes', memberIndex, 'texture', fliterSkinNotePathOpponent);
-          setPropertyFromGroup('notes', memberIndex, 'rgbShader.enabled', skinMetadataObjectNoteOpponent.rgbshader)
-          setPropertySustain(skinMetadataObjectNoteOpponent)
-          updateHitboxFromGroup('notes', memberIndex)
+          local isTypeExist = table.find(skinMetadataObjectNoteOpponent.types, noteType)
+          if getNoteSkinImagePathOpponent ~= '@void' and isTypeExist ~= nil then
+               setPropertyFromGroup('notes', memberIndex, 'texture', fliterSkinNotePathOpponent);
+               setPropertyFromGroup('notes', memberIndex, 'rgbShader.enabled', skinMetadataObjectNoteOpponent.rgbshader)
+               setPropertySustainGroup(skinMetadataObjectNoteOpponent)
+               updateHitboxFromGroup('notes', memberIndex)
+          end
      end
 end
 
