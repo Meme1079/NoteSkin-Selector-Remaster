@@ -13,7 +13,7 @@ states.splashes = {prefix = 'noteSplashes', folder = 'noteSplashes'}
 ---@param withPath? boolean Wheather the result will include a path to the skin or not.
 ---@return table[table[string]]
 function states.getTotalSkins(skin, withPath)
-     local totalSkins = {'assets/shared/images/noteSkins/'..states[skin]['prefix']}
+     local totalSkins = table.new(0xff, 0)
      local totalSkinPrefix = states[skin]['prefix']
      local totalSkinFolder = states[skin]['folder']
 
@@ -23,6 +23,9 @@ function states.getTotalSkins(skin, withPath)
           if skins:match('^('..totalSkinPrefix..'%-.+)%.png$') then
                local includedPath = withPath == true and 'assets/shared/images/'..totalSkinFolder..'/' or ''
                totalSkins[#totalSkins + 1] = includedPath..skins:match('^('..totalSkinPrefix..'%-.+)%.png$')
+          elseif skins:match('^('..totalSkinPrefix..')%.png$') then
+               local includedPath = withPath == true and 'assets/shared/images/'..totalSkinFolder..'/' or ''
+               table.insert(totalSkins, 1, includedPath..skins:match('^('..totalSkinPrefix..')%.png$'))
           end
      end
 
@@ -33,7 +36,10 @@ function states.getTotalSkins(skin, withPath)
           if skins:match('^('..totalSkinPrefix..'%-.+)%.png$') then
                local includedPath = withPath == true and totalSkinFolder..'/' or ''
                totalSkins[#totalSkins + 1] = includedPath..skins:match('^('..totalSkinPrefix..'%-.+)%.png$')
-          end   
+          elseif skins:match('^('..totalSkinPrefix..')%.png$') then
+               local includedPath = withPath == true and totalSkinFolder..'/' or ''
+               table.insert(totalSkins, 1, includedPath..skins:match('^('..totalSkinPrefix..')%.png$'))
+          end 
           if not skins:match('%.%w+$') then
                table.insert(directorySkinFolderGroup, skins)
           end
@@ -47,6 +53,9 @@ function states.getTotalSkins(skin, withPath)
                if skins:match('^('..totalSkinPrefix..'%-.+)%.png$') then
                     local includedPath = withPath == true and totalSkinFolder..'/'..folders..'/' or folders..'/'
                     totalSkins[#totalSkins + 1] = includedPath..skins:match('^('..totalSkinPrefix..'%-.+)%.png$')
+               elseif skins:match('^('..totalSkinPrefix..')%.png$') then
+                    local includedPath = withPath == true and totalSkinFolder..'/'..folders..'/' or folders..'/'
+                    table.insert(totalSkins, 1, includedPath..skins:match('^('..totalSkinPrefix..')%.png$'))
                end
           end
      end
@@ -57,7 +66,7 @@ end
 ---@param skin string The specified skin to find the total amount it currently has.
 ---@return table[table[string]]
 function states.getTotalSkinNames(skin)
-     local totalSkins = {'Funkin'}
+     local totalSkins = table.new(0xff, 0)
      local totalSkinPrefix = states[skin]['prefix']
      local totalSkinFolder = states[skin]['folder']
 
@@ -66,6 +75,8 @@ function states.getTotalSkinNames(skin)
      for _,skins in next, directorySkinLocalFolder do
           if skins:match('^('..totalSkinPrefix..'%-.+)%.png$') then
                totalSkins[#totalSkins + 1] = skins:match('^'..totalSkinPrefix..'%-(.+)%.png$'):upperAtStart()
+          elseif skins:match('^('..totalSkinPrefix..')%.png$') then
+               table.insert(totalSkins, 1, 'Funkin')
           end
      end
 
