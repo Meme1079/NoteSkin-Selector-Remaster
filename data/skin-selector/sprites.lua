@@ -1,5 +1,6 @@
 luaDebugMode = true
 
+local SkinSaves    = require 'mods.NoteSkin Selector Remastered.api.classes.skins.static.SkinSaves'
 local SkinStates   = require 'mods.NoteSkin Selector Remastered.api.classes.skins.static.SkinStates'
 local SkinSplashes = require 'mods.NoteSkin Selector Remastered.api.classes.skins.SkinSplashes'
 local SkinNotes    = require 'mods.NoteSkin Selector Remastered.api.classes.skins.SkinNotes'
@@ -17,6 +18,8 @@ local addCallbackEvents = funkinlua.addCallbackEvents
 local keyboardJustConditionPressed  = funkinlua.keyboardJustConditionPressed
 local keyboardJustConditionPress    = funkinlua.keyboardJustConditionPress
 local keyboardJustConditionReleased = funkinlua.keyboardJustConditionReleased
+
+local SkinStateSave = SkinSaves:new('noteskin_selector', 'NoteSkin Selector')
 
 -- Background --
 
@@ -51,7 +54,7 @@ addLuaSprite('displaySliderTrack', true)
 
 precacheImage('checkboxanim')
 
-makeAnimatedLuaSprite('selectionSkinButtonPlayer', 'checkboxanim', 775 + 12, 315)
+makeAnimatedLuaSprite('selectionSkinButtonPlayer', 'checkboxanim', 775 + 12, 330)
 addAnimationByPrefix('selectionSkinButtonPlayer', 'check', 'checkbox finish0', 24, false)
 addAnimationByPrefix('selectionSkinButtonPlayer', 'checking', 'checkbox anim0', 24, false)
 addAnimationByPrefix('selectionSkinButtonPlayer', 'unchecking', 'checkbox anim reverse0', 24, false)
@@ -66,7 +69,7 @@ addOffset('selectionSkinButtonPlayer', 'uncheck', 33.3, 32.2)
 setProperty('selectionSkinButtonPlayer.antialiasing', false)
 addLuaSprite('selectionSkinButtonPlayer')
 
-makeAnimatedLuaSprite('selectionSkinButtonOpponent', 'checkboxanim', 775 + 12 + (80*2.9), 315)
+makeAnimatedLuaSprite('selectionSkinButtonOpponent', 'checkboxanim', 775 + 12 + (80*2.9), 330)
 addAnimationByPrefix('selectionSkinButtonOpponent', 'check', 'checkbox finish0', 24, false)
 addAnimationByPrefix('selectionSkinButtonOpponent', 'checking', 'checkbox anim0', 24, false)
 addAnimationByPrefix('selectionSkinButtonOpponent', 'unchecking', 'checkbox anim reverse0', 24, false)
@@ -81,7 +84,7 @@ addOffset('selectionSkinButtonOpponent', 'uncheck', 33.3, 32.2)
 setProperty('selectionSkinButtonOpponent.antialiasing', false)
 addLuaSprite('selectionSkinButtonOpponent')
 
-makeLuaText('selectionSkinTextPlayer', 'Player', 0, 775 + 75, 315 + 7)
+makeLuaText('selectionSkinTextPlayer', 'Player', 0, 775 + 75, 330 + 7)
 setTextFont('selectionSkinTextPlayer', 'sonic.ttf')
 setTextSize('selectionSkinTextPlayer', 30)
 setTextColor('selectionSkinTextPlayer', '31b0d1')
@@ -89,7 +92,7 @@ setObjectCamera('selectionSkinTextPlayer', 'camHUD')
 setProperty('selectionSkinTextPlayer.antialiasing', false)
 addLuaText('selectionSkinTextPlayer')
 
-makeLuaText('selectionSkinTextOpponent', 'Opponent', 0, 775 + 75 + (80*2.9), 315 + 7)
+makeLuaText('selectionSkinTextOpponent', 'Opponent', 0, 775 + 75 + (80*2.9), 330 + 7)
 setTextFont('selectionSkinTextOpponent', 'sonic.ttf')
 setTextSize('selectionSkinTextOpponent', 30)
 setTextColor('selectionSkinTextOpponent', 'af66ce')
@@ -170,7 +173,6 @@ setTextSize('previewSkinButtonSelectionText', 25)
 setObjectCamera('previewSkinButtonSelectionText', 'camHUD')
 setProperty('previewSkinButtonSelectionText.antialiasing', false)
 addLuaText('previewSkinButtonSelectionText')
-
 
 makeLuaSprite('fart', 'ui/buttons/test/fart7', 430, 48)
 setObjectCamera('fart', 'camHUD')
@@ -354,10 +356,12 @@ function onUpdate(elapsed)
      hueChangeBG()
 end
 
+
+
 local Notes    = SkinNotes:new('notes', 'noteSkins', 'NOTE_assets')
 local Splashes = SkinSplashes:new('splashes', 'noteSplashes', 'noteSplashes')
 
-local Skins = SkinStates:new({Notes, Splashes}, 'notes')
+local Skins = SkinStates:new({Notes, Splashes}, SkinStateSave:get('dataStateName', '', 'notes'))
 Skins:load()
 Skins:create()
 
@@ -369,7 +373,6 @@ end
 function onDestroy()
      Skins:save()
 end
-
 
 --[[ makeLuaSprite('eefwe', 'ui/buttons/test/daih2', 397.6, 160.8) --397.6, 160.8
 scaleObject('eefwe', 0.8, 0.75)

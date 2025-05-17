@@ -1,3 +1,5 @@
+local SkinSaves = require 'mods.NoteSkin Selector Remastered.api.classes.skins.static.SkinSaves'
+
 local string    = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.string'
 local table     = require 'mods.NoteSkin Selector Remastered.api.libraries.standard.table'
 local json      = require 'mods.NoteSkin Selector Remastered.api.libraries.json.main'
@@ -12,6 +14,8 @@ local addCallbackEvents = funkinlua.addCallbackEvents
 local keyboardJustConditionPressed  = funkinlua.keyboardJustConditionPressed
 local keyboardJustConditionPress    = funkinlua.keyboardJustConditionPress
 local keyboardJustConditionReleased = funkinlua.keyboardJustConditionReleased
+
+local SkinStateSave = SkinSaves:new('noteskin_selector', 'NoteSkin Selector')
 
 ---@class SkinStates
 local SkinStates = {}
@@ -49,7 +53,6 @@ function SkinStates:load()
      self.stateSkinMain  = self.stateSkins[self.stateSkinNames[self.stateSkinIndex]]
 end
 
-local p = false
 --- Switches state to another different state.
 ---@return nil
 function SkinStates:switch()
@@ -66,6 +69,7 @@ function SkinStates:switch()
                end
           end
           self:create()
+          SkinStateSave:set('dataStateName', '', self.stateSkinNames[self.stateSkinIndex])
      end
 
      if conditionPressedSwitchStateRight and self.stateSkinIndex < #self.stateSkinNames then

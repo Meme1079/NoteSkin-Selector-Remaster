@@ -30,12 +30,11 @@ local SkinSplashes = SkinNotes:new()
 ---@param stateType table[string] The given skin states within a group to display later.
 ---@param statePath table[string] The given corresponding image paths to each skin states.
 ---@return table
-function SkinSplashes:new(stateClass, statePaths, statePrefix, startStart)
+function SkinSplashes:new(stateClass, statePaths, statePrefix)
      local self = setmetatable({}, {__index = self})
      self.stateClass  = stateClass
      self.statePaths  = statePaths
      self.statePrefix = statePrefix
-     self.stateStart  = stateStart
 
      return self
 end
@@ -103,7 +102,8 @@ function SkinSplashes:load()
      self.previewAnimationObjectHovered = {false, false}
      self.previewAnimationObjectClicked = {false, false}
 
-     self.previewAnimationObjectIndex     = 1
+     local previewObjectIndex = SkinSplashSave:get('previewObjectIndex', self.stateClass, 1)
+     self.previewAnimationObjectIndex     = previewObjectIndex
      self.previewAnimationObjectPrevAnims = {'note_splash1', 'note_splash2'}
 
      local previewObjectAnims    = {'note_splash1', 'note_splash2'}
@@ -511,12 +511,14 @@ function SkinSplashes:preview_selection_moved()
           previewSelectionToggle  = true
 
           playSound('ding', 0.5)
+          SkinSplashSave:set('previewObjectIndex', self.stateClass, self.previewAnimationObjectIndex)
      end
      if conditionPressedRight and previewAnimationMaxIndex then
           self.previewAnimationObjectIndex = self.previewAnimationObjectIndex + 1
           previewSelectionToggle  = true
 
           playSound('ding', 0.5)
+          SkinSplashSave:set('previewObjectIndex', self.stateClass, self.previewAnimationObjectIndex)
      end
      
      if previewSelectionToggle == true then --! DO NOT DELETE

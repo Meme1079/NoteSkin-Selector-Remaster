@@ -100,7 +100,8 @@ function SkinNotes:load()
      self.previewAnimationObjectHovered = {false, false}
      self.previewAnimationObjectClicked = {false, false}
 
-     self.previewAnimationObjectIndex     = 1
+     local previewObjectIndex = SkinNoteSave:get('previewObjectIndex', self.stateClass, 1)
+     self.previewAnimationObjectIndex     = previewObjectIndex
      self.previewAnimationObjectPrevAnims = {'confirm', 'pressed', 'colored'}
 
      local previewObjectAnims    = {'strums', 'confirm', 'pressed', 'colored'}
@@ -948,12 +949,14 @@ function SkinNotes:preview_selection_moved()
           previewSelectionToggle  = true
 
           playSound('ding', 0.5)
+          SkinNoteSave:set('previewObjectIndex', self.stateClass, self.previewAnimationObjectIndex)
      end
      if conditionPressedRight and previewAnimationMaxIndex then
           self.previewAnimationObjectIndex = self.previewAnimationObjectIndex + 1
           previewSelectionToggle  = true
 
           playSound('ding', 0.5)
+          SkinNoteSave:set('previewObjectIndex', self.stateClass, self.previewAnimationObjectIndex)
      end
      
      if previewSelectionToggle == true then --! DO NOT DELETE
@@ -999,6 +1002,8 @@ function SkinNotes:preview_selection_byclick()
                self.previewAnimationObjectIndex          = self.previewAnimationObjectIndex + value
                self.previewAnimationObjectClicked[index] = false
                self:preview_animation(true)
+
+               SkinNoteSave:set('previewObjectIndex', self.stateClass, self.previewAnimationObjectIndex)
           end
      end
 
