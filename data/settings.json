@@ -17,21 +17,7 @@
 		"save": "enable_double-tapping_safe",
 		"name": "Enable Double-Tapping Safe",
 		"type": "bool",
-		"description": "Prevents you from accidentally going to the noteskin state, when pressing the [Tab] or [Shift] key",
-		"value": false
-	},
-	{
-		"save": "enable_change_skins_mid-song",
-		"name": "Enable Change Skins Mid-Song",
-		"type": "bool",
-		"description": "If checked, allows the skin to change texture mid-song.\n Meaning it won't be constant throughout the song",
-		"value": false
-	},
-	{
-		"save": "disable_splash_animation_display",
-		"name": "Disable Display Animation",
-		"type": "bool",
-		"description": "Disables the animations for display icons",
+		"description": "Prevents you from accidentally going to the noteskin screen selection, when pressing the [Tab] key",
 		"value": false
 	},
 	{
@@ -39,17 +25,18 @@
 		"name": "Song Select:",
 		"type": "string",
 		"description": "Select the background song to play",
-		"value": "Extras Menu",
+		"value": "Artistic Expression",
 		"options": [
-               "Extras Menu",
-               "File Select",
-			"Monkey",
-			"Palmtree Panic (P-mix)",
 			"Artistic Expression",
+			"Stay Funky",
                "Tea-Time",
                "Breakfast",
 			"Breakfast-(Pico)",
-			"Breakfast-(Week 6)"
+			"Breakfast-(Week 6)",
+			"Palmtree Panic (P-mix)",
+			"File Select",
+               "Extras Menu",
+			"Monkey"		
           ]
 	}
 ]

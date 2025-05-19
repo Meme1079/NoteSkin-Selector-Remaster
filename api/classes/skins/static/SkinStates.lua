@@ -143,6 +143,8 @@ function SkinStates:save()
      for _,states in pairs(self.stateSkins) do
           states:save()
      end
+
+     debugPrint(self.stateSkins)
 end
 
 return SkinStates

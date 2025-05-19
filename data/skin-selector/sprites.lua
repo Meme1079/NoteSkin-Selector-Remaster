@@ -303,6 +303,10 @@ local hueChangeCPM    = 0.09
 local hueChangeStaticValue = 0   -- start: 0   | end: 30
 local hueChangeTweenValue  = 240 -- start: 240 | end: 270
 local function hueChangeBG()
+     if getModSetting('remove_color_changing_bg', modFolder) ~= false then
+          return
+     end
+
      local hueToRGB = function(primary, secondary, tertiary)
           if tertiary < 0 then tertiary = tertiary + 1 end
           if tertiary > 1 then tertiary = tertiary - 1 end
@@ -355,8 +359,6 @@ end
 function onUpdate(elapsed)
      hueChangeBG()
 end
-
-
 
 local Notes    = SkinNotes:new('notes', 'noteSkins', 'NOTE_assets')
 local Splashes = SkinSplashes:new('splashes', 'noteSplashes', 'noteSplashes')

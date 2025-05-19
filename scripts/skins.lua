@@ -10,6 +10,8 @@ local funkinlua = require 'mods.NoteSkin Selector Remastered.api.modules.funkinl
 local states    = require 'mods.NoteSkin Selector Remastered.api.modules.states'
 local global    = require 'mods.NoteSkin Selector Remastered.api.modules.global'
 
+local keyboardJustDoublePressed = funkinlua.keyboardJustDoublePressed
+
 local stateSkinMetadata = {}
 function stateSkinMetadata:__index(index)
      return '@void'
@@ -134,7 +136,7 @@ end
 function onSpawnNote(memberIndex, noteData, noteType, isSustainNote, strumTime)
      local songSpeed    = getProperty('songSpeed')
      local songPlayRate = getProperty('playbackRate')
-     local noteSustainHeight = ((stepCrochet / 100 * 1.05) * songSpeed) / songPlayRate
+     local noteSustainHeight = stepCrochet / 100 * 1.05 * songSpeed / songPlayRate
 
      local ultimateSwagWidth = getPropertyFromClass('objects.Note', 'swagWidth')
      local ultimateNoteWidth = getPropertyFromGroup('notes', memberIndex, 'width')
@@ -147,9 +149,8 @@ function onSpawnNote(memberIndex, noteData, noteType, isSustainNote, strumTime)
           if isSustainNote == false then
                return
           end
-          local sustainNoteOffsetX = ultimateNoteWidth - skinMetadataObjectType.strums.offsetX
-          setPropertyFromGroup('notes', memberIndex, 'offsetX', sustainNoteOffsetX)
-          
+          setPropertyFromGroup('notes', memberIndex, 'offsetX', ultimateWidth - skinMetadataObjectType.strums.offsetX)
+
           local isTailName = getProperty('game.notes.members['..memberIndex..'].animation.curAnim.name')
           local isTailNote = stringEndsWith(isTailName, 'end')
           if not isTailNote then
@@ -181,12 +182,22 @@ function onSpawnNote(memberIndex, noteData, noteType, isSustainNote, strumTime)
      end
 end
 
-function onUpdatePost(elapsed)
-     if keyboardJustPressed('TAB') then
-          SkinStateSave:set('dataSongName', '', songName)
-          SkinStateSave:set('dataDiffID',   '', tostring(difficulty))
-          SkinStateSave:set('dataDiffList', '', getPropertyFromClass('backend.Difficulty', 'list'))
+local function skinSelectionScreen()
+     SkinStateSave:set('dataSongName', '', songName)
+     SkinStateSave:set('dataDiffID',   '', tostring(difficulty))
+     SkinStateSave:set('dataDiffList', '', getPropertyFromClass('backend.Difficulty', 'list'))
 
-          loadNewSong('Skin Selector', -1, {'Easy', 'Normal', 'Hard'})
+     loadNewSong('Skin Selector', -1, {'Easy', 'Normal', 'Hard'})
+end
+
+function onUpdatePost(elapsed)
+     if getModSetting('enable_double-tapping_safe', modFolder) == true then
+          if keyboardJustDoublePressed('TAB') then
+               skinSelectionScreen()
+          end
+     else
+          if keyboardJustPressed('TAB') then
+               skinSelectionScreen()
+          end
      end
 end
