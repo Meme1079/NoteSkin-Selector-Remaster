@@ -1,7 +1,7 @@
 # NoteSkin Selector Remastered
 NoteSkin Selector Remastered; new layout, new code, and more customizability.
 
-<img width="1440" alt="Screen Shot 2025-04-21 at 9 38 58 PM" src="https://github.com/user-attachments/assets/ce90c42f-c74a-47bc-a90f-babb2d3bc6db" />
+<img width="1440" alt="Screen Shot 2025-05-20 at 10 03 01 PM" src="https://github.com/user-attachments/assets/2c767ba6-8a79-4fe7-8381-aac242e73564" />
 
 ## About
 This is a completely remastered one of my old mods "NoteSkin Selector", created in 2022. This mod heavily improves and enhances everything from the old mod. It includes a new friendlier GUI layout for selecting skins more easily, a better optimized and organized code. Basically, a more improved version of the current built-in noteskin system in the engine, because that one sucks ass ngl.
@@ -19,15 +19,24 @@ NoteSkin Selector Remastered © 2024 by Meme1079 is licensed under CC BY-NC-ND 4
           - The fork may use an unsupported version of Psych Engine or alter certain Lua & HScript features.
 
 ## Features
-- A brand new user-friendly graphical user interface (GUI)
+- A new improved and user-friendly GUI.
      - A `4x4` display grid to select multiple skins
      - A scroll bar to scroll through multiple pages of skin
      - A search bar to easily find the certain skin you want to select
-- A more new user-friendly way of impleneting new skins.
-- A preview strum for the selected skins and its animations accompanying it.
-~~- An editor for preview strums to mainly edit its position offsets.~~
+- An new improve preview for skins
+     - A preview strum in each of the skins and its accompanying animations
+- Subfolders for custom skin packs
 - Customizable background music
+- Extremely Optimize
 - Data Saving
+
+## Controls
+- <kbd>Tab</kbd> - Entering the skin selection screen _(May required to be double-tap if double-tapping is enabled)_
+- <kbd>Q</kbd> or <kbd>E</kbd> - Switching up or down in pages
+- <kbd>O</kbd> or <kbd>P</kbd> - Switching left or right in skin selection states
+- <kbd>Z</kbd> or <kbd>X</kbd> - Switching left or right in preview animations
+- <kbd>Enter</Kbd> - Returning back to the song
+- <kbd>Esc</kbd> - Exiting without going back to the song
 
 ***
 
