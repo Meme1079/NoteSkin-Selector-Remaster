@@ -128,46 +128,36 @@ end
 --- Checks if the any of skin states' data misaligned with each other.
 --- If found it will reset the skin states' data to its default.
 ---@return nil
-function SkinNotes:preventError()
-     local function resetSaveData()
-          SkinNoteSave:set('selectSkinPagePositionIndex', self.stateClass, 1)
-          SkinNoteSave:set('selectSkinInitSelectedIndex', self.stateClass, 1)
-          SkinNoteSave:set('selectSkinPreSelectedIndex',  self.stateClass, 1)
-          SkinNoteSave:set('selectSkinCurSelectedIndex',  self.stateClass, 1)
-
-          SkinNoteSave:set('previewObjectIndex',              self.stateClass, 1)
-          SkinNoteSave:set('checkboxSkinObjectIndexPlayer',   self.stateClass, 0)
-          SkinNoteSave:set('checkboxSkinObjectIndexOpponent', self.stateClass, 0)
-     end
-
-     local stateSkinMetadata = {
+function SkinNotes:load_preventError()
+     local stateSkinTotalPath = setmetatable(states.getTotalSkins(self.stateClass, true), {
           __index = function(skinSelf, index)
                if index == 0 then
                     return '@void'
                end
                return '@error', index
           end
-     }
+     })
 
-     local debugSkinNamePlayer   = SkinNoteSave:get('debugSkinNamePlayer',   '', 'NOTE_assets')
-     local debugSkinNameOpponent = SkinNoteSave:get('debugSkinNameOpponent', '', 'NOTE_assets')
-     local stateSkinTotal    = setmetatable(self.totalSkins, stateSkinMetadata)
-
-
-     
-
-     --[[ if stateSkinTotal[self.checkboxSkinObjectIndex.player]   == '@error' then
+     if stateSkinTotalPath[self.checkboxSkinObjectIndex.player]   == '@error' then
+          self.checkboxSkinObjectIndex.player = 0
           SkinNoteSave:set('checkboxSkinObjectIndexPlayer', self.stateClass, 0)
      end
-     if stateSkinTotal[self.checkboxSkinObjectIndex.opponent] == '@error' then
+     if stateSkinTotalPath[self.checkboxSkinObjectIndex.opponent] == '@error' then
+          self.checkboxSkinObjectIndex.opponent = 0
           SkinNoteSave:set('checkboxSkinObjectIndexOpponent', self.stateClass, 0)
      end
-     
-     debugPrint({stateSkinTotal[self.checkboxSkinObjectIndex.player], statePreSkinTotal[self.checkboxSkinObjectIndex.player]}) ]]
 
-     debugPrint({debugSkinNamePlayer, debugSkinNameOpponent})
-     SkinNoteSave:set('debugSkinNamePlayer',   '', stateSkinTotal[self.checkboxSkinObjectIndex.player])
-     SkinNoteSave:set('debugSkinNameOpponent', '', stateSkinTotal[self.checkboxSkinObjectIndex.opponent])
+     if self.selectSkinPagePositionIndex <= 0 or self.selectSkinPagePositionIndex > self.totalSkinLimit then
+          self.sliderPageIndex      = 1
+          self.sliderTrackPageIndex = 1
+
+          self.selectSkinPagePositionIndex = 1
+          SkinNoteSave:set('selectSkinPagePositionIndex', self.stateClass, 1)
+     end
+     if self.previewAnimationObjectIndex <= 0 or self.previewAnimationObjectIndex > #self.previewAnimationObjectPrevAnims then
+          self.previewAnimationObjectIndex = 1
+          SkinNoteSave:set('previewObjectIndex', self.stateClass, 1)
+     end
 end
 
 --- Creates a 16 chunk display of the selected skins.
@@ -261,10 +251,9 @@ end
 ---@return nil
 function SkinNotes:preload()
      for pages = self.totalSkinLimit, 1, -1 do
-          if pages ~= self.selectSkinPagePositionIndex then
-               break
+          if pages == self.selectSkinPagePositionIndex then
+               self:create(pages)
           end
-          self:create(pages)
      end
 end
 
@@ -714,7 +703,7 @@ function SkinNotes:preview()
      local curPage  = self.selectSkinPagePositionIndex
      local curIndex = self.selectSkinCurSelectedIndex
      local function getCurrentPreviewSkin(previewSkinArray)
-          if curIndex == 0 then
+          if curIndex == 0 or self.totalSkins[curIndex] == nil then
                return previewSkinArray[1][1]
           end
 
@@ -869,7 +858,7 @@ function SkinNotes:preview_animation(loadAnim)
 
      local curIndex = self.selectSkinCurSelectedIndex
      local function getCurrentPreviewSkin(previewSkinArray)
-          if curIndex == 0 then
+          if curIndex == 0 or self.totalSkins[curIndex] == nil then
                return previewSkinArray[1][1]
           end
 
