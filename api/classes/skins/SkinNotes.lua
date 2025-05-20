@@ -27,7 +27,6 @@ local SkinNoteSave = SkinSaves:new('noteskin_selector', 'NoteSkin Selector')
 
 ---@class SkinNotes
 local SkinNotes = {}
-
 --- Initializes the creation of a skin state to display skins.
 ---@param stateClass string The given tag for the class to inherit.
 ---@param statePath string The corresponding image path to display its skins.
@@ -130,7 +129,45 @@ end
 --- If found it will reset the skin states' data to its default.
 ---@return nil
 function SkinNotes:preventError()
+     local function resetSaveData()
+          SkinNoteSave:set('selectSkinPagePositionIndex', self.stateClass, 1)
+          SkinNoteSave:set('selectSkinInitSelectedIndex', self.stateClass, 1)
+          SkinNoteSave:set('selectSkinPreSelectedIndex',  self.stateClass, 1)
+          SkinNoteSave:set('selectSkinCurSelectedIndex',  self.stateClass, 1)
 
+          SkinNoteSave:set('previewObjectIndex',              self.stateClass, 1)
+          SkinNoteSave:set('checkboxSkinObjectIndexPlayer',   self.stateClass, 0)
+          SkinNoteSave:set('checkboxSkinObjectIndexOpponent', self.stateClass, 0)
+     end
+
+     local stateSkinMetadata = {
+          __index = function(skinSelf, index)
+               if index == 0 then
+                    return '@void'
+               end
+               return '@error', index
+          end
+     }
+
+     local debugSkinNamePlayer   = SkinNoteSave:get('debugSkinNamePlayer',   '', 'NOTE_assets')
+     local debugSkinNameOpponent = SkinNoteSave:get('debugSkinNameOpponent', '', 'NOTE_assets')
+     local stateSkinTotal    = setmetatable(self.totalSkins, stateSkinMetadata)
+
+
+     
+
+     --[[ if stateSkinTotal[self.checkboxSkinObjectIndex.player]   == '@error' then
+          SkinNoteSave:set('checkboxSkinObjectIndexPlayer', self.stateClass, 0)
+     end
+     if stateSkinTotal[self.checkboxSkinObjectIndex.opponent] == '@error' then
+          SkinNoteSave:set('checkboxSkinObjectIndexOpponent', self.stateClass, 0)
+     end
+     
+     debugPrint({stateSkinTotal[self.checkboxSkinObjectIndex.player], statePreSkinTotal[self.checkboxSkinObjectIndex.player]}) ]]
+
+     debugPrint({debugSkinNamePlayer, debugSkinNameOpponent})
+     SkinNoteSave:set('debugSkinNamePlayer',   '', stateSkinTotal[self.checkboxSkinObjectIndex.player])
+     SkinNoteSave:set('debugSkinNameOpponent', '', stateSkinTotal[self.checkboxSkinObjectIndex.opponent])
 end
 
 --- Creates a 16 chunk display of the selected skins.
