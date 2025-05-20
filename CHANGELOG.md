@@ -1,13 +1,18 @@
 ## Version 2.0.0
 ### Additions/Changes
 - Overhual the main GUI with a new redesign, cuz it looks cool. _(inspired by OreUI from Minecraft)_
-- Overhual the main source-code of the mod for organization and an ability to soft-code new skin states.
+- Overhual the main source-code of the mod for organization and an ability to soft-code new skin selection states.
      - Classes to create custom states for different skins by using inheritance and polymorphism stuff.
      - Loads separated chunks of object sprites of the skins when switching pages.
-- Additions/Changes on the Skin State.
+- Additions/Changes on the skin selection states.
+     - Added the splashskin selection state.
+          - Obviously works the same as the noteskin selection state.
+          - You can switch to other skin selection states by pressing <kbd>O</kbd> (left) or <kbd>P</kbd> (right) keys.
      - Added a slider for switching skin pages manually.
           - Automatically snaps to the nearest page.
           - Automatically disable it itself if there's only contain 1 page within that state.
+     - Added prevention for invalid data.
+          - If detected, it will reset the specific data that is currently invalid.
      - Added a search bar for searching certain skins more easily.
      - Added a "smoother" color tweening to the background.
 - Additions/Changes on the Display Grid Selection.
@@ -15,7 +20,7 @@
           - Features a hovering, pressed, selection, and blocked sprites.
      - Increase the grid selection from a `3x4` to a `4x4`, to easily select more skins.
 - Additions/Changes on the Preview Strum Selection.
-     - Added a new GIU for selecting preview strum animations.
+     - Added a new GUI for selecting preview strum animations.
           - Display it's current preview strum animation name.
           - 2 selection buttons to change the preview strum animations.
 - Added an implementation for custom skin packs.

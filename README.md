@@ -34,13 +34,18 @@ NoteSkin Selector Remastered © 2024 by Meme1079 is licensed under CC BY-NC-ND 4
 ## Version 2.0.0
 ### Additions/Changes
 - Overhual the main GUI with a new redesign, cuz it looks cool. _(inspired by OreUI from Minecraft)_
-- Overhual the main source-code of the mod for organization and an ability to soft-code new skin states.
+- Overhual the main source-code of the mod for organization and an ability to soft-code new skin selection states.
      - Classes to create custom states for different skins by using inheritance and polymorphism stuff.
      - Loads separated chunks of object sprites of the skins when switching pages.
-- Additions/Changes on the Skin State.
+- Additions/Changes on the skin selection states.
+     - Added the splashskin selection state.
+          - Obviously works the same as the noteskin selection state.
+          - You can switch to other skin selection states by pressing <kbd>O</kbd> (left) or <kbd>P</kbd> (right) keys.
      - Added a slider for switching skin pages manually.
           - Automatically snaps to the nearest page.
           - Automatically disable it itself if there's only contain 1 page within that state.
+     - Added prevention for invalid data.
+          - If detected, it will reset the specific data that is currently invalid.
      - Added a search bar for searching certain skins more easily.
      - Added a "smoother" color tweening to the background.
 - Additions/Changes on the Display Grid Selection.
@@ -64,7 +69,7 @@ NoteSkin Selector Remastered © 2024 by Meme1079 is licensed under CC BY-NC-ND 4
 
 # Stuff Used Here
 > [!CAUTION]
-> If you are a developer and you want to remove certain assets (skins, sprites, music, etc) that you own within this mod. I will happily obliged with your decision, I will remove your assetx within the mod with no hesitation.
+> If you are a developer and you want to remove certain assets (skins, sprites, music, etc) that you own within this mod. I will happily obliged with your decision, I will remove your assets within the mod with no hesitation.
 
 ## Noteskins
 - Majin - [Vs. Sonic.EXE 2.0](https://gamebanana.com/mods/316022)
@@ -82,7 +87,6 @@ NoteSkin Selector Remastered © 2024 by Meme1079 is licensed under CC BY-NC-ND 4
 - File Select - Sonic 3 & Knuckles
 - Extras Menu - Sonic Mega Collection
 - Palmtree Panic (P mix) - Sonic CD
-- Artistic Expression - [Friday Night Funkin' (Kawaisprite)](https://www.youtube.com/watch?v=yFHbQFH09Io)
 - Monkey - Original: [Mario Paint (Hirokazu Tanaka)](https://www.youtube.com/watch?v=gMRFXrbfKEo); Remix: [Mario's Madness (FriedFrick)](https://www.youtube.com/watch?v=x0AMU2nelAw)
 
 ## Lua Libraries
