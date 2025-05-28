@@ -590,7 +590,7 @@ function SkinSplashes:search_create()
                local startName   = list[i]:match(match..'(.+)')  == nil and 'funkin' or list[i]:match(match..'(.+)')
                local startFolder = list[i]:match('(.+/)'..match) == nil and ''       or list[i]:match('(.+/)'..match)
 
-               local startPos = startName:upper():find(input:upper())
+               local startPos = startName:upper():find(input:gsub('([%%%.%$%^%(%[])', '%%%1'):upper())
                local wordPos  = startPos == nil and -1 or startPos
                if wordPos > -1 and #search_result < 16 then
                     local p = allowPath == true and startFolder..match:gsub('%%%-', '-')..startName or startName

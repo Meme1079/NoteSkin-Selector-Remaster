@@ -40,6 +40,11 @@ NoteSkin Selector Remastered © 2024 by Meme1079 is licensed under CC BY-NC-ND 4
 
 ***
 
+## Version 2.0.1
+### Bug Fixes
+- Fixed a bug when typing special characters that correspond to the special string patterns, will result in an error.
+- Fixed a bug where the previously selected skin was prevented while switching to a different page and selecting skins from that page.
+
 ## Version 2.0.0
 ### Additions/Changes
 - Overhual the main GUI with a new redesign, cuz it looks cool. _(inspired by OreUI from Minecraft)_

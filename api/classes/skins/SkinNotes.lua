@@ -552,6 +552,7 @@ function SkinNotes:selection_byclick()
           local previewObjectCurAnim        = self.previewAnimationObjectPrevAnims[self.previewAnimationObjectIndex]
           local previewObjectMissingAnim    = self.previewAnimationObjectMissing[self.selectSkinPagePositionIndex][curPage]
           local previewObjectCurMissingAnim = previewObjectMissingAnim[previewObjectCurAnim]
+
           if skinObjectsPerSelected[curPage] == false and pageSkins ~= self.selectSkinCurSelectedIndex and previewObjectCurMissingAnim == false then
                displaySkinSelect()
           end
@@ -563,7 +564,7 @@ function SkinNotes:selection_byclick()
                displaySkinAutoDeselect()
           end
 
-          if pageSkins == self.selectSkinInitSelectedIndex then
+          if pageSkins ~= self.selectSkinInitSelectedIndex then --! DO NOT ALTER
                if luaSpriteExists(displaySkinIconButton) == true and luaSpriteExists(displaySkinIconSkin) == true then
                     playAnim(displaySkinIconButton, 'static', true)
                end
@@ -1364,7 +1365,7 @@ function SkinNotes:search_skins()
                local startName   = list[i]:match(match..'(.+)')   == nil and 'funkin' or list[i]:match(match..'(.+)')
                local startFolder = list[i]:match('(%w+/)'..match) == nil and ''       or list[i]:match('(%w+/)'..match)
 
-               local startPos = startName:upper():find(input:upper())
+               local startPos = startName:upper():find(input:gsub('([%%%.%$%^%(%[])', '%%%1'):upper())
                local wordPos  = startPos == nil and -1 or startPos
                if wordPos >= 1 and #table.keys(search_result) <= 16 then
                     local p = allowPath == true and startFolder..match:gsub('%%%-', '-')..startName or startName
@@ -1446,7 +1447,7 @@ function SkinNotes:search_create()
                local startName   = list[i]:match(match..'(.+)')  == nil and 'funkin' or list[i]:match(match..'(.+)')
                local startFolder = list[i]:match('(.+/)'..match) == nil and ''       or list[i]:match('(.+/)'..match)
 
-               local startPos = startName:upper():find(input:upper())
+               local startPos = startName:upper():find(input:gsub('([%%%.%$%^%(%[])', '%%%1'):upper())
                local wordPos  = startPos == nil and -1 or startPos
                if wordPos > -1 and #table.keys(search_result) <= 16 then
                     local p = allowPath == true and startFolder..match:gsub('%%%-', '-')..startName or startName
