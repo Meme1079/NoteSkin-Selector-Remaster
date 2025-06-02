@@ -473,7 +473,7 @@ function SkinNotes:selection_byclick()
      end
 
      for curIndex = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
-          local curSkinIndex = pageSkins - (16 * (self.selectSkinPagePositionIndex - 1))
+          local curSkinIndex = curIndex - (16 * (self.selectSkinPagePositionIndex - 1))
 
           local displaySkinIconTemplate = {state = (self.stateClass):upperAtStart(), ID = curIndex}
           local displaySkinIconButton   = ('displaySkinIconButton${state}-${ID}'):interpol(displaySkinIconTemplate)
@@ -1464,9 +1464,9 @@ function SkinNotes:search_skins()
      for searchPage = 1, #self.totalSkinObjectID do
           local totalSkinObjectIDs     = self.totalSkinObjectID[searchPage]
           local totalSkinObjectPresent = table.singularity(table.merge(totalSkinObjectIDs, skinSearchInput_textContentID), true)
-          for pageSkins = 1, #totalSkinObjectPresent do
+          for curIndex = 1, #totalSkinObjectPresent do
                searchSkinIndex = searchSkinIndex + 1
-               self.searchSkinObjectIndex[searchSkinIndex] = totalSkinObjectPresent[pageSkins]
+               self.searchSkinObjectIndex[searchSkinIndex] = totalSkinObjectPresent[curIndex]
                self.searchSkinObjectPage[searchSkinIndex]  = searchPage
           end
      end
