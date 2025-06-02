@@ -1,5 +1,6 @@
-## Version 2.1.0
+f## Version 2.1.0
 ### Additions/Changes
+- Added a skin highlight name, which obviously displays the name of the skin when hovering.
 - Blocked the skin implementation and ability to go into the skin selection screen, cuz it's not supported yet.
 - Adjust the Bad noteskin pressed offsets.
 
