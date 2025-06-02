@@ -1,11 +1,12 @@
 ## Version 2.1.0
 ### Additions/Changes
-- 
+- Blocked the skin implementation and ability to go into the skin selection screen, cuz it's not supported yet.
+- Adjust the Bad noteskin pressed offsets.
 
 ### Bug Fixes
 - All scripts that are outside the mods are now forcefully removed, thus preventing any soft-locking and weird bugs from happening.
-- Fixed a bug so that skins will actually load after a cutscene.
-- Fixed a bug so that checking the checkboxes and then selecting a different skin, the animation will finish instead of cutting off.
+- Skins (i.e. notes & slashes) can actually load after a cutscene has been finished.
+- Checkbox checking animation will now instantly cut-off when selecting a different skin.
 
 ## Version 2.0.1
 ### Bug Fixes

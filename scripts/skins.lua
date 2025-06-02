@@ -118,6 +118,10 @@ local filterSkinSplashesPathPlayer   = filterSkinImagePath( getSplashesSkinImage
 --- This also initiates the splashskin's texture setup.
 ---@return nil
 local function onInitSkinTexture()
+     if getPropertyFromClass('states.PlayState', 'stageUI') == 'pixel' then
+          return
+     end
+     
      for memberStrums = 0,3 do
           if getNoteSkinImagePathPlayer  ~= '@void' then
                setPropertyFromGroup('playerStrums', memberStrums, 'texture', fliterSkinNotePathPlayer)
@@ -146,6 +150,10 @@ function onCountdownStarted() -- A fail-safe, if initaiting the noteskin's textu
 end
 
 function onSpawnNote(memberIndex, noteData, noteType, isSustainNote, strumTime)
+     if getPropertyFromClass('states.PlayState', 'stageUI') == 'pixel' then
+          return
+     end
+
      local songSpeed    = getProperty('songSpeed')
      local songPlayRate = getProperty('playbackRate')
      local noteSustainHeight = stepCrochet / 100 * 1.05 * songSpeed / songPlayRate
@@ -195,6 +203,11 @@ function onSpawnNote(memberIndex, noteData, noteType, isSustainNote, strumTime)
 end
 
 local function skinSelectionScreen()
+     if getPropertyFromClass('states.PlayState', 'stageUI') == 'pixel' then
+          debugPrint('Pixel skin support is not available in this version!', 'ff0000')
+          return
+     end
+
      SkinStateSave:set('dataSongName', '', songName)
      SkinStateSave:set('dataDiffID',   '', tostring(difficulty))
      SkinStateSave:set('dataDiffList', '', getPropertyFromClass('backend.Difficulty', 'list'))

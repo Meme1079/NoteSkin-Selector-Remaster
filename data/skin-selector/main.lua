@@ -23,7 +23,6 @@ function onCreatePost()
                removeLuaScript(v, true)
           end
      end
-
      playMusic(getModSetting('song_select', modFolder):lower(), 0.5, true)
 end
 
