@@ -591,8 +591,9 @@ function SkinNotes:selection_byhover()
      local skinSearchInput_textContent = getVar('skinSearchInput_textContent') or ''
      if #skinSearchInput_textContent > 0 then
           return
-     end
+     end     
 
+     local fart = ''
      for curIndex = skinObjectsPerIDs[1], skinObjectsPerIDs[#skinObjectsPerIDs] do
           local curSkinIndex = curIndex - (16 * (self.selectSkinPagePositionIndex - 1))
 
@@ -604,23 +605,35 @@ function SkinNotes:selection_byhover()
           if hoverObject(displaySkinIconButton, 'camHUD') == false then
                skinObjectsPerHovered[curSkinIndex] = false
           end
-          
+
           local nonCurrentPreSelectedSkin = self.selectSkinPreSelectedIndex ~= curIndex
           local nonCurrentCurSelectedSkin = self.selectSkinCurSelectedIndex ~= curIndex
           if skinObjectsPerHovered[curSkinIndex] == true and nonCurrentPreSelectedSkin and nonCurrentCurSelectedSkin then
                if luaSpriteExists(displaySkinIconButton) == false then return end
                playAnim(displaySkinIconButton, 'hover', true)
+
+               fart = self.totalSkinObjectNames[self.selectSkinPagePositionIndex][curSkinIndex]
           end
           if skinObjectsPerHovered[curSkinIndex] == false and nonCurrentPreSelectedSkin and nonCurrentCurSelectedSkin then
                if luaSpriteExists(displaySkinIconButton) == false then return end
                playAnim(displaySkinIconButton, 'static', true)
           end
-
+          
           local previewObjectCurAnim        = self.previewAnimationObjectPrevAnims[self.previewAnimationObjectIndex]
           local previewObjectMissingAnim    = self.previewAnimationObjectMissing[self.selectSkinPagePositionIndex][curSkinIndex]
           local previewObjectCurMissingAnim = previewObjectMissingAnim[previewObjectCurAnim]
           if previewObjectCurMissingAnim == true then
                playAnim(displaySkinIconButton, 'blocked', true)
+          end
+     end
+
+     if getPropertyFromClass('flixel.FlxG', 'mouse.justMoved') == true then
+          if fart ~= '' then
+               setTextString('skinHighlightName', fart)
+               return
+          else
+               setTextString('skinHighlightName', '')
+               return
           end
      end
 end

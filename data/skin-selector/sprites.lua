@@ -191,7 +191,7 @@ for keyID = 1, 4 do
      addLuaText(genInfoKeybinds)
 end
 
--- Miscellaneous --
+-- Cursor --
 
 makeAnimatedLuaSprite('mouseTexture', 'ui/cursor', getMouseX('camOther'), getMouseY('camOther'))
 scaleObject('mouseTexture', 0.4, 0.4)
@@ -212,6 +212,12 @@ playAnim('mouseTexture', 'idle')
 setObjectCamera('mouseTexture', 'camOther')
 addLuaSprite('mouseTexture', true)
 setPropertyFromClass('flixel.FlxG', 'mouse.visible', false)
+
+makeLuaText('skinHighlightName', '', 0, 0, 0)
+setTextFont('skinHighlightName', 'sonic.ttf')
+setTextSize('skinHighlightName', 25)
+setObjectCamera('skinHighlightName', 'camOther')
+addLuaText('skinHighlightName', true)
 
 -- HScript Stuff --
 
