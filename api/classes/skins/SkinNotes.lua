@@ -571,7 +571,11 @@ function SkinNotes:selection_byclick()
 
                self.selectSkinInitSelectedIndex = 0
                SkinNoteSave:set('selectSkinInitSelectedIndex', self.stateClass, self.selectSkinInitSelectedIndex)
-               skinObjectsPerSelected[curSkinIndex]  = false
+
+               local curSelectSkinIndex = self.selectSkinCurSelectedIndex - (16 * (self.selectSkinPagePositionIndex - 1))
+               if curSkinIndex ~= curSelectSkinIndex then -- fuck you bug
+                    skinObjectsPerSelected[curSkinIndex] = false
+               end
           end
      end
 end
