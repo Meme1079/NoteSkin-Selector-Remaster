@@ -21,6 +21,17 @@ local keyboardJustConditionReleased = funkinlua.keyboardJustConditionReleased
 
 local SkinStateSave = SkinSaves:new('noteskin_selector', 'NoteSkin Selector')
 
+-- Prechaching --
+
+precacheImage('menuDesat')
+precacheImage('checkboxanim')
+precacheImage('ui/buttons/slider_button')
+precacheImage('ui/buttons/preview anim/previewAnimIcon_button')
+precacheImage('ui/buttons/preview anim/previewAnimInfoDirection_button')
+precacheImage('ui/buttons/preview anim/previewAnimSelection_button')
+precacheImage('ui/display_selected')
+precacheImage('ui/cursor')
+
 -- Background --
 
 makeLuaSprite('selectorBackground', 'menuDesat', 0, 0)
@@ -30,8 +41,6 @@ setProperty('selectorBackground.color', 0x5220bd)
 addLuaSprite('selectorBackground')
 
 -- Display Sliders --
-
-precacheImage('ui/buttons/slider_button')
 
 makeAnimatedLuaSprite('displaySliderIcon', 'ui/buttons/slider_button', 600, 127) -- min: 127; max: 643
 addAnimationByPrefix('displaySliderIcon', 'static', 'slider_button-static')
@@ -50,61 +59,7 @@ setObjectCamera('displaySliderTrack', 'camHUD')
 setProperty('displaySliderTrack.antialiasing', false)
 addLuaSprite('displaySliderTrack', true)
 
--- Selection Buttons --
-
-precacheImage('checkboxanim')
-
-makeAnimatedLuaSprite('selectionSkinButtonPlayer', 'checkboxanim', 775 + 12, 330)
-addAnimationByPrefix('selectionSkinButtonPlayer', 'check', 'checkbox finish0', 24, false)
-addAnimationByPrefix('selectionSkinButtonPlayer', 'checking', 'checkbox anim0', 24, false)
-addAnimationByPrefix('selectionSkinButtonPlayer', 'unchecking', 'checkbox anim reverse0', 24, false)
-addAnimationByPrefix('selectionSkinButtonPlayer', 'uncheck', 'checkbox0', 24, false)
-playAnim('selectionSkinButtonPlayer', 'uncheck')
-scaleObject('selectionSkinButtonPlayer', 0.4, 0.4)
-setObjectCamera('selectionSkinButtonPlayer', 'camHUD')
-addOffset('selectionSkinButtonPlayer', 'check', 34.5, 36 + (math.pi - 3))
-addOffset('selectionSkinButtonPlayer', 'checking', 48.5, 42)
-addOffset('selectionSkinButtonPlayer', 'unchecking', 44.5, 44)
-addOffset('selectionSkinButtonPlayer', 'uncheck', 33.3, 32.2)
-setProperty('selectionSkinButtonPlayer.antialiasing', false)
-addLuaSprite('selectionSkinButtonPlayer')
-
-makeAnimatedLuaSprite('selectionSkinButtonOpponent', 'checkboxanim', 775 + 12 + (80*2.9), 330)
-addAnimationByPrefix('selectionSkinButtonOpponent', 'check', 'checkbox finish0', 24, false)
-addAnimationByPrefix('selectionSkinButtonOpponent', 'checking', 'checkbox anim0', 24, false)
-addAnimationByPrefix('selectionSkinButtonOpponent', 'unchecking', 'checkbox anim reverse0', 24, false)
-addAnimationByPrefix('selectionSkinButtonOpponent', 'uncheck', 'checkbox0', 24, false)
-playAnim('selectionSkinButtonOpponent', 'uncheck')
-scaleObject('selectionSkinButtonOpponent', 0.4, 0.4)
-setObjectCamera('selectionSkinButtonOpponent', 'camHUD')
-addOffset('selectionSkinButtonOpponent', 'check', 34.5, 36 + (math.pi - 3))
-addOffset('selectionSkinButtonOpponent', 'checking', 48.5, 42)
-addOffset('selectionSkinButtonOpponent', 'unchecking', 44.5, 44)
-addOffset('selectionSkinButtonOpponent', 'uncheck', 33.3, 32.2)
-setProperty('selectionSkinButtonOpponent.antialiasing', false)
-addLuaSprite('selectionSkinButtonOpponent')
-
-makeLuaText('selectionSkinTextPlayer', 'Player', 0, 775 + 75, 330 + 7)
-setTextFont('selectionSkinTextPlayer', 'sonic.ttf')
-setTextSize('selectionSkinTextPlayer', 30)
-setTextColor('selectionSkinTextPlayer', '31b0d1')
-setObjectCamera('selectionSkinTextPlayer', 'camHUD')
-setProperty('selectionSkinTextPlayer.antialiasing', false)
-addLuaText('selectionSkinTextPlayer')
-
-makeLuaText('selectionSkinTextOpponent', 'Opponent', 0, 775 + 75 + (80*2.9), 330 + 7)
-setTextFont('selectionSkinTextOpponent', 'sonic.ttf')
-setTextSize('selectionSkinTextOpponent', 30)
-setTextColor('selectionSkinTextOpponent', 'af66ce')
-setObjectCamera('selectionSkinTextOpponent', 'camHUD')
-setProperty('selectionSkinTextOpponent.antialiasing', false)
-addLuaText('selectionSkinTextOpponent')
-
 -- Selection Animation Buttons --
-
-precacheImage('ui/buttons/preview anim/previewAnimIcon_button')
-precacheImage('ui/buttons/preview anim/previewAnimInfoDirection_button')
-precacheImage('ui/buttons/preview anim/previewAnimSelection_button')
 
 makeLuaText('previewSkinTitleText', 'Preview Animations', 0, 775+12, 470)
 setTextFont('previewSkinTitleText', 'FridayNight.ttf')
@@ -174,43 +129,12 @@ setObjectCamera('previewSkinButtonSelectionText', 'camHUD')
 setProperty('previewSkinButtonSelectionText.antialiasing', false)
 addLuaText('previewSkinButtonSelectionText')
 
-makeLuaSprite('fart', 'ui/buttons/test/fart7', 430, 48)
+--[[ makeLuaSprite('fart', 'ui/buttons/test/fart7', 430, 48)
 setObjectCamera('fart', 'camHUD')
 setProperty('fart.scale.x', 0.7)
 setProperty('fart.scale.y', 0.8)
 setProperty('fart.antialiasing', false)
-addLuaSprite('fart')
-
-
--- Display Selected Highlights --
-
-precacheImage('ui/display_selected')
-
-makeAnimatedLuaSprite('displaySelectionPlayer', 'ui/display_selected', 0, 0)
-scaleObject('displaySelectionPlayer', 0.8, 0.8)
-addAnimationByPrefix('displaySelectionPlayer', 'player', 'selected-player', 24, false)
-addAnimationByPrefix('displaySelectionPlayer', 'opponent', 'selected-opponent', 24, false)
-
-local displaySelectionPlayerOffsetX = getProperty('displaySelectionPlayer.offset.x')
-local displaySelectionPlayerOffsetY = getProperty('displaySelectionPlayer.offset.y')
-addOffset('displaySelectionPlayer', 'player', displaySelectionPlayerOffsetX + 5, displaySelectionPlayerOffsetY + 5)
-addOffset('displaySelectionPlayer', 'opponent', displaySelectionPlayerOffsetX + 5, displaySelectionPlayerOffsetY + 5)
-playAnim('displaySelectionPlayer', 'player')
-setObjectCamera('displaySelectionPlayer', 'camHUD')
-setProperty('displaySelectionPlayer.antialiasing', false)
-
-makeAnimatedLuaSprite('displaySelectionOpponent', 'ui/display_selected', 0, 0)
-scaleObject('displaySelectionOpponent', 0.8, 0.8)
-addAnimationByPrefix('displaySelectionOpponent', 'player', 'selected-player', 24, false)
-addAnimationByPrefix('displaySelectionOpponent', 'opponent', 'selected-opponent', 24, false)
-
-local displaySelectionOpponentOffsetX = getProperty('displaySelectionOpponent.offset.x')
-local displaySelectionOpponentOffsetY = getProperty('displaySelectionOpponent.offset.y')
-addOffset('displaySelectionOpponent', 'player', displaySelectionOpponentOffsetX + 5, displaySelectionOpponentOffsetY + 5)
-addOffset('displaySelectionOpponent', 'opponent', displaySelectionOpponentOffsetX + 5, displaySelectionOpponentOffsetY + 5)
-playAnim('displaySelectionOpponent', 'opponent')
-setObjectCamera('displaySelectionOpponent', 'camHUD')
-setProperty('displaySelectionOpponent.antialiasing', false)
+addLuaSprite('fart') ]]
 
 -- General Infos --
 
@@ -239,7 +163,7 @@ setObjectCamera('genInfoSkinName', 'camHUD')
 setProperty('genInfoSkinName.antialiasing', false)
 addLuaText('genInfoSkinName')
 
-makeLuaText('genInfoVersion', 'Ver 2.0.0', 0, 1195, 5)
+makeLuaText('genInfoVersion', 'Ver 2.1.0', 0, 1195, 5)
 setTextFont('genInfoVersion', 'sonic.ttf')
 setTextSize('genInfoVersion', 20)
 setTextColor('genInfoVersion', 'fccf03')
@@ -267,9 +191,7 @@ for keyID = 1, 4 do
      addLuaText(genInfoKeybinds)
 end
 
--- Mouse Texture --
-
-precacheImage('ui/cursor')
+-- Miscellaneous --
 
 makeAnimatedLuaSprite('mouseTexture', 'ui/cursor', getMouseX('camOther'), getMouseY('camOther'))
 scaleObject('mouseTexture', 0.4, 0.4)

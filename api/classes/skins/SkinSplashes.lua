@@ -117,8 +117,8 @@ function SkinSplashes:load()
 
      local checkboxIndexPlayer   = SkinSplashSave:get('checkboxSkinObjectIndexPlayer',   self.stateClass, 0)
      local checkboxIndexOpponent = SkinSplashSave:get('checkboxSkinObjectIndexOpponent', self.stateClass, 0)
-     self.checkboxSkinObjectIndex  = {player = checkboxIndexPlayer,  opponent = checkboxIndexOpponent}
-     self.checkboxSkinObjectToggle = {player = false,                opponent = false}
+     self.checkboxSkinObjectIndex  = {player = checkboxIndexPlayer}
+     self.checkboxSkinObjectToggle = {player = false}
      self.checkboxSkinObjectType   = table.keys(self.checkboxSkinObjectIndex)
 
      -- Note Preview Properties --

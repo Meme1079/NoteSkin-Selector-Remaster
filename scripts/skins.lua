@@ -113,15 +113,19 @@ local fliterSkinNotePathOpponent     = filterSkinImagePath( getNoteSkinImagePath
 
 local skinMetadataObjectSplashPlayer = skinMetadataObjectSplashes
 local filterSkinSplashesPathPlayer   = filterSkinImagePath( getSplashesSkinImagePathPlayer )
-function onCreatePost()
-     for strums = 0,3 do
-          if getNoteSkinImagePathPlayer ~= '@void' then
-               setPropertyFromGroup('playerStrums', strums, 'texture', fliterSkinNotePathPlayer)
-               setPropertyFromGroup('playerStrums', strums, 'useRGBShader', skinMetadataObjectNotePlayer.rgbshader)
+
+--- Initiate the noteskin's texture setup on its strum's texture and shader availability.
+--- This also initiates the splashskin's texture setup.
+---@return nil
+local function onInitSkinTexture()
+     for memberStrums = 0,3 do
+          if getNoteSkinImagePathPlayer  ~= '@void' then
+               setPropertyFromGroup('playerStrums', memberStrums, 'texture', fliterSkinNotePathPlayer)
+               setPropertyFromGroup('playerStrums', memberStrums, 'useRGBShader', skinMetadataObjectNotePlayer.rgbshader)
           end
           if getNoteSkinImagePathOpponent ~= '@void' then
-               setPropertyFromGroup('opponentStrums', strums, 'texture', fliterSkinNotePathOpponent)
-               setPropertyFromGroup('opponentStrums', strums, 'useRGBShader', skinMetadataObjectNoteOpponent.rgbshader)
+               setPropertyFromGroup('opponentStrums', memberStrums, 'texture', fliterSkinNotePathOpponent)
+               setPropertyFromGroup('opponentStrums', memberStrums, 'useRGBShader', skinMetadataObjectNoteOpponent.rgbshader)
           end
      end
 
@@ -131,6 +135,14 @@ function onCreatePost()
                setPropertyFromGroup('unspawnNotes', memberIndex, 'noteSplashData.useRGBShader', skinMetadataObjectSplashPlayer.rgbshader)
           end
      end
+end
+
+function onCreatePost()
+     onInitSkinTexture()
+end
+
+function onCountdownStarted() -- A fail-safe, if initaiting the noteskin's texture setup fails this will be called
+     onInitSkinTexture()
 end
 
 function onSpawnNote(memberIndex, noteData, noteType, isSustainNote, strumTime)
@@ -187,7 +199,7 @@ local function skinSelectionScreen()
      SkinStateSave:set('dataDiffID',   '', tostring(difficulty))
      SkinStateSave:set('dataDiffList', '', getPropertyFromClass('backend.Difficulty', 'list'))
 
-     loadNewSong('Skin Selector', -1, {'Easy', 'Normal', 'Hard'})
+     loadNewSong('Skin Selector', 2, {'Easy', 'Normal', 'Hard'})
 end
 
 function onUpdatePost(elapsed)

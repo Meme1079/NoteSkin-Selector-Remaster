@@ -66,6 +66,7 @@ function SkinStates:switch()
           for skins, states in pairs(self.stateSkins) do
                if skins ~= self.stateSkinNames[self.stateSkinIndex] then
                     states:destroy()
+                    states:checkbox_remove()
                end
           end
           self:create()
@@ -94,6 +95,7 @@ function SkinStates:create()
                self.stateSkinMain:save_load()
                self.stateSkinMain:precache()
                self.stateSkinMain:preload()
+               self.stateSkinMain:checkbox_create()
                self.stateSkinMain:preview()
                self.stateSkinMain:page_slider_marks()
           end,
@@ -103,6 +105,7 @@ function SkinStates:create()
                self.stateSkinMain:save_load()
                self.stateSkinMain:precache()
                self.stateSkinMain:preload()
+               self.stateSkinMain:checkbox_create()
                self.stateSkinMain:preview()
                self.stateSkinMain:preview_notes()
                self.stateSkinMain:page_slider_marks()
@@ -119,7 +122,7 @@ function SkinStates:update()
                self.stateSkinMain:page_moved()
                self.stateSkinMain:selection()
                self.stateSkinMain:search()
-               self.stateSkinMain:checkbox()
+               self.stateSkinMain:checkbox_checking()
                self.stateSkinMain:checkbox_selection()
                self.stateSkinMain:checkbox_sync()
                self.stateSkinMain:preview_selection()
@@ -130,7 +133,7 @@ function SkinStates:update()
                self.stateSkinMain:page_moved()
                self.stateSkinMain:selection()
                self.stateSkinMain:search()
-               self.stateSkinMain:checkbox()
+               self.stateSkinMain:checkbox_checking()
                self.stateSkinMain:checkbox_selection()
                self.stateSkinMain:checkbox_sync()
                self.stateSkinMain:preview_selection()
@@ -145,8 +148,6 @@ function SkinStates:save()
      for _,states in pairs(self.stateSkins) do
           states:save()
      end
-
-     debugPrint(self.stateSkins)
 end
 
 return SkinStates

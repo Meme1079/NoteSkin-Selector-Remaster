@@ -1,3 +1,12 @@
+## Version 2.1.0
+### Additions/Changes
+- 
+
+### Bug Fixes
+- All scripts that are outside the mods are now forcefully removed, thus preventing any soft-locking and weird bugs from happening.
+- Fixed a bug so that skins will actually load after a cutscene.
+- Fixed a bug so that checking the checkboxes and then selecting a different skin, the animation will finish instead of cutting off.
+
 ## Version 2.0.1
 ### Bug Fixes
 - Fixed a bug when typing special characters that correspond to the special string patterns, will result in an error.

@@ -1,6 +1,6 @@
 {
 	"storyName": "IDK",
-	"difficulties": "Normal",
+	"difficulties": "Easy,Normal,Hard",
 	"hideFreeplay": true,
 	"weekBackground": "",
 	"weekBefore": "tutorial",

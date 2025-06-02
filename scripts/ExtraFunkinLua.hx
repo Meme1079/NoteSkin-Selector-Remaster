@@ -35,22 +35,22 @@ function onCreate() {
      */
      createGlobalCallback('loadNewSong', function(name:String = null, difficultyNum:Int = -1, difficultyArray:Array<String> = null) {
           if (difficultyArray != null) Difficulty.list = difficultyArray;
-          if (name == null || name.length < 1) name = PlayState.SONG.song;
-          if (difficultyNum == -1) difficultyNum = PlayState.storyDifficulty;
+          if (name == null || name.length < 1) name = Song.loadedSongName;
+		if (difficultyNum == -1) difficultyNum = PlayState.storyDifficulty;
 
-          var bigAssShit = Highscore.formatSong(name, difficultyNum);
-          PlayState.SONG = Song.loadFromJson(bigAssShit, name);
-          PlayState.storyDifficulty = difficultyNum;
-          game.persistentUpdate = false;
-          LoadingState.loadAndSwitchState(new PlayState());
+		var poop = Highscore.formatSong(name, difficultyNum);
+		Song.loadFromJson(poop, name);
+		PlayState.storyDifficulty = difficultyNum;
+		FlxG.state.persistentUpdate = false;
+		LoadingState.loadAndSwitchState(new PlayState());
 
-          FlxG.sound.music.pause();
-          FlxG.sound.music.volume = 0;
-          if (game.vocals != null) {
-               game.vocals.pause();
-               game.vocals.volume = 0;
-          }
-          FlxG.camera.followLerp = 0;
+		FlxG.sound.music.pause();
+		FlxG.sound.music.volume = 0;
+		if (game != null && game.vocals != null) {
+			game.vocals.pause();
+			game.vocals.volume = 0;
+		}
+		FlxG.camera.followLerp = 0;
      });
 
      /* 

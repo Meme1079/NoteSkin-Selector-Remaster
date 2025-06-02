@@ -18,6 +18,12 @@ local keyboardJustConditionReleased = funkinlua.keyboardJustConditionReleased
 
 local SkinStateSave = SkinSaves:new('noteskin_selector', 'NoteSkin Selector')
 function onCreatePost()
+     for k,v in pairs(getRunningScripts()) do
+          if v:match(modFolder..'/scripts/skins') or not v:match(modFolder) then
+               removeLuaScript(v, true)
+          end
+     end
+
      playMusic(getModSetting('song_select', modFolder):lower(), 0.5, true)
 end
 
@@ -49,11 +55,6 @@ function onStartCountdown()
      end
 
      if not allowCountdown then -- Block the first countdown
-          for k,v in pairs(getRunningScripts()) do
-               if v:match(modFolder..'/scripts/skins') or not v:match(modFolder) then
-                    removeLuaScript(v, true)
-               end
-          end
           allowCountdown = true;
           return Function_Stop;
      end
