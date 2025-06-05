@@ -286,6 +286,7 @@ function SkinNotes:page_slider(snapToPage)
                self.sliderTrackThumbPressed = false 
           end
      end
+
      if clickObject('displaySliderIcon', 'camHUD') then
           self.sliderTrackThumbPressed = true
      end

@@ -16,6 +16,8 @@ local keyboardJustConditionPressed  = funkinlua.keyboardJustConditionPressed
 local keyboardJustConditionPress    = funkinlua.keyboardJustConditionPress
 local keyboardJustConditionReleased = funkinlua.keyboardJustConditionReleased
 
+local modFolder = 'NoteSkin Selector Remastered'
+
 local SkinStateSave = SkinSaves:new('noteskin_selector', 'NoteSkin Selector')
 function onCreatePost()
      for k,v in pairs(getRunningScripts()) do
@@ -32,7 +34,7 @@ function onUpdatePost(elapsed)
      if mouseClicked('left')  then playSound('clicks/clickDown', 0.5) end
      if mouseReleased('left') then playSound('clicks/clickUp', 0.5)   end
 
-     setProperty('mouseHitBox.x', getMouseX('camHUD') - 3)
+     setProperty('mouseHitBox.x', getMouseX('camHUD'))
      setProperty('mouseHitBox.y', getMouseY('camHUD'))
 
      setProperty('mouseTexture.x', getMouseX('camHUD'))

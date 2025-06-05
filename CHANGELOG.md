@@ -1,11 +1,11 @@
-f## Version 2.1.0
+## Version 2.1.0
 ### Additions/Changes
 - Added a skin highlight name, which obviously displays the name of the skin when hovering.
 - Blocked the skin implementation and ability to go into the skin selection screen, cuz it's not supported yet.
 - Adjust the Bad noteskin pressed offsets.
 
 ### Bug Fixes
-- All scripts that are outside the mods are now forcefully removed, thus preventing any soft-locking and weird bugs from happening.
+- All scripts that are outside this mod are now forcefully removed, thus preventing any soft-locking and weird bugs from happening.
 - Skins (i.e. notes & slashes) can actually load after a cutscene has been finished.
 - Checkbox checking animation will now instantly cut-off when selecting a different skin.
 - Switching through different preview animations will now deselect the selected skin, if it has a missing animations within its metadata JSON.

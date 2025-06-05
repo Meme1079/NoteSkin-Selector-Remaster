@@ -19,6 +19,8 @@ local keyboardJustConditionPressed  = funkinlua.keyboardJustConditionPressed
 local keyboardJustConditionPress    = funkinlua.keyboardJustConditionPress
 local keyboardJustConditionReleased = funkinlua.keyboardJustConditionReleased
 
+local modFolder = 'NoteSkin Selector Remastered'
+
 local SkinStateSave = SkinSaves:new('noteskin_selector', 'NoteSkin Selector')
 
 -- Prechaching --
@@ -213,6 +215,12 @@ setObjectCamera('mouseTexture', 'camOther')
 addLuaSprite('mouseTexture', true)
 setPropertyFromClass('flixel.FlxG', 'mouse.visible', false)
 
+makeLuaSprite('mouseHitBox', nil, getMouseX('camOther'), getMouseY('camOther'))
+makeGraphic('mouseHitBox', 1, 1, 'ff0000')
+setObjectCamera('mouseHitBox', 'camOther')
+setProperty('mouseHitBox.visible', false)
+addLuaSprite('mouseHitBox', true)
+
 makeLuaText('skinHighlightName', '', 0, 0, 0)
 setTextFont('skinHighlightName', 'sonic.ttf')
 setTextSize('skinHighlightName', 25)
@@ -222,7 +230,7 @@ addLuaText('skinHighlightName', true)
 -- HScript Stuff --
 
 addHScript('hscripts/skin-selector/selectorGridBG')     -- Checkerboard & Infinitely BG Stuff
-addHScript('hscripts/skin-selector/ui/skinSearchInput') -- Search Input Functionality
+--addHScript('hscripts/skin-selector/ui/skinSearchInput') -- Search Input Functionality
 
 -- General Stuff --
 
