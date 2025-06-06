@@ -41,7 +41,7 @@ function onUpdatePost(elapsed)
      setProperty('skinHighlightName.x', getMouseX('camHUD') + 35)
      setProperty('skinHighlightName.y', getMouseY('camHUD') + 12)
      
-     if keyboardJustPressed('ENTER') and songName == 'Skin Selector' then
+     if keyboardJustConditionPressed('ENTER', not getVar('skinSearchInputFocus')) and songName == 'Skin Selector' then
           local dataSongName = SkinStateSave:get('dataSongName', '')
           local dataDiffID   = SkinStateSave:get('dataDiffID',   '')
           local dataDiffList = SkinStateSave:get('dataDiffList', '')
