@@ -230,7 +230,7 @@ addLuaText('skinHighlightName', true)
 -- HScript Stuff --
 
 addHScript('hscripts/skin-selector/selectorGridBG')     -- Checkerboard & Infinitely BG Stuff
---addHScript('hscripts/skin-selector/ui/skinSearchInput') -- Search Input Functionality
+addHScript('hscripts/skin-selector/ui/skinSearchInput') -- Search Input Functionality
 
 -- General Stuff --
 

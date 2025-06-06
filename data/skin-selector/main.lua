@@ -25,7 +25,7 @@ function onCreatePost()
                removeLuaScript(v, true)
           end
      end
-     playMusic(getModSetting('song_select', modFolder):lower(), 0.5, true)
+     --playMusic(getModSetting('song_select', modFolder):lower(), 0.5, true)
 end
 
 function onUpdatePost(elapsed)
@@ -43,7 +43,7 @@ function onUpdatePost(elapsed)
      setProperty('skinHighlightName.x', getMouseX('camHUD') + 35)
      setProperty('skinHighlightName.y', getMouseY('camHUD') + 12)
      
-     if keyboardJustPressed('ENTER') and songName == 'Skin Selector' then
+     if keyboardJustConditionPressed('ENTER', not getVar('skinSearchInputFocus')) and songName == 'Skin Selector' then
           local dataSongName = SkinStateSave:get('dataSongName', '')
           local dataDiffID   = SkinStateSave:get('dataDiffID',   '')
           local dataDiffList = SkinStateSave:get('dataDiffList', '')
